@@ -101,8 +101,6 @@ export function GamePlayPage() {
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([])
   const [betAmount, setBetAmount] = useState(game?.betAmounts[0] || 0.5)
   const [numberOfDraws, setNumberOfDraws] = useState(1)
-  const [showBetAmountDropdown, setShowBetAmountDropdown] = useState(false)
-  const [showDrawsDropdown, setShowDrawsDropdown] = useState(false)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [confirmAction, setConfirmAction] = useState<'buy' | 'cart'>('buy')
   const [showSuccess, setShowSuccess] = useState(false)
@@ -153,7 +151,7 @@ export function GamePlayPage() {
             onClick={() => navigate('/pos')}
             style={{
               padding: '14px 32px',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
               color: 'white',
               border: 'none',
               borderRadius: '16px',
@@ -260,151 +258,258 @@ export function GamePlayPage() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header with gradient */}
+      {/* Header - Game Info + Draw Info */}
       <div style={{
-        background: GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length],
-        padding: '16px 20px',
+        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        padding: '12px 16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        position: 'relative',
-        overflow: 'hidden',
+        gap: '12px',
       }}>
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute',
-          width: '150px',
-          height: '150px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '50%',
-          top: '-60px',
-          right: '-40px',
-        }} />
-        <div style={{
-          position: 'absolute',
-          width: '100px',
-          height: '100px',
-          background: 'rgba(255,255,255,0.05)',
-          borderRadius: '50%',
-          bottom: '-40px',
-          left: '20%',
-        }} />
-
-        <button
-          onClick={() => navigate('/pos')}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            backdropFilter: 'blur(10px)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            color: 'white',
-            zIndex: 1,
-          }}
-        >
-          <ArrowLeft size={20} />
-        </button>
-
-        <div style={{ textAlign: 'center', zIndex: 1 }}>
-          <h1 style={{
-            color: 'white',
-            fontSize: '20px',
-            fontWeight: 700,
-            textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}>
-            {game.name}
-          </h1>
-          <p style={{
-            color: 'rgba(255,255,255,0.8)',
-            fontSize: '12px',
-            fontWeight: 500,
-          }}>
-            Draw #{game.currentDraw}
-          </p>
-        </div>
-
-        <button
-          onClick={() => navigate('/cart')}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            backdropFilter: 'blur(10px)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            position: 'relative',
-            zIndex: 1,
-          }}
-        >
-          <ShoppingCart size={20} color="white" />
-          {cartTickets.length > 0 && (
-            <span style={{
-              position: 'absolute',
-              top: '-6px',
-              right: '-6px',
-              background: '#ef4444',
-              color: 'white',
-              fontSize: '10px',
-              fontWeight: 700,
-              width: '20px',
-              height: '20px',
-              borderRadius: '50%',
+        {/* Left: Back + Game Icon + Name */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+          <button
+            onClick={() => navigate('/pos')}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)',
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              color: 'white',
+              flexShrink: 0,
+            }}
+          >
+            <ArrowLeft size={18} />
+          </button>
+
+          {/* Game Icon */}
+          <div style={{
+            width: '44px',
+            height: '44px',
+            background: GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length],
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '24px',
+            flexShrink: 0,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+          }}>
+            {game.icon}
+          </div>
+
+          {/* Game Name */}
+          <div style={{ minWidth: 0 }}>
+            <h1 style={{
+              color: 'white',
+              fontSize: '16px',
+              fontWeight: 700,
+              margin: 0,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}>
-              {cartTickets.length}
+              {game.name}
+            </h1>
+            <p style={{
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: '11px',
+              margin: 0,
+            }}>
+              {game.type === 'keno' ? 'Keno' : game.type === 'roulette' ? 'Roulette' : 'Multiplier'}
+            </p>
+          </div>
+        </div>
+
+        {/* Center: Current Draw Info */}
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: '8px 16px',
+          background: 'rgba(255,255,255,0.08)',
+          borderRadius: '12px',
+          minWidth: '140px',
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            marginBottom: '4px',
+          }}>
+            <span style={{
+              fontSize: '10px',
+              color: 'rgba(255,255,255,0.5)',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+            }}>
+              Current Draw
             </span>
-          )}
-        </button>
+          </div>
+          <span style={{
+            fontSize: '15px',
+            fontWeight: 700,
+            color: 'white',
+          }}>
+            #{game.currentDraw}
+          </span>
+          <span style={{
+            fontSize: '10px',
+            color: 'rgba(255,255,255,0.5)',
+          }}>
+            {upcomingDraws[0]?.date || 'Today'} {upcomingDraws[0]?.time || '--:--'}
+          </span>
+        </div>
+
+        {/* Right: Timer + Cart */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Timer */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            padding: '10px 14px',
+            background: isUrgent
+              ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+              : isWarning
+              ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+              : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
+            borderRadius: '12px',
+            boxShadow: isUrgent
+              ? '0 4px 16px rgba(239, 68, 68, 0.4)'
+              : isWarning
+              ? '0 4px 16px rgba(245, 158, 11, 0.4)'
+              : '0 4px 16px rgba(34, 197, 94, 0.4)',
+          }}>
+            <Clock size={16} color="white" />
+            <span style={{
+              fontFamily: 'ui-monospace, monospace',
+              fontSize: '18px',
+              fontWeight: 700,
+              color: 'white',
+              letterSpacing: '1px',
+            }}>
+              {formatTimer(timer)}
+            </span>
+          </div>
+
+          {/* Cart Button */}
+          <button
+            onClick={() => navigate('/cart')}
+            style={{
+              background: 'rgba(255,255,255,0.1)',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '36px',
+              height: '36px',
+              borderRadius: '10px',
+              position: 'relative',
+            }}
+          >
+            <ShoppingCart size={18} color="white" />
+            {cartTickets.length > 0 && (
+              <span style={{
+                position: 'absolute',
+                top: '-4px',
+                right: '-4px',
+                background: '#ef4444',
+                color: 'white',
+                fontSize: '9px',
+                fontWeight: 700,
+                width: '16px',
+                height: '16px',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
+              }}>
+                {cartTickets.length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
-      {/* Timer Bar */}
+      {/* Next Draws Info Bar */}
       <div style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-        padding: '12px 20px',
+        background: '#f8fafc',
+        padding: '10px 16px',
         display: 'flex',
-        justifyContent: 'center',
         alignItems: 'center',
-        gap: '16px',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+        justifyContent: 'center',
+        gap: '24px',
+        borderBottom: '1px solid #e2e8f0',
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          padding: '10px 20px',
-          background: isUrgent
-            ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-            : isWarning
-            ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-            : 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
-          borderRadius: '16px',
-          boxShadow: isUrgent
-            ? '0 4px 16px rgba(239, 68, 68, 0.4)'
-            : isWarning
-            ? '0 4px 16px rgba(245, 158, 11, 0.4)'
-            : '0 4px 16px rgba(34, 197, 94, 0.4)',
         }}>
-          <Clock size={18} color="white" />
           <span style={{
-            fontFamily: 'ui-monospace, monospace',
-            fontSize: '20px',
-            fontWeight: 700,
-            color: 'white',
-            letterSpacing: '1px',
+            fontSize: '10px',
+            color: '#94a3b8',
+            fontWeight: 600,
+            textTransform: 'uppercase',
           }}>
-            {formatTimer(timer)}
+            Next:
+          </span>
+          <span style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#f59e0b',
+          }}>
+            #{game.currentDraw + 1}
+          </span>
+          <span style={{
+            fontSize: '11px',
+            color: '#64748b',
+          }}>
+            {upcomingDraws[0]?.date} {upcomingDraws[0]?.time}
+          </span>
+        </div>
+
+        <div style={{
+          width: '1px',
+          height: '16px',
+          background: '#e2e8f0',
+        }} />
+
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}>
+          <span style={{
+            fontSize: '10px',
+            color: '#94a3b8',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+          }}>
+            +1:
+          </span>
+          <span style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: '#6366f1',
+          }}>
+            #{game.currentDraw + 2}
+          </span>
+          <span style={{
+            fontSize: '11px',
+            color: '#64748b',
+          }}>
+            {upcomingDraws[1]?.date} {upcomingDraws[1]?.time}
           </span>
         </div>
       </div>
@@ -439,7 +544,7 @@ export function GamePlayPage() {
           </div>
           <span style={{
             fontSize: '14px',
-            color: '#10b981',
+            color: '#24BD68',
             fontWeight: 600,
           }}>
             {selectedMarkets.length}/{game.maxSelections}
@@ -546,84 +651,55 @@ export function GamePlayPage() {
           </div>
         )}
 
-        {/* Bet Amount */}
-        <div style={{ position: 'relative', marginBottom: '16px' }}>
+        {/* Bet Amount - Button Grid */}
+        <div style={{
+          background: 'white',
+          borderRadius: '20px',
+          padding: '16px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+          marginBottom: '20px',
+        }}>
           <p style={{
             fontSize: '12px',
             color: '#94a3b8',
-            marginBottom: '8px',
+            marginBottom: '12px',
             fontWeight: 600,
             textTransform: 'uppercase',
             letterSpacing: '0.5px',
           }}>
             Bet Amount
           </p>
-          <button
-            onClick={() => {
-              setShowBetAmountDropdown(!showBetAmountDropdown)
-              setShowDrawsDropdown(false)
-              setShowSpecificDrawPicker(false)
-            }}
-            style={{
-              width: '100%',
-              padding: '16px',
-              borderRadius: '16px',
-              border: 'none',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-              color: 'white',
-              fontWeight: 700,
-              fontSize: '18px',
-              cursor: 'pointer',
-              boxShadow: '0 4px 16px rgba(16, 185, 129, 0.3)',
-              transition: 'all 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-            }}
-          >
-            {betAmount} BRL
-            <ChevronDown size={18} />
-          </button>
-          {showBetAmountDropdown && (
-            <div style={{
-              position: 'absolute',
-              top: '100%',
-              left: 0,
-              right: 0,
-              background: 'white',
-              borderRadius: '16px',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-              zIndex: 10,
-              maxHeight: '200px',
-              overflow: 'auto',
-              marginTop: '8px',
-            }}>
-              {game.betAmounts.map((amount) => (
-                <button
-                  key={amount}
-                  onClick={() => {
-                    setBetAmount(amount)
-                    setShowBetAmountDropdown(false)
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '14px 16px',
-                    border: 'none',
-                    background: betAmount === amount ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'white',
-                    color: betAmount === amount ? 'white' : '#334155',
-                    fontWeight: 600,
-                    fontSize: '16px',
-                    cursor: 'pointer',
-                    textAlign: 'center',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {amount} BRL
-                </button>
-              ))}
-            </div>
-          )}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '8px',
+          }}>
+            {game.betAmounts.map((amount) => (
+              <button
+                key={amount}
+                onClick={() => setBetAmount(amount)}
+                style={{
+                  padding: '14px 8px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: betAmount === amount
+                    ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
+                    : '#f8fafc',
+                  color: betAmount === amount ? 'white' : '#334155',
+                  fontWeight: 700,
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  transform: betAmount === amount ? 'scale(1.02)' : 'scale(1)',
+                  boxShadow: betAmount === amount
+                    ? '0 4px 12px rgba(36, 189, 104, 0.3)'
+                    : 'none',
+                }}
+              >
+                {amount}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Draw Selection - Mode Toggle + Options */}
@@ -750,8 +826,6 @@ export function GamePlayPage() {
               <button
                 onClick={() => {
                   setShowSpecificDrawPicker(!showSpecificDrawPicker)
-                  setShowBetAmountDropdown(false)
-                  setShowDrawsDropdown(false)
                 }}
                 style={{
                   width: '100%',
@@ -999,7 +1073,7 @@ export function GamePlayPage() {
               <span style={{
                 fontSize: '24px',
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
@@ -1033,18 +1107,18 @@ export function GamePlayPage() {
             border: 'none',
             background: !isBetValid
               ? '#e2e8f0'
-              : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              : 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
             color: !isBetValid ? '#94a3b8' : 'white',
             fontWeight: 700,
             fontSize: '16px',
             cursor: !isBetValid ? 'not-allowed' : 'pointer',
             boxShadow: !isBetValid
               ? 'none'
-              : '0 4px 16px rgba(245, 158, 11, 0.4)',
+              : '0 4px 16px rgba(36, 189, 104, 0.4)',
             transition: 'all 0.2s',
           }}
         >
-          Buy Now
+          Buy
         </button>
         <button
           onClick={handleAddToCart}
@@ -1203,7 +1277,7 @@ export function GamePlayPage() {
                 <span style={{
                   fontSize: '20px',
                   fontWeight: 700,
-                  color: '#10b981',
+                  color: '#24BD68',
                 }}>
                   {totalCost.toFixed(2)} BRL
                 </span>
@@ -1218,7 +1292,7 @@ export function GamePlayPage() {
                   padding: '16px',
                   borderRadius: '14px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   color: 'white',
                   fontWeight: 700,
                   fontSize: '16px',
@@ -1227,7 +1301,7 @@ export function GamePlayPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   gap: '8px',
-                  boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4)',
+                  boxShadow: '0 4px 16px rgba(36, 189, 104, 0.4)',
                 }}
               >
                 <Check size={20} />
@@ -1276,13 +1350,13 @@ export function GamePlayPage() {
           <div style={{
             width: '72px',
             height: '72px',
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
             borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 16px',
-            boxShadow: '0 8px 24px rgba(16, 185, 129, 0.4)',
+            boxShadow: '0 8px 24px rgba(36, 189, 104, 0.4)',
           }}>
             <Check size={36} color="white" strokeWidth={3} />
           </div>
