@@ -169,10 +169,10 @@ export function useBroadcastSync(source: 'main' | 'second'): UseBroadcastSyncRet
   const channelRef = useRef<BroadcastChannel | null>(null)
 
   // Ping interval reference
-  const pingIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const pingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   // Peer timeout reference
-  const peerTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const peerTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   /**
    * Initialize the broadcast channel and set up message handlers

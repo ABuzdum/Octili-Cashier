@@ -57,8 +57,11 @@ const PAGE_ROUTES: Record<NavTab, string> = {
   'tvbox': '/tvbox-control',
   'account': '/account',
   'newticket': '/physical-ticket/new',
-  'payout': '/payment',
+  'payout': '/payout',
   'seconddisplay': '/second-display',
+  'menu': '/menu',
+  'games': '/games',
+  'sellticket': '/physical-ticket/new',
 }
 
 interface SwipeConfig {

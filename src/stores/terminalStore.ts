@@ -117,7 +117,7 @@ interface TerminalState {
   expectedReturn: string | null
 
   /** Actions */
-  goOffline: (reason: OfflineReason, note?: string, expectedReturn?: string) => void
+  goOffline: (reason: OfflineReason, note?: string, expectedReturn?: string | null) => void
   goOnline: () => void
   setExpectedReturn: (time: string | null) => void
 }

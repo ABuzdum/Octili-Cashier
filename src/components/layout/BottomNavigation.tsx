@@ -14,9 +14,27 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { QrCode, Dices, Award, HandCoins, LayoutGrid } from 'lucide-react'
+import { QrCode, Dices, Award, HandCoins, LayoutGrid, type LucideIcon } from 'lucide-react'
 
-export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'payout' | 'menu'
+// NavTab includes all possible navigation states used across the app
+export type NavTab =
+  | 'games'
+  | 'results'
+  | 'qrticket-sell'
+  | 'payout'
+  | 'menu'
+  // Legacy tabs still referenced by some pages
+  | 'cart'
+  | 'checkout'
+  | 'transactions'
+  | 'settings'
+  | 'tvbox'
+  | 'account'
+  | 'qrticket-payout'
+  | 'sellticket'
+  | 'draw'
+  | 'newticket'
+  | 'seconddisplay'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -25,7 +43,7 @@ interface BottomNavigationProps {
 interface NavItem {
   id: NavTab
   label: string
-  icon: typeof Ticket
+  icon: LucideIcon
   path: string
   color: string
   activeColor: string

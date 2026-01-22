@@ -13,5 +13,8 @@
 export * from './auth.types'
 export * from './product.types'
 export * from './cart.types'
-export * from './transaction.types'
+// From transaction.types - explicit exports to avoid PaymentMethod conflict
+export type { TransactionStatus, Payment, Transaction } from './transaction.types'
+export type { PaymentMethod as TransactionPaymentMethod } from './transaction.types'
+// From game.types - this PaymentMethod is the primary one used for the POS system
 export * from './game.types'
