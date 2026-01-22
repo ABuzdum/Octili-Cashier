@@ -1,30 +1,122 @@
 /**
  * ============================================================================
- * MENU PAGE - CASHIER SETTINGS & MANAGEMENT
+ * MENU PAGE - OPERATIONAL HUB FOR CASHIERS & MANAGERS
  * ============================================================================
  *
- * Purpose: Beautiful menu for cashier operations and settings
- * Designed for VLT terminals and player-facing displays
+ * Purpose: Central hub for all cashier operational needs
+ * Comprehensive features for daily operations and support
  *
  * Features:
- * - Operator info display
- * - Cash management (collection/replenishment)
- * - History view
- * - Logout
+ * - SUPPORT: Big button to create support tickets
+ * - QUICK CALLS: Hostess, Security, Manager
+ * - TERMINAL: Display control, Printer status, Diagnostics
+ * - SHIFT: Clock in/out, Breaks, My Sales
+ * - CASH: Collection, Replenishment, Balance Top-up
+ * - REPORTS & HISTORY
+ * - SETTINGS
  *
  * @author Octili Development Team
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, FileText, Wallet, PiggyBank, History, LogOut, User, Phone, ChevronRight, X, Check, Sparkles } from 'lucide-react'
+import {
+  ArrowLeft,
+  FileText,
+  Wallet,
+  PiggyBank,
+  History,
+  LogOut,
+  User,
+  Phone,
+  ChevronRight,
+  X,
+  Check,
+  Sparkles,
+  Monitor,
+  Headphones,
+  Shield,
+  UserCog,
+  Tv,
+  Printer,
+  Wrench,
+  Clock,
+  Coffee,
+  DollarSign,
+  CreditCard,
+  Settings,
+  Globe,
+  Volume2,
+  AlertCircle,
+  Send,
+  CheckCircle2,
+  Wifi,
+  WifiOff,
+  Gamepad2,
+  CircleDollarSign,
+  MessageSquare,
+} from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useGameStore } from '@/stores/gameStore'
+import { openSecondDisplay } from '@/hooks/useBroadcastSync'
 import { operatorInfo } from '@/data/games-mock-data'
-import { BottomNavigation } from '@/components/layout/BottomNavigation'
 
-type ModalType = 'none' | 'collection' | 'replenishment' | 'history'
+// Modal types for different operations
+type ModalType =
+  | 'none'
+  | 'support'
+  | 'call-hostess'
+  | 'call-security'
+  | 'call-manager'
+  | 'display-control'
+  | 'printer-status'
+  | 'diagnostics'
+  | 'shift-info'
+  | 'collection'
+  | 'replenishment'
+  | 'topup-request'
+  | 'history'
+  | 'settings'
+
+// Support ticket categories
+const SUPPORT_CATEGORIES = [
+  { id: 'game', label: 'Game Not Working', icon: Gamepad2, color: '#667eea' },
+  { id: 'printer', label: 'Printer Issue', icon: Printer, color: '#f59e0b' },
+  { id: 'network', label: 'Network Problem', icon: WifiOff, color: '#ef4444' },
+  { id: 'payment', label: 'Payment Issue', icon: CreditCard, color: '#10b981' },
+  { id: 'customer', label: 'Customer Complaint', icon: MessageSquare, color: '#8b5cf6' },
+  { id: 'other', label: 'Other Issue', icon: AlertCircle, color: '#64748b' },
+]
+
+// Mock shift data
+const SHIFT_DATA = {
+  clockedIn: true,
+  startTime: '08:00',
+  currentTime: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+  hoursWorked: '4h 32m',
+  onBreak: false,
+  salesToday: 1250.00,
+  ticketsSold: 47,
+  commission: 37.50,
+}
+
+// Mock printer status
+const PRINTER_STATUS = {
+  connected: true,
+  paperLevel: 65,
+  lastPrint: '2 min ago',
+  model: 'Thermal 80mm',
+}
+
+// Mock diagnostics
+const DIAGNOSTICS = [
+  { name: 'Network', status: 'ok', latency: '24ms' },
+  { name: 'API Server', status: 'ok', latency: '156ms' },
+  { name: 'Payment Gateway', status: 'ok', latency: '89ms' },
+  { name: 'Game Server', status: 'ok', latency: '45ms' },
+  { name: 'Print Server', status: 'warning', latency: '320ms' },
+]
 
 export function MenuPage() {
   const navigate = useNavigate()
@@ -34,6 +126,13 @@ export function MenuPage() {
   const [activeModal, setActiveModal] = useState<ModalType>('none')
   const [amount, setAmount] = useState('')
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
+  const [supportCategory, setSupportCategory] = useState<string | null>(null)
+  const [supportDescription, setSupportDescription] = useState('')
+  const [supportPriority, setSupportPriority] = useState<'normal' | 'urgent'>('normal')
+  const [ticketSubmitted, setTicketSubmitted] = useState(false)
+  const [callConfirmed, setCallConfirmed] = useState(false)
+  const [displayVolume, setDisplayVolume] = useState(80)
+  const [displayBrightness, setDisplayBrightness] = useState(100)
 
   // Handle logout
   const handleLogout = () => {
@@ -66,7 +165,30 @@ export function MenuPage() {
     setAmount(balance.toFixed(2))
   }
 
-  // Number pad component
+  // Submit support ticket
+  const handleSubmitTicket = () => {
+    if (supportCategory && supportDescription) {
+      setTicketSubmitted(true)
+      setTimeout(() => {
+        setTicketSubmitted(false)
+        setSupportCategory(null)
+        setSupportDescription('')
+        setSupportPriority('normal')
+        setActiveModal('none')
+      }, 2000)
+    }
+  }
+
+  // Handle call confirmation
+  const handleCallConfirm = () => {
+    setCallConfirmed(true)
+    setTimeout(() => {
+      setCallConfirmed(false)
+      setActiveModal('none')
+    }, 2000)
+  }
+
+  // Number pad button component
   const NumButton = ({ value, onClick, variant = 'default' }: {
     value: string;
     onClick: () => void;
@@ -85,13 +207,13 @@ export function MenuPage() {
         onMouseUp={() => setIsPressed(false)}
         onMouseLeave={() => setIsPressed(false)}
         style={{
-          padding: '18px',
-          fontSize: '22px',
+          padding: '16px',
+          fontSize: '20px',
           fontWeight: 700,
           background: backgrounds[variant],
           color: variant === 'default' ? '#334155' : 'white',
           border: 'none',
-          borderRadius: '14px',
+          borderRadius: '12px',
           cursor: 'pointer',
           boxShadow: variant === 'default' ? '0 4px 12px rgba(0,0,0,0.08)' : '0 4px 12px rgba(0,0,0,0.2)',
           transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -103,13 +225,90 @@ export function MenuPage() {
     )
   }
 
-  const menuItems = [
-    { id: 'reports', icon: FileText, label: 'Reports Menu', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', action: () => navigate('/reports') },
-    { id: 'collection', icon: Wallet, label: 'Cash Collection', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', action: () => setActiveModal('collection') },
-    { id: 'replenishment', icon: PiggyBank, label: 'Cash Replenishment', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', action: () => setActiveModal('replenishment') },
-    { id: 'history', icon: History, label: 'History', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', action: () => setActiveModal('history') },
-    { id: 'logout', icon: LogOut, label: 'Exit', gradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', action: handleLogout },
-  ]
+  // Menu item component
+  const MenuItem = ({ icon: Icon, label, gradient, onClick, badge }: {
+    icon: typeof FileText;
+    label: string;
+    gradient: string;
+    onClick: () => void;
+    badge?: string;
+  }) => {
+    const isHovered = hoveredItem === label
+    return (
+      <button
+        onClick={onClick}
+        onMouseEnter={() => setHoveredItem(label)}
+        onMouseLeave={() => setHoveredItem(null)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
+          padding: '14px 16px',
+          background: 'white',
+          border: 'none',
+          borderRadius: '14px',
+          cursor: 'pointer',
+          textAlign: 'left',
+          boxShadow: isHovered
+            ? '0 8px 24px rgba(0,0,0,0.1)'
+            : '0 2px 8px rgba(0,0,0,0.04)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+        }}
+      >
+        <div style={{
+          width: '42px',
+          height: '42px',
+          background: gradient,
+          borderRadius: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        }}>
+          <Icon size={20} color="white" />
+        </div>
+        <span style={{
+          flex: 1,
+          fontSize: '15px',
+          fontWeight: 600,
+          color: '#1e293b',
+        }}>
+          {label}
+        </span>
+        {badge && (
+          <span style={{
+            padding: '4px 10px',
+            background: gradient,
+            borderRadius: '8px',
+            fontSize: '11px',
+            fontWeight: 700,
+            color: 'white',
+          }}>
+            {badge}
+          </span>
+        )}
+        <ChevronRight size={18} color="#94a3b8" />
+      </button>
+    )
+  }
+
+  // Section header component
+  const SectionHeader = ({ title }: { title: string }) => (
+    <p style={{
+      fontSize: '11px',
+      fontWeight: 700,
+      color: '#94a3b8',
+      textTransform: 'uppercase',
+      letterSpacing: '1px',
+      marginBottom: '8px',
+      marginTop: '16px',
+      paddingLeft: '4px',
+    }}>
+      {title}
+    </p>
+  )
 
   return (
     <div style={{
@@ -120,7 +319,7 @@ export function MenuPage() {
     }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
         padding: '16px 20px',
         display: 'flex',
         alignItems: 'center',
@@ -131,7 +330,7 @@ export function MenuPage() {
           position: 'absolute',
           width: '200px',
           height: '200px',
-          background: 'rgba(255,255,255,0.1)',
+          background: 'rgba(255,255,255,0.03)',
           borderRadius: '50%',
           top: '-80px',
           right: '-60px',
@@ -140,8 +339,7 @@ export function MenuPage() {
         <button
           onClick={() => navigate('/pos')}
           style={{
-            background: 'rgba(255,255,255,0.2)',
-            backdropFilter: 'blur(10px)',
+            background: 'rgba(255,255,255,0.1)',
             border: 'none',
             cursor: 'pointer',
             display: 'flex',
@@ -162,151 +360,329 @@ export function MenuPage() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '12px',
           zIndex: 1,
         }}>
           <h1 style={{
             color: 'white',
-            fontSize: '20px',
+            fontSize: '18px',
             fontWeight: 700,
-            textShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}>
-            Menu
+            Operator Menu
           </h1>
         </div>
 
-        <div style={{ width: '40px' }} />
-      </div>
-
-      {/* Operator Info Card */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-        margin: '20px',
-        borderRadius: '24px',
-        padding: '24px',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
+        {/* Shift Status Badge */}
         <div style={{
-          position: 'absolute',
-          width: '150px',
-          height: '150px',
-          background: 'rgba(255,255,255,0.05)',
-          borderRadius: '50%',
-          top: '-40px',
-          right: '-40px',
-        }} />
-
-        <div style={{
+          background: SHIFT_DATA.clockedIn ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
+          padding: '6px 12px',
+          borderRadius: '20px',
           display: 'flex',
           alignItems: 'center',
-          gap: '16px',
-          marginBottom: '20px',
+          gap: '6px',
+          zIndex: 1,
         }}>
           <div style={{
-            width: '56px',
-            height: '56px',
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            borderRadius: '16px',
+            width: '8px',
+            height: '8px',
+            background: SHIFT_DATA.clockedIn ? '#10b981' : '#ef4444',
+            borderRadius: '50%',
+          }} />
+          <span style={{
+            fontSize: '12px',
+            fontWeight: 600,
+            color: SHIFT_DATA.clockedIn ? '#10b981' : '#ef4444',
+          }}>
+            {SHIFT_DATA.clockedIn ? 'On Duty' : 'Off Duty'}
+          </span>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={{
+        flex: 1,
+        padding: '16px 20px',
+        paddingBottom: '100px',
+        overflow: 'auto',
+      }}>
+        {/* Big Support Button */}
+        <button
+          onClick={() => setActiveModal('support')}
+          style={{
+            width: '100%',
+            padding: '20px',
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            border: 'none',
+            borderRadius: '20px',
+            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-          }}>
-            <User size={28} color="white" />
-          </div>
-          <div>
-            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-              Operator ID
+            gap: '14px',
+            boxShadow: '0 8px 32px rgba(239, 68, 68, 0.4)',
+            marginBottom: '20px',
+          }}
+        >
+          <Headphones size={32} color="white" />
+          <div style={{ textAlign: 'left' }}>
+            <p style={{
+              color: 'white',
+              fontSize: '20px',
+              fontWeight: 700,
+            }}>
+              Need Help?
             </p>
-            <p style={{ color: 'white', fontSize: '18px', fontWeight: 700 }}>
-              {operatorInfo.id}
+            <p style={{
+              color: 'rgba(255,255,255,0.8)',
+              fontSize: '13px',
+            }}>
+              Create a support ticket
             </p>
           </div>
-        </div>
+        </button>
 
+        {/* Operator Info Card */}
         <div style={{
-          background: 'rgba(255,255,255,0.1)',
+          background: 'white',
           borderRadius: '16px',
-          padding: '16px 20px',
+          padding: '16px',
+          marginBottom: '8px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         }}>
-          <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px', marginBottom: '4px', fontWeight: 500 }}>
-            Current Balance
-          </p>
-          <p style={{
-            fontSize: '28px',
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '14px',
           }}>
-            {balance.toFixed(2)} <span style={{ fontSize: '16px' }}>{operatorInfo.currency}</span>
-          </p>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              borderRadius: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <User size={24} color="white" />
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: '13px', color: '#64748b' }}>Operator</p>
+              <p style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>
+                {operatorInfo.id}
+              </p>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: '13px', color: '#64748b' }}>Balance</p>
+              <p style={{
+                fontSize: '18px',
+                fontWeight: 700,
+                color: '#10b981',
+              }}>
+                {balance.toFixed(2)} BRL
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Menu Items */}
-      <div style={{
-        flex: 1,
-        padding: '0 20px',
-        paddingBottom: '100px',
-      }}>
+        {/* Quick Calls Section */}
+        <SectionHeader title="Quick Calls" />
         <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: '10px',
+          marginBottom: '8px',
         }}>
-          {menuItems.map((item) => {
-            const Icon = item.icon
-            const isHovered = hoveredItem === item.id
-            return (
-              <button
-                key={item.id}
-                onClick={item.action}
-                onMouseEnter={() => setHoveredItem(item.id)}
-                onMouseLeave={() => setHoveredItem(null)}
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '18px 20px',
-                  background: 'white',
-                  border: 'none',
-                  borderRadius: '16px',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  boxShadow: isHovered
-                    ? '0 12px 32px rgba(0,0,0,0.12)'
-                    : '0 4px 16px rgba(0,0,0,0.06)',
-                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
-                }}
-              >
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  background: item.gradient,
-                  borderRadius: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                }}>
-                  <Icon size={24} color="white" />
-                </div>
-                <span style={{
-                  flex: 1,
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  color: '#1e293b',
-                }}>
-                  {item.label}
-                </span>
-                <ChevronRight size={20} color="#94a3b8" />
-              </button>
-            )
-          })}
+          <button
+            onClick={() => setActiveModal('call-hostess')}
+            style={{
+              padding: '16px 12px',
+              background: 'white',
+              border: 'none',
+              borderRadius: '14px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <div style={{
+              width: '44px',
+              height: '44px',
+              background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Phone size={20} color="white" />
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>Hostess</span>
+          </button>
+
+          <button
+            onClick={() => setActiveModal('call-security')}
+            style={{
+              padding: '16px 12px',
+              background: 'white',
+              border: 'none',
+              borderRadius: '14px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <div style={{
+              width: '44px',
+              height: '44px',
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Shield size={20} color="white" />
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>Security</span>
+          </button>
+
+          <button
+            onClick={() => setActiveModal('call-manager')}
+            style={{
+              padding: '16px 12px',
+              background: 'white',
+              border: 'none',
+              borderRadius: '14px',
+              cursor: 'pointer',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <div style={{
+              width: '44px',
+              height: '44px',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <UserCog size={20} color="white" />
+            </div>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>Manager</span>
+          </button>
+        </div>
+
+        {/* Terminal Section */}
+        <SectionHeader title="Terminal" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <MenuItem
+            icon={Tv}
+            label="Display Control"
+            gradient="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"
+            onClick={() => setActiveModal('display-control')}
+          />
+          <MenuItem
+            icon={Printer}
+            label="Printer Status"
+            gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+            onClick={() => setActiveModal('printer-status')}
+            badge={PRINTER_STATUS.paperLevel < 30 ? 'Low Paper' : undefined}
+          />
+          <MenuItem
+            icon={Wrench}
+            label="Run Diagnostics"
+            gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+            onClick={() => setActiveModal('diagnostics')}
+          />
+        </div>
+
+        {/* My Shift Section */}
+        <SectionHeader title="My Shift" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <MenuItem
+            icon={Clock}
+            label="Shift Info"
+            gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+            onClick={() => setActiveModal('shift-info')}
+            badge={SHIFT_DATA.hoursWorked}
+          />
+          <MenuItem
+            icon={DollarSign}
+            label="My Sales Today"
+            gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+            onClick={() => setActiveModal('shift-info')}
+            badge={`${SHIFT_DATA.salesToday.toFixed(0)} BRL`}
+          />
+        </div>
+
+        {/* Cash Management Section */}
+        <SectionHeader title="Cash Management" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <MenuItem
+            icon={Wallet}
+            label="Cash Collection"
+            gradient="linear-gradient(135deg, #ec4899 0%, #db2777 100%)"
+            onClick={() => setActiveModal('collection')}
+          />
+          <MenuItem
+            icon={PiggyBank}
+            label="Cash Replenishment"
+            gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+            onClick={() => setActiveModal('replenishment')}
+          />
+          <MenuItem
+            icon={CircleDollarSign}
+            label="Request Balance Top-up"
+            gradient="linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)"
+            onClick={() => setActiveModal('topup-request')}
+          />
+        </div>
+
+        {/* Reports & History Section */}
+        <SectionHeader title="Reports & History" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <MenuItem
+            icon={FileText}
+            label="Reports Menu"
+            gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            onClick={() => navigate('/reports')}
+          />
+          <MenuItem
+            icon={History}
+            label="Transaction History"
+            gradient="linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)"
+            onClick={() => setActiveModal('history')}
+          />
+        </div>
+
+        {/* Other Section */}
+        <SectionHeader title="Other" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <MenuItem
+            icon={Monitor}
+            label="Open Second Display"
+            gradient="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"
+            onClick={() => openSecondDisplay()}
+          />
+          <MenuItem
+            icon={Settings}
+            label="Settings"
+            gradient="linear-gradient(135deg, #64748b 0%, #475569 100%)"
+            onClick={() => setActiveModal('settings')}
+          />
+          <MenuItem
+            icon={LogOut}
+            label="Exit / Logout"
+            gradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+            onClick={handleLogout}
+          />
         </div>
 
         {/* Support Phone */}
@@ -315,25 +691,20 @@ export function MenuPage() {
           alignItems: 'center',
           justifyContent: 'center',
           gap: '8px',
-          marginTop: '32px',
-          padding: '16px',
-          background: 'white',
-          borderRadius: '16px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+          marginTop: '24px',
+          padding: '12px',
         }}>
-          <Phone size={18} color="#64748b" />
-          <span style={{ fontSize: '14px', color: '#64748b' }}>Support:</span>
-          <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
-            {operatorInfo.supportPhone}
+          <Phone size={16} color="#94a3b8" />
+          <span style={{ fontSize: '13px', color: '#94a3b8' }}>
+            Support: <strong style={{ color: '#64748b' }}>{operatorInfo.supportPhone}</strong>
           </span>
         </div>
       </div>
 
-      {/* Bottom Navigation */}
-      <BottomNavigation activeTab="menu" />
+      {/* ============= MODALS ============= */}
 
-      {/* Cash Collection/Replenishment Modal */}
-      {(activeModal === 'collection' || activeModal === 'replenishment') && (
+      {/* Support Ticket Modal */}
+      {activeModal === 'support' && (
         <div style={{
           position: 'fixed',
           inset: 0,
@@ -348,49 +719,975 @@ export function MenuPage() {
           <div style={{
             background: 'white',
             borderRadius: '24px',
-            padding: '28px 24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '400px',
+            maxHeight: '90vh',
+            overflow: 'auto',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            {ticketSubmitted ? (
+              <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 20px',
+                }}>
+                  <CheckCircle2 size={40} color="white" />
+                </div>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>
+                  Ticket Submitted!
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '14px' }}>
+                  Our team will respond shortly.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '20px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '44px',
+                      height: '44px',
+                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                      borderRadius: '12px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Headphones size={22} color="white" />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                        Support Request
+                      </h3>
+                      <p style={{ fontSize: '12px', color: '#64748b' }}>
+                        What do you need help with?
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveModal('none')}
+                    style={{
+                      background: '#f1f5f9',
+                      border: 'none',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <X size={20} color="#64748b" />
+                  </button>
+                </div>
+
+                {/* Category Selection */}
+                <div style={{ marginBottom: '20px' }}>
+                  <p style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '10px' }}>
+                    Select Issue Type
+                  </p>
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '10px',
+                  }}>
+                    {SUPPORT_CATEGORIES.map((cat) => {
+                      const Icon = cat.icon
+                      const isSelected = supportCategory === cat.id
+                      return (
+                        <button
+                          key={cat.id}
+                          onClick={() => setSupportCategory(cat.id)}
+                          style={{
+                            padding: '14px',
+                            background: isSelected ? cat.color : '#f8fafc',
+                            border: isSelected ? 'none' : '2px solid #e2e8f0',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            gap: '8px',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          <Icon size={22} color={isSelected ? 'white' : cat.color} />
+                          <span style={{
+                            fontSize: '11px',
+                            fontWeight: 600,
+                            color: isSelected ? 'white' : '#475569',
+                            textAlign: 'center',
+                          }}>
+                            {cat.label}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div style={{ marginBottom: '16px' }}>
+                  <p style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '8px' }}>
+                    Describe the issue
+                  </p>
+                  <textarea
+                    value={supportDescription}
+                    onChange={(e) => setSupportDescription(e.target.value)}
+                    placeholder="Please describe your issue in detail..."
+                    rows={4}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
+                      fontSize: '14px',
+                      resize: 'none',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* Priority */}
+                <div style={{ marginBottom: '20px' }}>
+                  <p style={{ fontSize: '13px', fontWeight: 600, color: '#64748b', marginBottom: '8px' }}>
+                    Priority
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      onClick={() => setSupportPriority('normal')}
+                      style={{
+                        flex: 1,
+                        padding: '12px',
+                        background: supportPriority === 'normal' ? '#3b82f6' : '#f1f5f9',
+                        color: supportPriority === 'normal' ? 'white' : '#64748b',
+                        border: 'none',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Normal
+                    </button>
+                    <button
+                      onClick={() => setSupportPriority('urgent')}
+                      style={{
+                        flex: 1,
+                        padding: '12px',
+                        background: supportPriority === 'urgent' ? '#ef4444' : '#f1f5f9',
+                        color: supportPriority === 'urgent' ? 'white' : '#64748b',
+                        border: 'none',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Urgent
+                    </button>
+                  </div>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  onClick={handleSubmitTicket}
+                  disabled={!supportCategory || !supportDescription}
+                  style={{
+                    width: '100%',
+                    padding: '16px',
+                    background: supportCategory && supportDescription
+                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                      : '#e2e8f0',
+                    color: supportCategory && supportDescription ? 'white' : '#94a3b8',
+                    border: 'none',
+                    borderRadius: '14px',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                    cursor: supportCategory && supportDescription ? 'pointer' : 'not-allowed',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                  }}
+                >
+                  <Send size={20} />
+                  Submit Ticket
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Call Confirmation Modals (Hostess, Security, Manager) */}
+      {(activeModal === 'call-hostess' || activeModal === 'call-security' || activeModal === 'call-manager') && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '32px 24px',
+            width: '100%',
+            maxWidth: '340px',
+            textAlign: 'center',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            {callConfirmed ? (
+              <>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 20px',
+                }}>
+                  <CheckCircle2 size={40} color="white" />
+                </div>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>
+                  {activeModal === 'call-hostess' && 'Hostess Notified!'}
+                  {activeModal === 'call-security' && 'Security Notified!'}
+                  {activeModal === 'call-manager' && 'Manager Notified!'}
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '14px', marginTop: '8px' }}>
+                  They will arrive shortly.
+                </p>
+              </>
+            ) : (
+              <>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: activeModal === 'call-hostess'
+                    ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+                    : activeModal === 'call-security'
+                    ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                    : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 20px',
+                }}>
+                  {activeModal === 'call-hostess' && <Phone size={36} color="white" />}
+                  {activeModal === 'call-security' && <Shield size={36} color="white" />}
+                  {activeModal === 'call-manager' && <UserCog size={36} color="white" />}
+                </div>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>
+                  {activeModal === 'call-hostess' && 'Call Hostess?'}
+                  {activeModal === 'call-security' && 'Call Security?'}
+                  {activeModal === 'call-manager' && 'Call Manager?'}
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '24px' }}>
+                  They will be notified immediately.
+                </p>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={() => setActiveModal('none')}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      background: '#f1f5f9',
+                      color: '#64748b',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleCallConfirm}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      background: activeModal === 'call-security'
+                        ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                        : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Display Control Modal */}
+      {activeModal === 'display-control' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '360px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Tv size={22} color="white" />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                  Display Control
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveModal('none')}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            {/* Volume Control */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Volume2 size={18} color="#64748b" />
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>Volume</span>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#3b82f6' }}>{displayVolume}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={displayVolume}
+                onChange={(e) => setDisplayVolume(Number(e.target.value))}
+                style={{ width: '100%', accentColor: '#3b82f6' }}
+              />
+            </div>
+
+            {/* Brightness Control */}
+            <div style={{ marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Monitor size={18} color="#64748b" />
+                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>Brightness</span>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#f59e0b' }}>{displayBrightness}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={displayBrightness}
+                onChange={(e) => setDisplayBrightness(Number(e.target.value))}
+                style={{ width: '100%', accentColor: '#f59e0b' }}
+              />
+            </div>
+
+            {/* Quick Actions */}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button
+                onClick={() => openSecondDisplay()}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                }}
+              >
+                Open Display
+              </button>
+              <button
+                onClick={() => setActiveModal('none')}
+                style={{
+                  flex: 1,
+                  padding: '14px',
+                  background: '#f1f5f9',
+                  color: '#64748b',
+                  border: 'none',
+                  borderRadius: '12px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Printer Status Modal */}
+      {activeModal === 'printer-status' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '360px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Printer size={22} color="white" />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                  Printer Status
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveModal('none')}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            {/* Status Items */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '14px',
+                background: '#f8fafc',
+                borderRadius: '12px',
+              }}>
+                <span style={{ fontSize: '14px', color: '#64748b' }}>Connection</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{
+                    width: '10px',
+                    height: '10px',
+                    background: PRINTER_STATUS.connected ? '#10b981' : '#ef4444',
+                    borderRadius: '50%',
+                  }} />
+                  <span style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: PRINTER_STATUS.connected ? '#10b981' : '#ef4444',
+                  }}>
+                    {PRINTER_STATUS.connected ? 'Connected' : 'Disconnected'}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{
+                padding: '14px',
+                background: '#f8fafc',
+                borderRadius: '12px',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '14px', color: '#64748b' }}>Paper Level</span>
+                  <span style={{
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    color: PRINTER_STATUS.paperLevel < 30 ? '#ef4444' : '#10b981',
+                  }}>
+                    {PRINTER_STATUS.paperLevel}%
+                  </span>
+                </div>
+                <div style={{
+                  height: '8px',
+                  background: '#e2e8f0',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${PRINTER_STATUS.paperLevel}%`,
+                    height: '100%',
+                    background: PRINTER_STATUS.paperLevel < 30
+                      ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
+                      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    borderRadius: '4px',
+                  }} />
+                </div>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '14px',
+                background: '#f8fafc',
+                borderRadius: '12px',
+              }}>
+                <span style={{ fontSize: '14px', color: '#64748b' }}>Model</span>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
+                  {PRINTER_STATUS.model}
+                </span>
+              </div>
+
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                padding: '14px',
+                background: '#f8fafc',
+                borderRadius: '12px',
+              }}>
+                <span style={{ fontSize: '14px', color: '#64748b' }}>Last Print</span>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
+                  {PRINTER_STATUS.lastPrint}
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setActiveModal('none')}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Test Print
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Diagnostics Modal */}
+      {activeModal === 'diagnostics' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '360px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Wrench size={22} color="white" />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                  System Diagnostics
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveModal('none')}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '20px' }}>
+              {DIAGNOSTICS.map((item) => (
+                <div
+                  key={item.name}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '14px',
+                    background: '#f8fafc',
+                    borderRadius: '12px',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    {item.status === 'ok' ? (
+                      <Wifi size={18} color="#10b981" />
+                    ) : (
+                      <AlertCircle size={18} color="#f59e0b" />
+                    )}
+                    <span style={{ fontSize: '14px', fontWeight: 500, color: '#1e293b' }}>
+                      {item.name}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '12px', color: '#64748b' }}>{item.latency}</span>
+                    <div style={{
+                      padding: '4px 10px',
+                      background: item.status === 'ok'
+                        ? 'rgba(16, 185, 129, 0.1)'
+                        : 'rgba(245, 158, 11, 0.1)',
+                      borderRadius: '6px',
+                    }}>
+                      <span style={{
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        color: item.status === 'ok' ? '#10b981' : '#f59e0b',
+                        textTransform: 'uppercase',
+                      }}>
+                        {item.status}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setActiveModal('none')}
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Run Full Diagnostics
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Shift Info Modal */}
+      {activeModal === 'shift-info' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '360px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Clock size={22} color="white" />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                  My Shift
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveModal('none')}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            {/* Shift Stats */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(2, 1fr)',
+              gap: '12px',
+              marginBottom: '20px',
+            }}>
+              <div style={{
+                padding: '16px',
+                background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)',
+                borderRadius: '14px',
+                textAlign: 'center',
+              }}>
+                <p style={{ fontSize: '12px', color: '#059669', marginBottom: '4px' }}>Start Time</p>
+                <p style={{ fontSize: '20px', fontWeight: 700, color: '#047857' }}>{SHIFT_DATA.startTime}</p>
+              </div>
+              <div style={{
+                padding: '16px',
+                background: 'linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)',
+                borderRadius: '14px',
+                textAlign: 'center',
+              }}>
+                <p style={{ fontSize: '12px', color: '#2563eb', marginBottom: '4px' }}>Hours Worked</p>
+                <p style={{ fontSize: '20px', fontWeight: 700, color: '#1d4ed8' }}>{SHIFT_DATA.hoursWorked}</p>
+              </div>
+              <div style={{
+                padding: '16px',
+                background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
+                borderRadius: '14px',
+                textAlign: 'center',
+              }}>
+                <p style={{ fontSize: '12px', color: '#d97706', marginBottom: '4px' }}>Tickets Sold</p>
+                <p style={{ fontSize: '20px', fontWeight: 700, color: '#b45309' }}>{SHIFT_DATA.ticketsSold}</p>
+              </div>
+              <div style={{
+                padding: '16px',
+                background: 'linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)',
+                borderRadius: '14px',
+                textAlign: 'center',
+              }}>
+                <p style={{ fontSize: '12px', color: '#db2777', marginBottom: '4px' }}>Sales Today</p>
+                <p style={{ fontSize: '20px', fontWeight: 700, color: '#be185d' }}>{SHIFT_DATA.salesToday.toFixed(0)}</p>
+              </div>
+            </div>
+
+            {/* Commission */}
+            <div style={{
+              padding: '16px',
+              background: '#f8fafc',
+              borderRadius: '14px',
+              marginBottom: '20px',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: '14px', color: '#64748b' }}>My Commission Today</span>
+                <span style={{
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: '#10b981',
+                }}>
+                  {SHIFT_DATA.commission.toFixed(2)} BRL
+                </span>
+              </div>
+            </div>
+
+            {/* Break Button */}
+            <button
+              style={{
+                width: '100%',
+                padding: '14px',
+                background: SHIFT_DATA.onBreak
+                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                  : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '12px',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              <Coffee size={20} />
+              {SHIFT_DATA.onBreak ? 'End Break' : 'Start Break'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Cash Collection/Replenishment/Top-up Modal */}
+      {(activeModal === 'collection' || activeModal === 'replenishment' || activeModal === 'topup-request') && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
             width: '100%',
             maxWidth: '360px',
             boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
           }}>
             <div style={{
               textAlign: 'center',
-              marginBottom: '24px',
+              marginBottom: '20px',
             }}>
               <div style={{
-                width: '64px',
-                height: '64px',
+                width: '56px',
+                height: '56px',
                 background: activeModal === 'collection'
-                  ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-                  : 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                borderRadius: '20px',
+                  ? 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
+                  : activeModal === 'replenishment'
+                  ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                  : 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
+                borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 16px',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                margin: '0 auto 12px',
               }}>
-                {activeModal === 'collection' ? (
-                  <Wallet size={28} color="white" />
-                ) : (
-                  <PiggyBank size={28} color="white" />
-                )}
+                {activeModal === 'collection' && <Wallet size={26} color="white" />}
+                {activeModal === 'replenishment' && <PiggyBank size={26} color="white" />}
+                {activeModal === 'topup-request' && <CircleDollarSign size={26} color="white" />}
               </div>
               <h3 style={{
-                fontSize: '20px',
+                fontSize: '18px',
                 fontWeight: 700,
                 color: '#1e293b',
               }}>
-                {activeModal === 'collection' ? 'Cash Collection' : 'Cash Replenishment'}
+                {activeModal === 'collection' && 'Cash Collection'}
+                {activeModal === 'replenishment' && 'Cash Replenishment'}
+                {activeModal === 'topup-request' && 'Request Balance Top-up'}
               </h3>
             </div>
 
             {/* Amount Input */}
             <div style={{
               background: '#f8fafc',
-              borderRadius: '16px',
-              padding: '16px',
-              marginBottom: '20px',
+              borderRadius: '14px',
+              padding: '14px',
+              marginBottom: '16px',
             }}>
               <input
                 type="text"
@@ -399,8 +1696,8 @@ export function MenuPage() {
                 placeholder="0.00"
                 style={{
                   width: '100%',
-                  padding: '12px',
-                  fontSize: '28px',
+                  padding: '8px',
+                  fontSize: '26px',
                   fontWeight: 700,
                   border: 'none',
                   background: 'transparent',
@@ -414,7 +1711,7 @@ export function MenuPage() {
                 fontSize: '12px',
                 color: '#64748b',
               }}>
-                {activeModal === 'collection' ? `Max: ${balance.toFixed(2)} BRL` : 'Enter amount'}
+                {activeModal === 'collection' ? `Max: ${balance.toFixed(2)} BRL` : 'Enter amount in BRL'}
               </p>
             </div>
 
@@ -422,8 +1719,8 @@ export function MenuPage() {
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: '10px',
-              marginBottom: '20px',
+              gap: '8px',
+              marginBottom: '16px',
             }}>
               {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                 <NumButton
@@ -434,7 +1731,15 @@ export function MenuPage() {
               ))}
               <NumButton
                 value="✓"
-                onClick={() => activeModal === 'collection' ? handleCashCollection() : handleCashReplenishment()}
+                onClick={() => {
+                  if (activeModal === 'collection') handleCashCollection()
+                  else if (activeModal === 'replenishment') handleCashReplenishment()
+                  else {
+                    // Handle top-up request
+                    setAmount('')
+                    setActiveModal('none')
+                  }
+                }}
                 variant="confirm"
               />
               <NumButton
@@ -449,27 +1754,26 @@ export function MenuPage() {
             </div>
 
             {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {activeModal === 'collection' && (
                 <button
                   onClick={handleAllMoney}
                   style={{
-                    padding: '16px',
-                    borderRadius: '14px',
+                    padding: '14px',
+                    borderRadius: '12px',
                     border: 'none',
                     background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                     color: 'white',
-                    fontWeight: 700,
-                    fontSize: '16px',
+                    fontWeight: 600,
+                    fontSize: '14px',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '8px',
-                    boxShadow: '0 4px 16px rgba(245, 158, 11, 0.4)',
                   }}
                 >
-                  <Sparkles size={20} />
+                  <Sparkles size={18} />
                   Collect All ({balance.toFixed(2)} BRL)
                 </button>
               )}
@@ -479,13 +1783,13 @@ export function MenuPage() {
                   setAmount('')
                 }}
                 style={{
-                  padding: '16px',
-                  borderRadius: '14px',
+                  padding: '14px',
+                  borderRadius: '12px',
                   border: 'none',
                   background: '#f1f5f9',
                   color: '#64748b',
-                  fontWeight: 700,
-                  fontSize: '16px',
+                  fontWeight: 600,
+                  fontSize: '14px',
                   cursor: 'pointer',
                 }}
               >
@@ -555,10 +1859,9 @@ export function MenuPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#64748b',
                 }}
               >
-                <X size={20} />
+                <X size={20} color="#64748b" />
               </button>
             </div>
 
@@ -586,43 +1889,44 @@ export function MenuPage() {
                   <p style={{ color: '#64748b', fontSize: '14px' }}>No history yet</p>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {ticketHistory.slice(0, 20).map((ticket) => (
                     <div
                       key={ticket.id}
                       style={{
-                        padding: '16px',
+                        padding: '14px',
                         background: '#f8fafc',
-                        borderRadius: '14px',
+                        borderRadius: '12px',
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                         <span style={{ fontSize: '12px', color: '#64748b' }}>
                           {new Date(ticket.purchasedAt).toLocaleString()}
                         </span>
                         <span style={{
-                          fontSize: '11px',
+                          fontSize: '10px',
                           fontWeight: 700,
-                          padding: '4px 10px',
+                          padding: '3px 8px',
                           borderRadius: '6px',
                           background: ticket.status === 'won'
-                            ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                            ? 'rgba(16, 185, 129, 0.1)'
                             : ticket.status === 'lost'
-                            ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                            : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                          color: 'white',
+                            ? 'rgba(239, 68, 68, 0.1)'
+                            : 'rgba(245, 158, 11, 0.1)',
+                          color: ticket.status === 'won'
+                            ? '#10b981'
+                            : ticket.status === 'lost'
+                            ? '#ef4444'
+                            : '#f59e0b',
                         }}>
                           {ticket.status.toUpperCase()}
                         </span>
                       </div>
-                      <p style={{ fontWeight: 700, color: '#1e293b', marginBottom: '4px' }}>
+                      <p style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px', marginBottom: '2px' }}>
                         {ticket.bet.gameName}
                       </p>
-                      <p style={{ fontSize: '11px', color: '#94a3b8', fontFamily: 'ui-monospace, monospace', marginBottom: '8px' }}>
-                        {ticket.ticketNumber}
-                      </p>
                       <p style={{
-                        fontSize: '16px',
+                        fontSize: '14px',
                         fontWeight: 700,
                         color: '#10b981',
                       }}>
@@ -632,6 +1936,129 @@ export function MenuPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Modal */}
+      {activeModal === 'settings' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '360px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Settings size={22} color="white" />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                  Settings
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveModal('none')}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <button style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px',
+                background: '#f8fafc',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}>
+                <Globe size={20} color="#3b82f6" />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px' }}>Language</p>
+                  <p style={{ color: '#64748b', fontSize: '12px' }}>English</p>
+                </div>
+                <ChevronRight size={18} color="#94a3b8" />
+              </button>
+
+              <button style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px',
+                background: '#f8fafc',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}>
+                <Volume2 size={20} color="#10b981" />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px' }}>Sound</p>
+                  <p style={{ color: '#64748b', fontSize: '12px' }}>Enabled</p>
+                </div>
+                <ChevronRight size={18} color="#94a3b8" />
+              </button>
+
+              <button style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '14px',
+                padding: '16px',
+                background: '#f8fafc',
+                border: 'none',
+                borderRadius: '12px',
+                cursor: 'pointer',
+                textAlign: 'left',
+              }}>
+                <Monitor size={20} color="#f59e0b" />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px' }}>Display</p>
+                  <p style={{ color: '#64748b', fontSize: '12px' }}>Brightness: 100%</p>
+                </div>
+                <ChevronRight size={18} color="#94a3b8" />
+              </button>
             </div>
           </div>
         </div>

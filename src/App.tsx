@@ -35,6 +35,9 @@ const MenuPage = lazy(() => import('@/pages/Menu/MenuPage').then(m => ({ default
 const AccountPage = lazy(() => import('@/pages/Account/AccountPage').then(m => ({ default: m.AccountPage })))
 const CartPage = lazy(() => import('@/pages/Cart/CartPage').then(m => ({ default: m.CartPage })))
 
+// Second Display - Player-facing screen (opens in separate window)
+const SecondDisplayPage = lazy(() => import('@/pages/SecondDisplay/SecondDisplayPage').then(m => ({ default: m.SecondDisplayPage })))
+
 /**
  * Loading spinner component shown during lazy loading
  */
@@ -186,6 +189,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Second Display - Player-facing screen (no auth required) */}
+          <Route path="/second-display" element={<SecondDisplayPage />} />
 
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
