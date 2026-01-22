@@ -288,19 +288,18 @@ export function GamePlayPage() {
             {/* Game Name */}
             <div style={{ minWidth: 0 }}>
               <h1 style={{
-                color: 'white',
+                color: '#1e293b',
                 fontSize: '16px',
                 fontWeight: 700,
                 margin: 0,
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                textShadow: '0 2px 8px rgba(0,0,0,0.15)',
               }}>
                 {game.name}
               </h1>
               <p style={{
-                color: 'rgba(255,255,255,0.8)',
+                color: '#64748b',
                 fontSize: '11px',
                 margin: 0,
               }}>
@@ -375,6 +374,35 @@ export function GamePlayPage() {
               color: '#64748b',
             }}>
               {upcomingDraws[0]?.date || 'Today'} {upcomingDraws[0]?.time || '--:--'}
+            </span>
+          </div>
+
+          {/* Next Draw Info */}
+          <div style={{
+            width: '1px',
+            height: '32px',
+            background: '#e2e8f0',
+          }} />
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+          }}>
+            <span style={{
+              fontSize: '10px',
+              color: '#94a3b8',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+            }}>
+              Next
+            </span>
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#3b82f6',
+            }}>
+              #{game.currentDraw + 1} {upcomingDraws[1]?.time || '--:--'}
             </span>
           </div>
         </div>
@@ -588,9 +616,9 @@ export function GamePlayPage() {
                     minHeight: '48px',
                     aspectRatio: '1',
                     borderRadius: '12px',
-                    border: 'none',
+                    border: isSelected ? '2px solid #24BD68' : '2px solid transparent',
                     background: isSelected
-                      ? GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length]
+                      ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
                       : '#f1f5f9',
                     color: isSelected ? 'white' : '#334155',
                     fontWeight: 700,
@@ -599,7 +627,7 @@ export function GamePlayPage() {
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     transform: isSelected ? 'scale(1.05)' : 'scale(1)',
                     boxShadow: isSelected
-                      ? '0 4px 12px rgba(102, 126, 234, 0.3)'
+                      ? '0 4px 12px rgba(36, 189, 104, 0.4)'
                       : 'none',
                     display: 'flex',
                     alignItems: 'center',
@@ -647,9 +675,9 @@ export function GamePlayPage() {
                       padding: '14px 12px',
                       minHeight: '48px',
                       borderRadius: '12px',
-                      border: 'none',
+                      border: isSelected ? '2px solid #24BD68' : '2px solid transparent',
                       background: isSelected
-                        ? GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length]
+                        ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
                         : '#f1f5f9',
                       color: isSelected ? 'white' : '#334155',
                       fontWeight: 600,
@@ -657,6 +685,7 @@ export function GamePlayPage() {
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                      boxShadow: isSelected ? '0 4px 12px rgba(36, 189, 104, 0.4)' : 'none',
                     }}
                   >
                     {market}
