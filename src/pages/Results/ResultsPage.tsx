@@ -61,8 +61,7 @@ export function ResultsPage() {
     >
       {/* AppHeader with balance and menu */}
       <AppHeader
-        showBack
-        backPath={selectedGame ? undefined : '/pos'}
+        showBack={!!selectedGame}
         title={selectedGame ? games.find(g => g.id === selectedGame)?.name || 'Results' : 'Draw Results'}
         subtitle="Latest game results"
       />

@@ -19,7 +19,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Menu, ArrowLeft, ShoppingCart } from 'lucide-react'
+import { ArrowLeft, ShoppingCart } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BalanceOverview } from '@/components/shared/BalanceOverview'
@@ -77,10 +77,6 @@ export function AppHeader({
     setShowBalanceModal(true)
   }
 
-  // Handle menu click
-  const handleMenuClick = () => {
-    navigate('/menu')
-  }
 
   // Generate header styles based on visual style
   const getHeaderStyle = (): React.CSSProperties => {
@@ -428,30 +424,6 @@ export function AppHeader({
             </div>
           </button>
         )}
-
-        {/* Menu Button - 48px minimum touch target */}
-        <button
-          onClick={handleMenuClick}
-          style={{
-            width: '48px',
-            height: '48px',
-            minWidth: '48px',
-            minHeight: '48px',
-            background: getButtonBackground(),
-            backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
-            border: getButtonBorder(),
-            borderRadius: visualStyle === 'bold' ? '12px' : '14px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.2s ease',
-            boxShadow: getButtonShadow(),
-          }}
-          title="Menu"
-        >
-          <Menu size={24} color={getIconColor()} strokeWidth={2} />
-        </button>
       </div>
     </header>
 

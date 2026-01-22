@@ -14,7 +14,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode, Banknote, Sliders } from 'lucide-react'
+import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode, Banknote, Dices, Award, HandCoins, LayoutGrid } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
 export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay' | 'menu'
@@ -51,7 +51,7 @@ const drawNavItems: NavItem[] = [
   {
     id: 'games',
     label: 'Draw Games',
-    icon: Ticket,
+    icon: Dices,
     path: '/games',
     color: '#8b5cf6',
     activeColor: '#7c3aed',
@@ -59,7 +59,7 @@ const drawNavItems: NavItem[] = [
   {
     id: 'results',
     label: 'Draw Results',
-    icon: Trophy,
+    icon: Award,
     path: '/results',
     color: '#f59e0b',
     activeColor: '#d97706',
@@ -72,7 +72,7 @@ const drawNavItems: NavItem[] = [
 const payoutItem: NavItem = {
   id: 'payout',
   label: 'Payout',
-  icon: Banknote,
+  icon: HandCoins,
   path: '/payout',
   color: '#f59e0b',
   activeColor: '#d97706',
@@ -84,7 +84,7 @@ const payoutItem: NavItem = {
 const controlCenterItem: NavItem = {
   id: 'menu',
   label: 'Control',
-  icon: Sliders,
+  icon: LayoutGrid,
   path: '/menu',
   color: '#28455B',
   activeColor: '#1e293b',

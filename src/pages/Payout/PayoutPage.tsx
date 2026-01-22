@@ -567,9 +567,7 @@ export function PayoutPage() {
     >
       {/* AppHeader */}
       <AppHeader
-        showBack
-        backPath="/pos"
-        title="Scan & Payout"
+        title="Payout"
         subtitle="Scan or enter ticket code"
       />
 

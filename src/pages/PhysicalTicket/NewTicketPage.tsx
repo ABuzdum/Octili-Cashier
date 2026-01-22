@@ -404,11 +404,9 @@ export function NewTicketPage() {
       currentPage="qrticket-sell"
       background="linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
     >
-      {/* AppHeader - Consistent header with balance and menu */}
+      {/* AppHeader - Consistent header with balance */}
       <AppHeader
-        showBack
-        backPath="/games"
-        title="QR Ticket - Sell"
+        title="QR Tickets"
         subtitle="Issue QR lottery ticket"
       />
 
