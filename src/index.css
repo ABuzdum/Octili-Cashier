@@ -1,55 +1,125 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand colors */
-  --color-brand-50: #f0fdf4;
-  --color-brand-100: #dcfce7;
-  --color-brand-200: #bbf7d0;
-  --color-brand-300: #86efac;
-  --color-brand-400: #4ade80;
-  --color-brand-500: #22c55e;
-  --color-brand-600: #16a34a;
-  --color-brand-700: #15803d;
-  --color-brand-800: #166534;
-  --color-brand-900: #14532d;
+  /* Octili Brand Colors - Green/Teal Palette */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #24BD68;
+  --color-primary-600: #00A77E;
+  --color-primary-700: #006E7E;
+  --color-primary-800: #28455B;
+  --color-primary-900: #282E3A;
+
+  /* Accent Colors (Teal/Deep Teal) */
+  --color-accent-50: #f0fdfa;
+  --color-accent-100: #ccfbf1;
+  --color-accent-200: #99f6e4;
+  --color-accent-300: #5eead4;
+  --color-accent-400: #2dd4bf;
+  --color-accent-500: #00A77E;
+  --color-accent-600: #006E7E;
+  --color-accent-700: #0f766e;
+  --color-accent-800: #115e59;
+  --color-accent-900: #134e4a;
 
   /* Status colors */
   --color-success: #22c55e;
   --color-success-light: #dcfce7;
   --color-success-dark: #15803d;
-  --color-warning: #f59e0b;
-  --color-warning-light: #fef3c7;
-  --color-warning-dark: #b45309;
+  --color-warning: #eab308;
+  --color-warning-light: #fef9c3;
+  --color-warning-dark: #a16207;
   --color-danger: #ef4444;
   --color-danger-light: #fee2e2;
   --color-danger-dark: #b91c1c;
   --color-info: #3b82f6;
   --color-info-light: #dbeafe;
   --color-info-dark: #1d4ed8;
+
+  /* Animation keyframes */
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-slide-up: slide-up 0.5s ease-out forwards;
+  --animate-shake: shake 0.5s ease-out;
 }
 
 :root {
   /* Light theme colors */
   --color-surface: #ffffff;
-  --color-surface-secondary: #f9fafb;
-  --color-surface-tertiary: #f3f4f6;
-  --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-text-tertiary: #9ca3af;
-  --color-border-light: #e5e7eb;
-  --color-border: #d1d5db;
+  --color-surface-secondary: #f8fafc;
+  --color-surface-tertiary: #f1f5f9;
+  --color-text-primary: #1e293b;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94a3b8;
+  --color-border-light: #e2e8f0;
+  --color-border: #cbd5e1;
 }
 
 /* Dark theme (future) */
 .dark {
-  --color-surface: #111827;
-  --color-surface-secondary: #1f2937;
-  --color-surface-tertiary: #374151;
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #d1d5db;
-  --color-text-tertiary: #6b7280;
-  --color-border-light: #374151;
-  --color-border: #4b5563;
+  --color-surface: #0f172a;
+  --color-surface-secondary: #1e293b;
+  --color-surface-tertiary: #334155;
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-tertiary: #64748b;
+  --color-border-light: #334155;
+  --color-border: #475569;
+}
+
+/* Keyframe animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+/* Animation utility classes */
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-out;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 * {
@@ -94,4 +164,17 @@ body {
 @utility touch-target {
   min-height: 48px;
   min-width: 48px;
+}
+
+/* Glass morphism utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
 }

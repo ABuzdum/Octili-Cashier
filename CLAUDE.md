@@ -8,7 +8,7 @@
 
 > **This section eliminates exploration time. Use it before every task.**
 
-### Project: Loteus Cashier POS Terminal (SUMMUS RMP)
+### Project: Octili Cashier POS Terminal
 - **Stack**: React 18 + TypeScript + Vite + TailwindCSS + Zustand
 - **Port**: http://localhost:5173
 - **Start**: `npm run dev`
@@ -20,10 +20,12 @@
 src/
 ├── App.tsx                    # All routes defined here (lazy loaded)
 ├── pages/                     # One folder per module
-│   ├── Auth/                  # Login (username/password), Registration code
+│   ├── Auth/                  # Login (username/password), PIN entry
+│   ├── POS/                   # Main POS interface - game selection
 │   ├── Games/                 # Games grid - lottery games with timers
 │   ├── GamePlay/              # Game selection (multipliers, bet amount, draws)
 │   ├── Cart/                  # Pending tickets before purchase
+│   ├── Checkout/              # Payment processing
 │   ├── PaymentOfWinnings/     # Scan QR or enter ticket number to pay winnings
 │   ├── Results/               # Draw results for all games
 │   ├── Menu/                  # Main menu (Reports, Cash, History, Exit)
@@ -31,6 +33,8 @@ src/
 │   ├── CashCollection/        # Track payouts to winning players
 │   ├── CashReplenishment/     # Add cash to balance from payments
 │   ├── History/               # Full history of printed tickets
+│   ├── Transactions/          # Transaction history
+│   ├── Settings/              # Cashier settings
 │   └── QR/                    # QR Replenishment & QR Payout for player accounts
 ├── components/
 │   ├── ui/                    # Primitives: Button, Input, Modal, NumPad, etc.
@@ -91,24 +95,22 @@ git add . && git commit -m "feat(module): description" && git push
 
 ---
 
-## BRAND GUIDELINES - SUMMUS RMP / LOTEUS CASHIER
+## BRAND GUIDELINES - OCTILI
 
 > **This app must match the Octili Admin Panel visual style - same tones, same feel.**
 
 ### Color Palette
 
 ```css
-/* Primary Colors */
---color-primary: #1a365d;        /* Dark blue - headers, navigation */
---color-primary-light: #2c5282;  /* Lighter blue - hover states */
---color-primary-dark: #0f2744;   /* Darker blue - active states */
-
-/* Accent Colors */
---color-accent: #f59e0b;         /* Orange/Amber - primary buttons, highlights */
---color-accent-hover: #d97706;   /* Darker orange - button hover */
+/* Octili Brand Colors - Green/Teal Palette */
+--color-green: #24BD68;          /* Primary green - buttons, accents, success */
+--color-teal: #00A77E;           /* Teal - hover states, secondary actions */
+--color-deep-teal: #006E7E;      /* Deep teal - gradients, active states */
+--color-dark-blue: #28455B;      /* Dark blue - headers, labels */
+--color-charcoal: #282E3A;       /* Charcoal - primary text */
 
 /* Semantic Colors */
---color-success: #22c55e;        /* Green - positive actions, valid tickets */
+--color-success: #24BD68;        /* Green - positive actions, valid tickets */
 --color-danger: #ef4444;         /* Red - cancel, invalid, destructive actions */
 --color-info: #3b82f6;           /* Blue - info bars, timers */
 --color-warning: #eab308;        /* Yellow - warnings, pending states */
@@ -116,7 +118,7 @@ git add . && git commit -m "feat(module): description" && git push
 /* Neutral Colors */
 --color-background: #f8fafc;     /* Light gray - page background */
 --color-surface: #ffffff;        /* White - cards, modals */
---color-text: #1e293b;           /* Dark slate - primary text */
+--color-text: #282E3A;           /* Charcoal - primary text */
 --color-text-muted: #64748b;     /* Gray - secondary text */
 --color-border: #e2e8f0;         /* Light gray - borders */
 ```
@@ -125,38 +127,40 @@ git add . && git commit -m "feat(module): description" && git push
 
 | Button Type | Background | Text | Use Case |
 |-------------|------------|------|----------|
-| Primary | `--color-accent` (orange) | White | Main actions: Buy, OK, Confirm |
-| Success | `--color-success` (green) | White | Payment, Valid, Positive |
+| Primary | `--color-green` (#24BD68) | White | Main actions: Buy, OK, Confirm |
+| Success | `--color-green` (#24BD68) | White | Payment, Valid, Positive |
 | Danger | `--color-danger` (red) | White | Cancel, Delete, Invalid |
-| Secondary | White with border | `--color-primary` | Secondary actions |
-| Info | `--color-info` (blue) | White | Info, timers, status |
+| Secondary | White with border | `--color-dark-blue` | Secondary actions |
+| Info | `--color-teal` (#00A77E) | White | Info, timers, status |
 
 ### Typography
 
 - **Font Family**: System fonts (Inter, -apple-system, sans-serif)
-- **Headings**: Bold, dark blue (`--color-primary`)
-- **Body**: Regular, slate (`--color-text`)
+- **Headings**: Bold, dark blue (`--color-dark-blue`)
+- **Body**: Regular, charcoal (`--color-charcoal`)
 - **Labels**: Medium, muted (`--color-text-muted`)
 
 ### Component Patterns
 
-1. **Game Cards** - Grid of 2 columns, image + title + countdown timer
-2. **Bottom Navigation** - 5 items: Games, Results, Menu, QR, Cart
-3. **Modals** - Centered, white background, rounded corners
-4. **NumPad** - Large touch targets (48px+), colored confirm/back buttons
-5. **Lists** - Clean rows with dividers, action buttons on right
+1. **Glass Morphism** - Backdrop blur, semi-transparent backgrounds
+2. **Animated Backgrounds** - Liquid blob effects with Octili colors
+3. **Game Cards** - Grid of 2 columns, image + title + countdown timer
+4. **Bottom Navigation** - 5 items: Games, Results, Menu, QR, Cart
+5. **Modals** - Centered, white background, rounded corners
+6. **NumPad** - Large touch targets (48px+), colored confirm/back buttons
+7. **Lists** - Clean rows with dividers, action buttons on right
 
 ---
 
 ## APPLICATION FEATURES (FROM POS TERMINAL SPEC)
 
-> **Reference: POS Terminal Instructions PDF - SUMMUS RMP**
+> **Reference: POS Terminal Instructions PDF - functional spec only**
 
 ### 1. Login/Authorization
 - Username and password fields
 - Optional registration code checkbox
 - Support phone number displayed
-- SUMMUS logo at bottom
+- Octili logo at top
 
 ### 2. Games Screen (Main)
 - Grid layout (2 columns) of available lottery games
@@ -180,7 +184,7 @@ git add . && git commit -m "feat(module): description" && git push
 
 ### 5. Payment of Winnings
 - Barcode input field (manual entry)
-- "Camera scan Qrcode" button (orange)
+- "Camera scan Qrcode" button (green)
 - Results: "Valid ticket - Win: X" / "Ticket not valid" / "Paid ticket"
 - Payment button to confirm payout
 
@@ -285,7 +289,7 @@ Every file MUST start with a detailed header comment block explaining:
  *
  * Dependencies: Key libraries or modules this depends on
  *
- * @author Loteus Development Team
+ * @author Octili Development Team
  * @version X.X.X
  * @lastUpdated YYYY-MM-DD
  */
@@ -349,7 +353,7 @@ Use inline comments for:
 
 4. **UI Quality Standards**
    - Consistent spacing (8px grid system)
-   - Harmonious color palette (SUMMUS brand colors)
+   - Harmonious color palette (Octili brand colors)
    - Readable typography (16px minimum for body)
    - Smooth animations (200-300ms transitions)
    - Touch-friendly targets (48px minimum for POS)
@@ -781,29 +785,30 @@ Ask ONLY when there are **multiple valid approaches** and you genuinely cannot d
 
 ### THEME VERIFICATION PROTOCOL
 
-> **Every component MUST support theming and be visually consistent with SUMMUS brand.**
+> **Every component MUST support theming and be visually consistent with Octili brand.**
 
 #### Theme Check Requirements
 
 1. **CSS Variables Usage**
    - Use semantic color tokens from brand guidelines
-   - All colors must use the defined palette
+   - All colors must use the defined Octili palette
 
 2. **Brand Consistency**
-   - Dark blue for navigation/headers
-   - Orange for primary actions
-   - Green for success/positive
-   - Red for cancel/negative
+   - Green (#24BD68) for primary actions
+   - Teal (#00A77E) for secondary/hover
+   - Deep teal (#006E7E) for gradients
+   - Dark blue (#28455B) for headers/labels
+   - Charcoal (#282E3A) for text
 
 3. **Interactive States**
    - Hover states must use theme colors
    - Focus states visible in all themes
-   - Active/selected states consistent (orange highlight)
+   - Active/selected states consistent (green highlight)
 
 #### Theme Verification Checklist
 
 For each component:
-- [ ] Uses brand color palette
+- [ ] Uses Octili brand color palette
 - [ ] No hardcoded colors outside palette
 - [ ] Hover/focus states use theme colors
 - [ ] Buttons follow the style guide
@@ -838,10 +843,10 @@ For each component:
 
 | State | Display | Color |
 |-------|---------|-------|
-| Valid (winning) | "Valid ticket - Win: X" | Green |
-| Invalid (no win) | "Ticket not valid" | Red text |
+| Valid (winning) | "Valid ticket - Win: X" | Green (#24BD68) |
+| Invalid (no win) | "Ticket not valid" | Red (#ef4444) |
 | Already paid | "Paid ticket" | Gray |
-| Pending | In cart | Orange |
+| Pending | In cart | Teal (#00A77E) |
 
 ### Timer Rules
 
