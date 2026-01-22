@@ -4,9 +4,9 @@ This folder contains technical documentation for all supported POS terminals.
 
 ## Supported Terminals
 
-| Terminal | Platform | Status | Documentation |
-|----------|----------|--------|---------------|
-| VV2S Plus | Android | Active | [View Docs](./vv2s-plus/README.md) |
+| Terminal | Manufacturer | Platform | Status | Documentation |
+|----------|--------------|----------|--------|---------------|
+| V2s Plus | SUNMI | Android 11 | Active | [View Docs](./vv2s-plus/README.md) |
 
 ## Adding a New Terminal
 

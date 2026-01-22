@@ -485,56 +485,163 @@ export async function clearAllSecureData(): Promise<void> {
 
 #### Issue 1: Printer Not Responding
 
-**Symptoms:** Print commands fail or timeout
+**Symptoms:** Print commands fail, timeout, or return error
 
-**Solution:**
-1. Check paper roll is properly installed
-2. Verify printer is enabled in settings
-3. Restart the device
-4. Check for paper jams
+**Solutions:**
+1. **Check paper roll** - Ensure 80mm paper is properly installed
+2. **Check roll direction** - Paper should feed from bottom of roll
+3. **Verify printer service** - Go to Settings > Apps > SUNMI Printer Service > Force Stop, then retry
+4. **Check for jams** - Open printer cover and clear any stuck paper
+5. **Restart device** - Full reboot often resolves service issues
+6. **Check temperature** - If overheated (constant printing), wait 30 seconds
+7. **Re-bind service** - In your app, disconnect and reconnect to printer service
+
+**Error Codes:**
+| Code | Meaning | Action |
+|------|---------|--------|
+| `NO_PAPER` | Paper roll empty | Replace paper |
+| `PAPER_JAM` | Paper stuck | Clear jam, reload |
+| `OVERHEAT` | Printer too hot | Wait 30s, reduce print volume |
+| `COVER_OPEN` | Printer cover open | Close cover properly |
 
 #### Issue 2: Scanner Not Detecting Codes
 
 **Symptoms:** QR codes or barcodes not being read
 
-**Solution:**
-1. Clean the scanner lens
-2. Ensure adequate lighting
-3. Check scan distance (optimal: 10-20cm)
-4. Verify code format is supported
+**Solutions:**
+1. **Verify scanner version** - Only V2s Plus Scanner (GMS) has built-in scanner
+2. **Clean scanner lens** - Use soft microfiber cloth
+3. **Adjust distance** - Optimal: 10-20cm from code
+4. **Enable flashlight** - For low-light conditions via SDK
+5. **Check code quality** - Ensure code is not too damaged/small
+6. **Verify format** - Ensure barcode format is enabled in scanner config
+7. **Restart scanner service** - Force stop and restart scan service
+
+**Scanner Not Available Error:**
+- Check device variant - Standard/NFC versions don't have scanner
+- Use camera-based scanning as alternative
 
 #### Issue 3: Network Connection Drops
 
-**Symptoms:** Intermittent connectivity
+**Symptoms:** Intermittent connectivity, API timeouts
 
-**Solution:**
-1. Check WiFi signal strength
-2. Verify router settings
-3. Restart network services
-4. Consider using cellular backup
+**Solutions:**
+1. **Check signal strength** - Move closer to router or use 2.4GHz band
+2. **Switch bands** - Try 2.4GHz (better range) vs 5GHz (faster speed)
+3. **Verify router** - Check router isn't overloaded with devices
+4. **Enable cellular backup** - Configure auto-failover in app
+5. **Check proxy settings** - Ensure no proxy is misconfigured
+6. **Restart networking** - Airplane mode on/off
+7. **Forget and reconnect** - Remove network, reconnect fresh
+
+#### Issue 4: Battery Draining Fast
+
+**Symptoms:** Battery depletes faster than 16h expected runtime
+
+**Solutions:**
+1. **Reduce screen brightness** - Lower to minimum comfortable level
+2. **Disable unused radios** - Turn off Bluetooth/NFC when not needed
+3. **Check background apps** - Close unnecessary apps
+4. **Enable battery saver** - When below 20%
+5. **Check battery health** - Settings > Battery > Battery health
+6. **Replace battery** - Battery is removable if worn out
+
+#### Issue 5: NFC Not Working
+
+**Symptoms:** NFC cards not detected
+
+**Solutions:**
+1. **Verify NFC variant** - Standard variant doesn't have NFC
+2. **Enable NFC** - Settings > Connected devices > NFC
+3. **Check card position** - Hold card flat against back of device
+4. **Remove case** - Thick cases may block NFC
+5. **Check card compatibility** - Device supports Type A&B, Mifare, Felica
 
 ## Deployment Checklist
 
 ### Pre-Deployment
 
-- [ ] Device firmware is up to date
-- [ ] Octili Cashier app is latest version
-- [ ] Network connectivity verified
-- [ ] Printer tested with sample ticket
-- [ ] Scanner tested with sample QR code
-- [ ] Payment terminal configured (if applicable)
+**Device Setup:**
+- [ ] SUNMI V2s Plus firmware is up to date
+- [ ] Android 11 security patches applied
+- [ ] Device registered in SUNMI Device Management (if using MDM)
+- [ ] Developer options disabled
+- [ ] USB debugging disabled
+- [ ] Screen lock configured (PIN/Password)
+
+**App Installation:**
+- [ ] Octili Cashier app installed (latest version)
+- [ ] App permissions granted (Camera, NFC, Storage)
+- [ ] App configured for production API endpoint
+- [ ] Certificate pinning verified
+
+**Network:**
+- [ ] WiFi configured and connected
+- [ ] Cellular backup configured (if applicable)
+- [ ] API connectivity verified
+- [ ] Sync tested successfully
+
+**Hardware:**
+- [ ] Printer tested with sample 80mm ticket
+- [ ] Paper roll installed (correct width: 80mm)
+- [ ] Scanner tested with sample QR code (if Scanner version)
+- [ ] NFC tested with sample card (if NFC version)
+- [ ] Battery fully charged
+- [ ] Spare battery available (recommended)
+- [ ] Spare paper rolls available
 
 ### Go-Live
 
-- [ ] Operator credentials created
-- [ ] Cash drawer configured
-- [ ] Shift start/end procedures documented
-- [ ] Support contact information provided
-- [ ] Backup procedures established
+**User Setup:**
+- [ ] Operator credentials created and tested
+- [ ] PIN/password set for shift login
+- [ ] Permissions assigned (sales, refunds, reports)
+
+**Operations:**
+- [ ] Cash drawer initial float set
+- [ ] Shift start procedure documented
+- [ ] Shift end/close procedure documented
+- [ ] Support contact information saved on device
+- [ ] Emergency offline procedures documented
+
+**Training:**
+- [ ] Cashier trained on ticket sales
+- [ ] Cashier trained on ticket validation (scan)
+- [ ] Cashier trained on refund process
+- [ ] Cashier trained on shift close/report
+- [ ] Cashier trained on troubleshooting basics
 
 ### Post-Deployment
 
+**Daily Operations:**
 - [ ] Daily reconciliation process verified
-- [ ] Offline mode tested
-- [ ] Data sync verified
-- [ ] Performance monitored
+- [ ] End-of-day report generation tested
+- [ ] Cash count procedure verified
+
+**Reliability:**
+- [ ] Offline mode tested (disconnect WiFi, make sales, reconnect)
+- [ ] Data sync verified after offline period
+- [ ] Battery life meets 16h runtime target
+- [ ] Printer handles full day of tickets
+
+**Monitoring:**
+- [ ] Remote monitoring configured (if using MDM)
+- [ ] Error logging and reporting enabled
+- [ ] Performance baseline established
+- [ ] Alert thresholds configured
+
+---
+
+## Resources
+
+- [SUNMI Official Product Page](https://www.sunmi.com/en/v2s-plus/)
+- [SUNMI Developer Portal](https://developer.sunmi.com/docs/en-US/index)
+- [SUNMI Developer Docs](https://docs.sunmi.com/en/)
+- [Printing Service Documentation](https://docs.sunmi.com/en/general-function-modules/printing-service/)
+- [Scanning Documentation](https://docs.sunmi.com/en/general-function-modules/scan/)
+- [GitHub Printer Demo](https://github.com/shangmisunmi/SunmiPrinterDemo)
+
+---
+
+> **Last Updated**: January 2026
+> **Documentation Source**: SUNMI Official Specifications
