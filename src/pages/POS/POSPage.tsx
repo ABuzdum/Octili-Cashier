@@ -392,11 +392,11 @@ export function POSPage() {
           zIndex: 1,
         }}>
           <img
-            src="/octili-icon.svg"
+            src="/octili-primary-logo.svg"
             alt="Octili"
             style={{
-              width: '48px',
-              height: '48px',
+              height: '36px',
+              width: 'auto',
               objectFit: 'contain',
               filter: visualStyle === 'glass' || visualStyle === 'bento'
                 ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))'
