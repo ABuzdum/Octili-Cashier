@@ -18,7 +18,7 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Clock, Sparkles, Menu, QrCode, Ticket } from 'lucide-react'
+import { Clock, Sparkles, Menu } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
@@ -205,119 +205,6 @@ function GameCard({ game, index, onClick }: { game: LotteryGame; index: number; 
   )
 }
 
-/**
- * Main action button component - QR Ticket or Draw Ticket
- */
-function MainActionButton({
-  icon: Icon,
-  label,
-  gradient,
-  shadowColor,
-  onClick
-}: {
-  icon: typeof QrCode
-  label: string
-  gradient: string
-  shadowColor: string
-  onClick: () => void
-}) {
-  const [isHovered, setIsHovered] = useState(false)
-
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        flex: 1,
-        background: gradient,
-        borderRadius: '24px',
-        overflow: 'hidden',
-        boxShadow: isHovered
-          ? `0 20px 40px ${shadowColor}60, 0 0 0 3px ${shadowColor}40`
-          : `0 8px 24px ${shadowColor}40`,
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        border: 'none',
-        cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '32px 24px',
-        gap: '16px',
-        position: 'relative',
-        transform: isHovered ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
-        minHeight: '160px',
-      }}
-    >
-      {/* Decorative elements */}
-      <div style={{
-        position: 'absolute',
-        width: '180px',
-        height: '180px',
-        background: 'rgba(255,255,255,0.1)',
-        borderRadius: '50%',
-        top: '-60px',
-        right: '-60px',
-      }} />
-      <div style={{
-        position: 'absolute',
-        width: '100px',
-        height: '100px',
-        background: 'rgba(255,255,255,0.05)',
-        borderRadius: '50%',
-        bottom: '-40px',
-        left: '-20px',
-      }} />
-
-      {/* Icon */}
-      <div style={{
-        width: '80px',
-        height: '80px',
-        background: 'rgba(255,255,255,0.2)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transform: isHovered ? 'scale(1.1) rotate(-5deg)' : 'scale(1) rotate(0deg)',
-        transition: 'transform 0.3s ease',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-        zIndex: 1,
-      }}>
-        <Icon size={40} color="white" strokeWidth={2} />
-      </div>
-
-      {/* Text */}
-      <span style={{
-        color: 'white',
-        fontSize: '22px',
-        fontWeight: 800,
-        textAlign: 'center',
-        textShadow: '0 2px 8px rgba(0,0,0,0.15)',
-        zIndex: 1,
-        letterSpacing: '-0.5px',
-      }}>
-        {label}
-      </span>
-
-      {/* Sparkle on hover */}
-      {isHovered && (
-        <Sparkles
-          size={24}
-          color="rgba(255,255,255,0.9)"
-          style={{
-            position: 'absolute',
-            top: '20px',
-            right: '20px',
-            zIndex: 1,
-          }}
-        />
-      )}
-    </button>
-  )
-}
-
 export function POSPage() {
   const navigate = useNavigate()
   const games = useLotteryGames()
@@ -330,10 +217,6 @@ export function POSPage() {
 
   const handleGameClick = (game: LotteryGame) => {
     navigate(`/game/${game.id}`)
-  }
-
-  const handleQRTicket = () => {
-    navigate('/qr-ticket')
   }
 
   // Generate header styles based on visual style
@@ -646,35 +529,7 @@ export function POSPage() {
           maxWidth: '900px',
           margin: '0 auto',
         }}>
-          {/* Two Main Action Buttons */}
-          <div style={{
-            display: 'flex',
-            gap: '16px',
-            marginBottom: '32px',
-          }}>
-            <MainActionButton
-              icon={QrCode}
-              label="QR Ticket"
-              gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)"
-              shadowColor="#3b82f6"
-              onClick={handleQRTicket}
-            />
-            <MainActionButton
-              icon={Ticket}
-              label="Draw Ticket"
-              gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%)"
-              shadowColor="#8b5cf6"
-              onClick={() => {
-                // Scroll to games section
-                const gamesSection = document.getElementById('games-section')
-                if (gamesSection) {
-                  gamesSection.scrollIntoView({ behavior: 'smooth' })
-                }
-              }}
-            />
-          </div>
-
-          {/* Draw Ticket Section Header */}
+          {/* Games Section Header with Draw Badge */}
           <div
             id="games-section"
             style={{
@@ -685,24 +540,42 @@ export function POSPage() {
             }}
           >
             <div style={{
-              width: '44px',
-              height: '44px',
+              width: '48px',
+              height: '48px',
               background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
               borderRadius: '14px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+              position: 'relative',
             }}>
-              <Ticket size={22} color="white" />
+              <Sparkles size={24} color="white" />
+              {/* Draw notification badge */}
+              <span style={{
+                position: 'absolute',
+                top: '-6px',
+                right: '-8px',
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                color: 'white',
+                fontSize: '9px',
+                fontWeight: 700,
+                padding: '3px 6px',
+                borderRadius: '6px',
+                textTransform: 'uppercase',
+                letterSpacing: '0.3px',
+                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
+              }}>
+                Draw
+              </span>
             </div>
             <div>
               <h2 style={{
-                fontSize: '18px',
+                fontSize: '20px',
                 fontWeight: 700,
                 color: isDarkMode ? '#f8fafc' : '#1e293b',
               }}>
-                Draw Ticket
+                Games
               </h2>
               <p style={{
                 fontSize: '12px',
