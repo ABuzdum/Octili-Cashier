@@ -377,16 +377,16 @@ export function POSPage() {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
-          {/* Simple O Logo - No background */}
-          <span style={{
-            fontSize: '36px',
-            fontWeight: 900,
-            color: getHeaderTextColor(),
-            lineHeight: 1,
-            textShadow: (visualStyle === 'glass' || visualStyle === 'bento') ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
-          }}>
-            O
-          </span>
+          {/* Octili Icon - No background */}
+          <img
+            src="/octili-icon.svg"
+            alt="Octili"
+            style={{
+              width: '40px',
+              height: '40px',
+              objectFit: 'contain',
+            }}
+          />
           <div>
             <p style={{
               fontSize: '11px',
