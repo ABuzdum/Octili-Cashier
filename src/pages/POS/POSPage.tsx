@@ -18,7 +18,7 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Banknote, Clock, Sparkles, Menu } from 'lucide-react'
+import { Banknote, Clock, Sparkles, Menu, Ticket, CreditCard } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import type { LotteryGame } from '@/types/game.types'
@@ -303,6 +303,204 @@ function PaymentOfWinningsCard({ onClick }: { onClick: () => void }) {
   )
 }
 
+/**
+ * New Ticket card - Issue physical lottery tickets
+ */
+function NewTicketCard({ onClick }: { onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        boxShadow: isHovered
+          ? '0 20px 40px rgba(59, 130, 246, 0.4), 0 0 0 2px rgba(59, 130, 246, 0.3)'
+          : '0 8px 24px rgba(59, 130, 246, 0.25)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        height: '100%',
+        minHeight: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        gap: '16px',
+        position: 'relative',
+        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+      }}
+    >
+      {/* Decorative elements */}
+      <div style={{
+        position: 'absolute',
+        width: '150px',
+        height: '150px',
+        background: 'rgba(255,255,255,0.1)',
+        borderRadius: '50%',
+        top: '-40px',
+        right: '-40px',
+      }} />
+      <div style={{
+        position: 'absolute',
+        width: '100px',
+        height: '100px',
+        background: 'rgba(255,255,255,0.05)',
+        borderRadius: '50%',
+        bottom: '-30px',
+        left: '-30px',
+      }} />
+
+      {/* Icon */}
+      <div style={{
+        width: '72px',
+        height: '72px',
+        background: 'rgba(255,255,255,0.2)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transform: isHovered ? 'scale(1.1) rotate(-5deg)' : 'scale(1) rotate(0deg)',
+        transition: 'transform 0.3s ease',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+      }}>
+        <Ticket size={36} color="white" strokeWidth={2} />
+      </div>
+
+      {/* Text */}
+      <div style={{
+        color: 'white',
+        fontSize: '18px',
+        fontWeight: 700,
+        textAlign: 'center',
+        lineHeight: 1.3,
+        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      }}>
+        New<br />Ticket
+      </div>
+
+      {/* Sparkle on hover */}
+      {isHovered && (
+        <Sparkles
+          size={20}
+          color="rgba(255,255,255,0.9)"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+          }}
+        />
+      )}
+    </button>
+  )
+}
+
+/**
+ * Pay Out Ticket card - Redeem physical lottery tickets
+ */
+function PayOutTicketCard({ onClick }: { onClick: () => void }) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%)',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        boxShadow: isHovered
+          ? '0 20px 40px rgba(6, 182, 212, 0.4), 0 0 0 2px rgba(6, 182, 212, 0.3)'
+          : '0 8px 24px rgba(6, 182, 212, 0.25)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        height: '100%',
+        minHeight: '200px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        gap: '16px',
+        position: 'relative',
+        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+      }}
+    >
+      {/* Decorative elements */}
+      <div style={{
+        position: 'absolute',
+        width: '150px',
+        height: '150px',
+        background: 'rgba(255,255,255,0.1)',
+        borderRadius: '50%',
+        top: '-40px',
+        right: '-40px',
+      }} />
+      <div style={{
+        position: 'absolute',
+        width: '100px',
+        height: '100px',
+        background: 'rgba(255,255,255,0.05)',
+        borderRadius: '50%',
+        bottom: '-30px',
+        left: '-30px',
+      }} />
+
+      {/* Icon */}
+      <div style={{
+        width: '72px',
+        height: '72px',
+        background: 'rgba(255,255,255,0.2)',
+        backdropFilter: 'blur(10px)',
+        borderRadius: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        transform: isHovered ? 'scale(1.1) rotate(-5deg)' : 'scale(1) rotate(0deg)',
+        transition: 'transform 0.3s ease',
+        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+      }}>
+        <CreditCard size={36} color="white" strokeWidth={2} />
+      </div>
+
+      {/* Text */}
+      <div style={{
+        color: 'white',
+        fontSize: '18px',
+        fontWeight: 700,
+        textAlign: 'center',
+        lineHeight: 1.3,
+        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      }}>
+        Pay Out<br />Ticket
+      </div>
+
+      {/* Sparkle on hover */}
+      {isHovered && (
+        <Sparkles
+          size={20}
+          color="rgba(255,255,255,0.9)"
+          style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+          }}
+        />
+      )}
+    </button>
+  )
+}
+
 export function POSPage() {
   const navigate = useNavigate()
   const games = useLotteryGames()
@@ -314,6 +512,14 @@ export function POSPage() {
 
   const handlePaymentOfWinnings = () => {
     navigate('/payment')
+  }
+
+  const handleNewTicket = () => {
+    navigate('/physical-ticket/new')
+  }
+
+  const handlePayOutTicket = () => {
+    navigate('/physical-ticket/payout')
   }
 
   return (
@@ -435,6 +641,12 @@ export function POSPage() {
 
           {/* Payment of Winnings Card */}
           <PaymentOfWinningsCard onClick={handlePaymentOfWinnings} />
+
+          {/* New Ticket Card */}
+          <NewTicketCard onClick={handleNewTicket} />
+
+          {/* Pay Out Ticket Card */}
+          <PayOutTicketCard onClick={handlePayOutTicket} />
 
           {/* Rest of the games */}
           {games.slice(1).map((game, idx) => (
