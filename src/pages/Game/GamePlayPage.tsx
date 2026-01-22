@@ -96,14 +96,14 @@ export function GamePlayPage() {
   const { gameId } = useParams<{ gameId: string }>()
   const navigate = useNavigate()
   const game = useGame(gameId || '')
-  const { purchaseSingle, cartTickets } = useGameStore()
+  const { addToCart, cartTickets } = useGameStore()
 
   const [timer, setTimer] = useState(game?.timerSeconds || 60)
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([])
   const [betAmount, setBetAmount] = useState(game?.betAmounts[0] || 0.5)
   const [numberOfDraws, setNumberOfDraws] = useState(1)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [showSuccess, setShowSuccess] = useState(false)
+  const [showAnotherTicketModal, setShowAnotherTicketModal] = useState(false)
 
   // Draw selection mode: 'multi' for next X draws, 'specific' for a specific draw
   const [drawMode, setDrawMode] = useState<DrawMode>('multi')
@@ -220,16 +220,25 @@ export function GamePlayPage() {
     setShowConfirmModal(true)
   }
 
-  // Confirm purchase - processes the bet
+  // Confirm purchase - adds to cart and asks if want another ticket
   const confirmPurchase = () => {
     const bet = createBet()
-    purchaseSingle(bet)
+    addToCart(bet)
     setShowConfirmModal(false)
-    setShowSuccess(true)
-    setTimeout(() => {
-      setShowSuccess(false)
+    setSelectedMarkets([]) // Clear selections for potential next ticket
+    setShowAnotherTicketModal(true)
+  }
+
+  // Handle "Another ticket?" response
+  const handleAnotherTicket = (wantAnother: boolean) => {
+    setShowAnotherTicketModal(false)
+    if (wantAnother) {
+      // Go back to games list to select another game
       navigate('/pos')
-    }, 1500)
+    } else {
+      // Go to cart to complete purchase
+      navigate('/cart')
+    }
   }
 
   // Clear selections
@@ -816,28 +825,28 @@ export function GamePlayPage() {
             </button>
           </div>
 
-          {/* Multi-Draw Options - 48px minimum touch targets */}
+          {/* Multi-Draw Options - 5 columns for two rows of 5 */}
           {drawMode === 'multi' && (
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '10px',
+              gridTemplateColumns: 'repeat(5, 1fr)',
+              gap: '8px',
             }}>
               {game.drawOptions.map((draws) => (
                 <button
                   key={draws}
                   onClick={() => setNumberOfDraws(draws)}
                   style={{
-                    padding: '16px 12px',
-                    minHeight: '52px',
-                    borderRadius: '12px',
+                    padding: '10px 6px',
+                    minHeight: '44px',
+                    borderRadius: '10px',
                     border: 'none',
                     background: numberOfDraws === draws
                       ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
                       : '#f8fafc',
                     color: numberOfDraws === draws ? 'white' : '#334155',
                     fontWeight: 700,
-                    fontSize: '17px',
+                    fontSize: '14px',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     transform: numberOfDraws === draws ? 'scale(1.02)' : 'scale(1)',
