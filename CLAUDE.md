@@ -8,7 +8,7 @@
 
 > **This section eliminates exploration time. Use it before every task.**
 
-### Project: Octili Cashier App
+### Project: Loteus Cashier POS Terminal (SUMMUS RMP)
 - **Stack**: React 18 + TypeScript + Vite + TailwindCSS + Zustand
 - **Port**: http://localhost:5173
 - **Start**: `npm run dev`
@@ -20,30 +20,35 @@
 src/
 ├── App.tsx                    # All routes defined here (lazy loaded)
 ├── pages/                     # One folder per module
-│   ├── Auth/                  # Login, PIN entry
-│   ├── POS/                   # Point of Sale - main cashier interface
-│   ├── Cart/                  # Shopping cart management
-│   ├── Checkout/              # Payment processing
-│   ├── Transactions/          # Transaction history
-│   ├── Reports/               # Daily reports, shift reports
-│   └── Settings/              # Cashier settings
+│   ├── Auth/                  # Login (username/password), Registration code
+│   ├── Games/                 # Games grid - lottery games with timers
+│   ├── GamePlay/              # Game selection (multipliers, bet amount, draws)
+│   ├── Cart/                  # Pending tickets before purchase
+│   ├── PaymentOfWinnings/     # Scan QR or enter ticket number to pay winnings
+│   ├── Results/               # Draw results for all games
+│   ├── Menu/                  # Main menu (Reports, Cash, History, Exit)
+│   ├── Reports/               # Date range reports, daily reports
+│   ├── CashCollection/        # Track payouts to winning players
+│   ├── CashReplenishment/     # Add cash to balance from payments
+│   ├── History/               # Full history of printed tickets
+│   └── QR/                    # QR Replenishment & QR Payout for player accounts
 ├── components/
-│   ├── ui/                    # Primitives: Button, Input, Modal, etc.
-│   ├── shared/                # Complex: ProductCard, CartItem, PaymentMethod
-│   └── layout/                # Header, Footer, Layout
+│   ├── ui/                    # Primitives: Button, Input, Modal, NumPad, etc.
+│   ├── shared/                # Complex: GameCard, TicketItem, MultiplierSelector
+│   └── layout/                # Header, BottomNav, Layout
 ├── types/                     # TypeScript interfaces per module
-├── data/                      # Mock data files
-├── stores/                    # Zustand stores (authStore, cartStore, transactionStore)
+├── data/                      # Mock data files (games, tickets, etc.)
+├── stores/                    # Zustand stores (authStore, cartStore, balanceStore)
 ├── hooks/                     # Custom hooks
-└── lib/                       # Utilities (cn() for classnames)
+└── lib/                       # Utilities (cn() for classnames, formatCurrency, etc.)
 ```
 
 ### Module Page Pattern (ALWAYS FOLLOW THIS)
 ```
 /src/pages/{MODULE}/
-├── {MODULE}Landing.tsx        # Main view for the module
-├── {Entity}List.tsx           # List view with filters
-├── {Entity}Detail.tsx         # Detail view
+├── {MODULE}Page.tsx           # Main view for the module
+├── {Entity}List.tsx           # List view with filters (if needed)
+├── {Entity}Detail.tsx         # Detail view (if needed)
 └── index.ts                   # Export all components
 ```
 
@@ -54,9 +59,8 @@ const MyPage = lazy(() => import('@/pages/MODULE/MyPage').then(m => ({ default: 
 
 // 2. Add route inside <Route path="module">
 <Route path="module">
-  <Route index element={<ModuleLanding />} />
-  <Route path="entities" element={<EntityList />} />
-  <Route path="entities/:id" element={<EntityDetail />} />
+  <Route index element={<ModulePage />} />
+  <Route path="detail/:id" element={<DetailPage />} />
 </Route>
 ```
 
@@ -83,67 +87,143 @@ git add . && git commit -m "feat(module): description" && git push
 | Add types | `src/types/{module}.types.ts` |
 | Add mock data | `src/data/{module}-mock-data.ts` |
 | Add route | `src/App.tsx` (lazy import + Route) |
-| Find existing page | `src/pages/{MODULE}/{Entity}*.tsx` |
+| Find existing page | `src/pages/{MODULE}/{Module}Page.tsx` |
 
 ---
 
-## The 3-Layer Architecture
+## BRAND GUIDELINES - SUMMUS RMP / LOTEUS CASHIER
 
-You operate within a 3-layer architecture that separates concerns to maximize reliability. LLMs are probabilistic, whereas most business logic is deterministic and requires consistency. This system fixes that mismatch.
+> **This app must match the Octili Admin Panel visual style - same tones, same feel.**
 
-**Layer 1: Directive (What to do)**
-- SOPs written in Markdown, live in `directives/`
-- Define the goals, inputs, tools/scripts to use, outputs, and edge cases
-- Natural language instructions, like you'd give a mid-level employee
+### Color Palette
 
-**Layer 2: Orchestration (Decision making)**
-- This is you. Your job: intelligent routing.
-- Read directives, call execution tools in the right order, handle errors, ask for clarification, update directives with learnings
-- You're the glue between intent and execution
+```css
+/* Primary Colors */
+--color-primary: #1a365d;        /* Dark blue - headers, navigation */
+--color-primary-light: #2c5282;  /* Lighter blue - hover states */
+--color-primary-dark: #0f2744;   /* Darker blue - active states */
 
-**Layer 3: Execution (Doing the work)**
-- Deterministic Python scripts in `execution/`
-- Environment variables, api tokens, etc are stored in `.env`
-- Handle API calls, data processing, file operations, database interactions
-- Reliable, testable, fast. Use scripts instead of manual work. Commented well.
+/* Accent Colors */
+--color-accent: #f59e0b;         /* Orange/Amber - primary buttons, highlights */
+--color-accent-hover: #d97706;   /* Darker orange - button hover */
 
-**Why this works:** if you do everything yourself, errors compound. 90% accuracy per step = 59% success over 5 steps. The solution is push complexity into deterministic code. That way you just focus on decision-making.
+/* Semantic Colors */
+--color-success: #22c55e;        /* Green - positive actions, valid tickets */
+--color-danger: #ef4444;         /* Red - cancel, invalid, destructive actions */
+--color-info: #3b82f6;           /* Blue - info bars, timers */
+--color-warning: #eab308;        /* Yellow - warnings, pending states */
 
-## Operating Principles
+/* Neutral Colors */
+--color-background: #f8fafc;     /* Light gray - page background */
+--color-surface: #ffffff;        /* White - cards, modals */
+--color-text: #1e293b;           /* Dark slate - primary text */
+--color-text-muted: #64748b;     /* Gray - secondary text */
+--color-border: #e2e8f0;         /* Light gray - borders */
+```
 
-**1. Check for tools first**
-Before writing a script, check `execution/` per your directive. Only create new scripts if none exist.
+### Button Styles
 
-**2. Self-anneal when things break**
-- Read error message and stack trace
-- Fix the script and test it again (unless it uses paid tokens/credits/etc—in which case you check w user first)
-- Update the directive with what you learned (API limits, timing, edge cases)
+| Button Type | Background | Text | Use Case |
+|-------------|------------|------|----------|
+| Primary | `--color-accent` (orange) | White | Main actions: Buy, OK, Confirm |
+| Success | `--color-success` (green) | White | Payment, Valid, Positive |
+| Danger | `--color-danger` (red) | White | Cancel, Delete, Invalid |
+| Secondary | White with border | `--color-primary` | Secondary actions |
+| Info | `--color-info` (blue) | White | Info, timers, status |
 
-**3. Update directives as you learn**
-Directives are living documents. When you discover API constraints, better approaches, common errors, or timing expectations—update the directive. But don't create or overwrite directives without asking unless explicitly told to.
+### Typography
 
-## Self-annealing loop
+- **Font Family**: System fonts (Inter, -apple-system, sans-serif)
+- **Headings**: Bold, dark blue (`--color-primary`)
+- **Body**: Regular, slate (`--color-text`)
+- **Labels**: Medium, muted (`--color-text-muted`)
 
-Errors are learning opportunities. When something breaks:
-1. Fix it
-2. Update the tool
-3. Test tool, make sure it works
-4. Update directive to include new flow
-5. System is now stronger
+### Component Patterns
 
-## File Organization
+1. **Game Cards** - Grid of 2 columns, image + title + countdown timer
+2. **Bottom Navigation** - 5 items: Games, Results, Menu, QR, Cart
+3. **Modals** - Centered, white background, rounded corners
+4. **NumPad** - Large touch targets (48px+), colored confirm/back buttons
+5. **Lists** - Clean rows with dividers, action buttons on right
 
-**Deliverables vs Intermediates:**
-- **Deliverables**: Google Sheets, Google Slides, or other cloud-based outputs that the user can access
-- **Intermediates**: Temporary files needed during processing
+---
 
-**Directory structure:**
-- `.tmp/` - All intermediate files. Never commit, always regenerated.
-- `execution/` - Python scripts (the deterministic tools)
-- `directives/` - SOPs in Markdown (the instruction set)
-- `.env` - Environment variables and API keys
+## APPLICATION FEATURES (FROM POS TERMINAL SPEC)
 
-**Key principle:** Local files are only for processing. Deliverables live in cloud services where the user can access them.
+> **Reference: POS Terminal Instructions PDF - SUMMUS RMP**
+
+### 1. Login/Authorization
+- Username and password fields
+- Optional registration code checkbox
+- Support phone number displayed
+- SUMMUS logo at bottom
+
+### 2. Games Screen (Main)
+- Grid layout (2 columns) of available lottery games
+- Each game shows: name, image, countdown timer to next draw
+- "Payment of winnings" green button in top-right position
+- Bottom navigation: Games | Results | Menu | QR | Cart
+
+### 3. Game Play Screen
+- Back arrow + Game title + Cart icon in header
+- Timer bar showing time until draw closes + Draw number
+- Market selection (multipliers: X2, X3, X5, X10, X15, X25, X50, X100)
+- OR number selection grid (for keno/number games)
+- Bet Amount selector (dropdown: 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0)
+- Number of Draws selector (1, 2, etc.)
+- Bottom actions: Buy | Add to Cart | Clear
+
+### 4. Purchase Confirmation Modal
+- Shows: selected markets/numbers, price, number of draws
+- OK (green) and Cancel (red) buttons
+- Prints ticket on confirmation
+
+### 5. Payment of Winnings
+- Barcode input field (manual entry)
+- "Camera scan Qrcode" button (orange)
+- Results: "Valid ticket - Win: X" / "Ticket not valid" / "Paid ticket"
+- Payment button to confirm payout
+
+### 6. Results Screen
+- List of all games with "Printing" option and arrow to details
+- Detail view shows: Number, Date, Time, Result in table
+- Print option available
+
+### 7. Menu Screen
+- Operator ID and Balance displayed at top
+- Options: Reports menu, Cash collection, Cash replenishment, History, Exit
+- Support phone displayed at bottom
+
+### 8. Reports Menu
+- Date range selector (start date, end date)
+- "Show report days" button
+- Report display: Games breakdown, Sales, Pay, Abolition, Balance
+- Print report option
+
+### 9. Cash Collection
+- Sum input field with NumPad
+- "Cash collection" and "All the money" buttons
+- Confirmation modal
+- Decreases balance, prints receipt
+
+### 10. Cash Replenishment
+- Sum input field with NumPad
+- Confirmation modal
+- Increases balance, prints receipt
+
+### 11. History
+- List of all printed tickets with date/time, type, amount
+- Print option for history
+
+### 12. QR Screen
+- QR Replenishment button
+- QR Payout button
+- Camera scanner for player QR codes
+
+### 13. Cart
+- List of pending tickets before purchase
+- Delete individual or all tickets
+- Total amount displayed
 
 ---
 
@@ -205,7 +285,7 @@ Every file MUST start with a detailed header comment block explaining:
  *
  * Dependencies: Key libraries or modules this depends on
  *
- * @author Octili Development Team
+ * @author Loteus Development Team
  * @version X.X.X
  * @lastUpdated YYYY-MM-DD
  */
@@ -230,16 +310,10 @@ Every function, hook, or component MUST have JSDoc comments:
 ### Inline Comments
 
 Use inline comments for:
-- Complex business logic
+- Complex business logic (betting calculations, payout logic)
 - Non-obvious code decisions
 - Workarounds or edge cases
 - TODO items with context
-
-### What NOT to Comment
-
-- Self-explanatory code (`const name = user.name`)
-- Standard library functions
-- Obvious variable names
 
 ### Language
 
@@ -261,7 +335,7 @@ Use inline comments for:
    - If it looks complicated, it IS complicated - simplify it
    - White space is not empty space - it's breathing room
 
-2. **Users Are Regular People**
+2. **Users Are Regular People (Cashiers)**
    - They don't read manuals
    - They don't want to think
    - They expect things to "just work"
@@ -275,13 +349,13 @@ Use inline comments for:
 
 4. **UI Quality Standards**
    - Consistent spacing (8px grid system)
-   - Harmonious color palette
+   - Harmonious color palette (SUMMUS brand colors)
    - Readable typography (16px minimum for body)
    - Smooth animations (200-300ms transitions)
-   - Touch-friendly targets (44px minimum)
+   - Touch-friendly targets (48px minimum for POS)
 
 5. **UX Quality Standards**
-   - Maximum 3 clicks to any feature
+   - Maximum 3 taps to any feature
    - Forms: one column, top to bottom
    - Error messages: specific and helpful
    - Loading states: skeleton, not spinner
@@ -299,50 +373,67 @@ If any answer is "no" - redesign it.
 
 ---
 
-## UX PRINCIPLES - OCTILI CASHIER APP
+## UX PRINCIPLES - POS TERMINAL
 
-> **Core Philosophy: Speed and accuracy. Every second costs money.**
+> **Core Philosophy: Speed and accuracy. Every second costs money. Every mistake loses customers.**
 
-### Cashier-Specific Design Rules
+### POS-Specific Design Rules
 
 1. **Large Touch Targets**
    - Minimum 48px for all interactive elements
-   - Cashiers often wear gloves or work quickly
+   - Cashiers work quickly, often with gloves
    - Misclicks cost time and frustrate customers
 
 2. **Clear Visual Hierarchy**
-   - Current cart total ALWAYS visible and prominent
-   - Product images large and recognizable
-   - Price displayed clearly
+   - Current balance ALWAYS visible and prominent
+   - Timer countdown highly visible (red when < 30 seconds)
+   - Prices displayed clearly and consistently
 
 3. **Fast Actions**
-   - One-tap product add to cart
-   - Quick quantity adjustments (+/- buttons)
-   - Shortcut keys for common actions
+   - One-tap game selection
+   - Quick multiplier/number selection
+   - Instant visual feedback on selection
 
 4. **Error Prevention**
-   - Confirm destructive actions (void, cancel)
-   - Show running totals in real-time
-   - Validate before payment processing
+   - Confirm destructive actions (cancel ticket, logout)
+   - Show totals in real-time before purchase
+   - Validate before processing payment
 
-5. **Offline Capability**
-   - Must work without internet
+5. **Offline Awareness**
+   - Clear indicator when offline
    - Queue transactions for sync when online
-   - Clear offline indicator
+   - Warn user before critical actions if offline
 
 ### Cashier Workflow
 
 ```
-LOGIN → SELECT PRODUCTS → REVIEW CART → PAYMENT → RECEIPT → NEXT CUSTOMER
+LOGIN → SELECT GAME → CHOOSE OPTIONS → CONFIRM PURCHASE → PRINT TICKET → NEXT CUSTOMER
+         ↓
+         → PAYMENT OF WINNINGS → SCAN/ENTER TICKET → PAY → NEXT CUSTOMER
+         ↓
+         → MENU → REPORTS/CASH/HISTORY → BACK TO GAMES
 ```
 
 ### Key Screens
 
-1. **POS Grid** - Product selection with categories
-2. **Cart Panel** - Running list of items with totals
-3. **Payment Screen** - Cash, card, voucher options
-4. **Receipt Screen** - Print or email receipt
-5. **Reports** - End of shift, daily sales
+1. **Games Grid** - 2-column grid of lottery games with countdown timers
+2. **Game Play** - Multiplier/number selection with bet amount and draws
+3. **Cart** - Pending tickets before batch purchase
+4. **Payment of Winnings** - QR scan or manual ticket entry
+5. **Results** - Game results with print option
+6. **Menu** - Reports, Cash collection/replenishment, History, Exit
+7. **Reports** - Date range reports with print
+
+### Bottom Navigation
+
+Always visible with 5 items:
+| Icon | Label | Description |
+|------|-------|-------------|
+| Grid | Games | Main game selection |
+| Target | Results | Draw results |
+| Menu | Menu | Settings/Reports |
+| QR | QR | Player account QR |
+| Cart | Cart | Pending tickets |
 
 ---
 
@@ -640,14 +731,14 @@ When Klava finds issues:
 6. **Security**
    - No secrets in code
    - Sanitize user input
-   - Use parameterized queries
+   - Validate ticket numbers server-side
    - HTTPS everywhere
 
 7. **Accessibility (a11y)**
    - Semantic HTML
    - ARIA labels where needed
    - Keyboard navigation
-   - Color contrast ratios
+   - Color contrast ratios (important for POS)
 
 #### Code Quality Checklist
 
@@ -690,32 +781,73 @@ Ask ONLY when there are **multiple valid approaches** and you genuinely cannot d
 
 ### THEME VERIFICATION PROTOCOL
 
-> **Every component MUST support theming and be visually consistent.**
+> **Every component MUST support theming and be visually consistent with SUMMUS brand.**
 
 #### Theme Check Requirements
 
 1. **CSS Variables Usage**
-   - Use semantic color tokens, not hardcoded colors
-   - All colors must change with theme
+   - Use semantic color tokens from brand guidelines
+   - All colors must use the defined palette
 
-2. **Dark Mode Support**
-   - No hardcoded `#fff`, `#000`, `rgb()`, `hsl()`
-   - Use semantic color tokens
+2. **Brand Consistency**
+   - Dark blue for navigation/headers
+   - Orange for primary actions
+   - Green for success/positive
+   - Red for cancel/negative
 
 3. **Interactive States**
    - Hover states must use theme colors
    - Focus states visible in all themes
-   - Active/selected states consistent
+   - Active/selected states consistent (orange highlight)
 
 #### Theme Verification Checklist
 
 For each component:
-- [ ] No hardcoded color values (#hex, rgb, hsl)
-- [ ] Uses semantic color tokens
+- [ ] Uses brand color palette
+- [ ] No hardcoded colors outside palette
 - [ ] Hover/focus states use theme colors
-- [ ] Looks good in light theme
-- [ ] Looks good in dark theme (when implemented)
-- [ ] Status colors are semantic
-- [ ] Shadows use theme-aware values
+- [ ] Buttons follow the style guide
+- [ ] Typography matches brand
+- [ ] Touch targets are 48px minimum
+- [ ] Consistent with other components
+
+---
+
+## LOTTERY/GAMING SPECIFIC RULES
+
+> **Critical business logic for POS terminal**
+
+### Betting Calculations
+
+1. **Multiplier Games** (like Balloons)
+   - Each multiplier selected = 1 bet unit
+   - Total cost = bet amount × number of multipliers × number of draws
+   - Example: X2, X5, X15 at 10 BRL = 30 BRL (3 multipliers × 10)
+
+2. **Number/Keno Games** (like Loto Blitz)
+   - Multiple numbers can be selected without increasing cost
+   - Total cost = bet amount × number of draws
+   - Example: 10 numbers at 1 BRL = 1 BRL
+
+3. **Roulette-Style Games**
+   - Each item selected = 1 bet unit
+   - Maximum 10 selections
+   - Total cost = bet amount × number of selections × number of draws
+
+### Ticket States
+
+| State | Display | Color |
+|-------|---------|-------|
+| Valid (winning) | "Valid ticket - Win: X" | Green |
+| Invalid (no win) | "Ticket not valid" | Red text |
+| Already paid | "Paid ticket" | Gray |
+| Pending | In cart | Orange |
+
+### Timer Rules
+
+- Show countdown to next draw
+- Red color when < 30 seconds
+- Disable purchases when timer reaches 0
+- Auto-refresh when new draw starts
 
 ---
