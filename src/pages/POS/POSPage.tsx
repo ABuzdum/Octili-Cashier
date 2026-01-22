@@ -22,7 +22,7 @@ import { Clock, Sparkles, Menu } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
-import { useSwipeNavigation } from '@/hooks'
+import { SwipePageWrapper } from '@/components/shared/SwipePageWrapper'
 import type { LotteryGame } from '@/types/game.types'
 
 // Beautiful gradient colors for games
@@ -212,9 +212,6 @@ export function POSPage() {
   const { balance } = useGameStore()
   const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
 
-  // Swipe navigation handlers
-  const swipeHandlers = useSwipeNavigation({ currentPage: 'draw' })
-
   // Get current theme colors
   const theme = COLOR_THEMES[colorTheme]
   const style = VISUAL_STYLES[visualStyle]
@@ -342,19 +339,14 @@ export function POSPage() {
   }
 
   return (
-    <div
-      {...swipeHandlers}
-      style={{
-        minHeight: '100vh',
-        background: isDarkMode
-          ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
-          : visualStyle === 'neumorphic'
-          ? 'linear-gradient(180deg, #e8eef5 0%, #dfe6ef 100%)'
-          : 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        touchAction: 'pan-y', // Allow vertical scroll, capture horizontal swipe
-      }}>
+    <SwipePageWrapper
+      currentPage="draw"
+      background={isDarkMode
+        ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
+        : visualStyle === 'neumorphic'
+        ? 'linear-gradient(180deg, #e8eef5 0%, #dfe6ef 100%)'
+        : 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)'}
+    >
       {/* Header - Modern 2026 Design with Theme Support */}
       <div style={getHeaderStyle()}>
         {/* Decorative gradient orbs for glass/bento styles */}
@@ -556,63 +548,6 @@ export function POSPage() {
           maxWidth: '900px',
           margin: '0 auto',
         }}>
-          {/* Games Section Header with Draw Badge */}
-          <div
-            id="games-section"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '20px',
-            }}
-          >
-            <div style={{
-              width: '48px',
-              height: '48px',
-              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-              borderRadius: '14px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
-              position: 'relative',
-            }}>
-              <Sparkles size={24} color="white" />
-              {/* Draw notification badge */}
-              <span style={{
-                position: 'absolute',
-                top: '-6px',
-                right: '-8px',
-                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                color: 'white',
-                fontSize: '9px',
-                fontWeight: 700,
-                padding: '3px 6px',
-                borderRadius: '6px',
-                textTransform: 'uppercase',
-                letterSpacing: '0.3px',
-                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
-              }}>
-                Draw
-              </span>
-            </div>
-            <div>
-              <h2 style={{
-                fontSize: '20px',
-                fontWeight: 700,
-                color: isDarkMode ? '#f8fafc' : '#1e293b',
-              }}>
-                Games
-              </h2>
-              <p style={{
-                fontSize: '12px',
-                color: isDarkMode ? '#94a3b8' : '#64748b',
-              }}>
-                Select a lottery game to play
-              </p>
-            </div>
-          </div>
-
           {/* Games Grid */}
           <div style={{
             display: 'grid',
@@ -641,6 +576,6 @@ export function POSPage() {
           50% { opacity: 0.7; transform: scale(1.1); }
         }
       `}</style>
-    </div>
+    </SwipePageWrapper>
   )
 }

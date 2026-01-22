@@ -276,6 +276,28 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
+      {/* Draws Tickets Section Label */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: '8px',
+        flexShrink: 0,
+      }}>
+        <span style={{
+          fontSize: '9px',
+          fontWeight: 700,
+          fontFamily: 'Montserrat, sans-serif',
+          color: '#8b5cf6',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+          whiteSpace: 'nowrap',
+        }}>
+          Draws Tickets
+        </span>
+      </div>
+
       {/* Left Section: Draw (large) & Results */}
       <div style={{
         display: 'flex',
@@ -295,7 +317,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         flexShrink: 0,
       }} />
 
-      {/* QR Ticket Section Label */}
+      {/* QR Tickets Section Label */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -308,12 +330,12 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           fontSize: '9px',
           fontWeight: 700,
           fontFamily: 'Montserrat, sans-serif',
-          color: '#64748b',
+          color: '#24BD68',
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
           whiteSpace: 'nowrap',
         }}>
-          QR Ticket
+          QR Tickets
         </span>
       </div>
 
