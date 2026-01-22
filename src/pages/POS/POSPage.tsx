@@ -22,6 +22,7 @@ import { Clock, Sparkles, Menu } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { useSwipeNavigation } from '@/hooks'
 import type { LotteryGame } from '@/types/game.types'
 
 // Beautiful gradient colors for games
@@ -211,6 +212,9 @@ export function POSPage() {
   const { balance } = useGameStore()
   const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
 
+  // Swipe navigation handlers
+  const swipeHandlers = useSwipeNavigation({ currentPage: 'draw' })
+
   // Get current theme colors
   const theme = COLOR_THEMES[colorTheme]
   const style = VISUAL_STYLES[visualStyle]
@@ -338,16 +342,19 @@ export function POSPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: isDarkMode
-        ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
-        : visualStyle === 'neumorphic'
-        ? 'linear-gradient(180deg, #e8eef5 0%, #dfe6ef 100%)'
-        : 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div
+      {...swipeHandlers}
+      style={{
+        minHeight: '100vh',
+        background: isDarkMode
+          ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
+          : visualStyle === 'neumorphic'
+          ? 'linear-gradient(180deg, #e8eef5 0%, #dfe6ef 100%)'
+          : 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        touchAction: 'pan-y', // Allow vertical scroll, capture horizontal swipe
+      }}>
       {/* Header - Modern 2026 Design with Theme Support */}
       <div style={getHeaderStyle()}>
         {/* Decorative gradient orbs for glass/bento styles */}
@@ -375,6 +382,28 @@ export function POSPage() {
             }} />
           </>
         )}
+
+        {/* Centered Octili Logo */}
+        <div style={{
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: 1,
+        }}>
+          <img
+            src="/octili-icon.svg"
+            alt="Octili"
+            style={{
+              width: '48px',
+              height: '48px',
+              objectFit: 'contain',
+              filter: visualStyle === 'glass' || visualStyle === 'bento'
+                ? 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))'
+                : 'none',
+            }}
+          />
+        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
           {/* Octili Icon - No background */}
