@@ -20,7 +20,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft,
   Banknote,
   Camera,
   Search,
@@ -35,6 +34,7 @@ import {
 import { usePhysicalTicketStore } from '@/stores/physicalTicketStore'
 import { useAuthStore } from '@/stores/authStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { SwipePageWrapper } from '@/components/shared/SwipePageWrapper'
 import { STATUS_DISPLAY_CONFIG, type PayoutMode } from '@/types/physical-ticket.types'
 import type { PhysicalTicket, PayoutCalculation } from '@/types/physical-ticket.types'
@@ -772,88 +772,13 @@ export function PayoutTicketPage() {
       currentPage="qrticket-payout"
       background="linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
     >
-      {/* Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-          padding: '16px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          boxShadow: '0 4px 20px rgba(6, 182, 212, 0.3)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative circles */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '200px',
-            height: '200px',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            top: '-100px',
-            right: '-50px',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            width: '100px',
-            height: '100px',
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '50%',
-            bottom: '-50px',
-            left: '20%',
-          }}
-        />
-
-        <button
-          onClick={() => navigate('/pos')}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            backdropFilter: 'blur(10px)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '44px',
-            height: '44px',
-            borderRadius: '14px',
-            color: 'white',
-            zIndex: 1,
-          }}
-        >
-          <ArrowLeft size={22} />
-        </button>
-
-        <div style={{ zIndex: 1 }}>
-          <h1
-            style={{
-              color: 'white',
-              fontSize: '20px',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-            }}
-          >
-            <Banknote size={24} />
-            QR Ticket - Payout
-          </h1>
-          <p
-            style={{
-              color: 'rgba(255,255,255,0.8)',
-              fontSize: '13px',
-              marginTop: '2px',
-            }}
-          >
-            Scan or enter ticket code
-          </p>
-        </div>
-      </div>
+      {/* AppHeader - Consistent header with balance and menu */}
+      <AppHeader
+        showBack
+        backPath="/pos"
+        title="QR Ticket - Payout"
+        subtitle="Scan or enter ticket code"
+      />
 
       {/* Content */}
       <div

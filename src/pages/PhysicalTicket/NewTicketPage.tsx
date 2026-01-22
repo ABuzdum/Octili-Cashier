@@ -22,7 +22,6 @@
 import { useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ArrowLeft,
   Ticket,
   Check,
   X,
@@ -36,6 +35,7 @@ import { usePhysicalTicketStore } from '@/stores/physicalTicketStore'
 import { useLotteryGames } from '@/stores/gameStore'
 import { QRCodeDisplay } from '@/components/shared/QRCodeDisplay'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { SwipePageWrapper } from '@/components/shared/SwipePageWrapper'
 import { QUICK_AMOUNTS, type GameScope } from '@/types/physical-ticket.types'
 import type { PhysicalTicket } from '@/types/physical-ticket.types'
@@ -404,88 +404,13 @@ export function NewTicketPage() {
       currentPage="qrticket-sell"
       background="linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
     >
-      {/* Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-          padding: '16px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          boxShadow: '0 4px 20px rgba(59, 130, 246, 0.3)',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative circles */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '200px',
-            height: '200px',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            top: '-100px',
-            right: '-50px',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            width: '100px',
-            height: '100px',
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '50%',
-            bottom: '-50px',
-            left: '20%',
-          }}
-        />
-
-        <button
-          onClick={() => navigate('/pos')}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            backdropFilter: 'blur(10px)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '44px',
-            height: '44px',
-            borderRadius: '14px',
-            color: 'white',
-            zIndex: 1,
-          }}
-        >
-          <ArrowLeft size={22} />
-        </button>
-
-        <div style={{ zIndex: 1 }}>
-          <h1
-            style={{
-              color: 'white',
-              fontSize: '20px',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-            }}
-          >
-            <Ticket size={24} />
-            QR Ticket - Sell
-          </h1>
-          <p
-            style={{
-              color: 'rgba(255,255,255,0.8)',
-              fontSize: '13px',
-              marginTop: '2px',
-            }}
-          >
-            Issue QR lottery ticket
-          </p>
-        </div>
-      </div>
+      {/* AppHeader - Consistent header with balance and menu */}
+      <AppHeader
+        showBack
+        backPath="/pos"
+        title="QR Ticket - Sell"
+        subtitle="Issue QR lottery ticket"
+      />
 
       {/* Content */}
       <div
