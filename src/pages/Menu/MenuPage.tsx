@@ -166,8 +166,6 @@ export function MenuPage() {
   const [supportPriority, setSupportPriority] = useState<'normal' | 'urgent'>('normal')
   const [ticketSubmitted, setTicketSubmitted] = useState(false)
   const [callConfirmed, setCallConfirmed] = useState(false)
-  const [displayVolume, setDisplayVolume] = useState(80)
-  const [displayBrightness, setDisplayBrightness] = useState(100)
 
   // Handle logout
   const handleLogout = () => {
@@ -663,9 +661,9 @@ export function MenuPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <MenuItem
             icon={Tv}
-            label="Display Control"
+            label="TV Box Control"
             gradient="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"
-            onClick={() => setActiveModal('display-control')}
+            onClick={() => navigate('/tvbox-control')}
           />
           <MenuItem
             icon={Printer}
@@ -1119,144 +1117,6 @@ export function MenuPage() {
                 </div>
               </>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Display Control Modal */}
-      {activeModal === 'display-control' && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(0,0,0,0.6)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '20px',
-        }}>
-          <div style={{
-            background: 'white',
-            borderRadius: '24px',
-            padding: '24px',
-            width: '100%',
-            maxWidth: '360px',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '24px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{
-                  width: '44px',
-                  height: '44px',
-                  background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                  <Tv size={22} color="white" />
-                </div>
-                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
-                  Display Control
-                </h3>
-              </div>
-              <button
-                onClick={() => setActiveModal('none')}
-                style={{
-                  background: '#f1f5f9',
-                  border: 'none',
-                  width: '36px',
-                  height: '36px',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <X size={20} color="#64748b" />
-              </button>
-            </div>
-
-            {/* Volume Control */}
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Volume2 size={18} color="#64748b" />
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>Volume</span>
-                </div>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#3b82f6' }}>{displayVolume}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={displayVolume}
-                onChange={(e) => setDisplayVolume(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#3b82f6' }}
-              />
-            </div>
-
-            {/* Brightness Control */}
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Monitor size={18} color="#64748b" />
-                  <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>Brightness</span>
-                </div>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#f59e0b' }}>{displayBrightness}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={displayBrightness}
-                onChange={(e) => setDisplayBrightness(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#f59e0b' }}
-              />
-            </div>
-
-            {/* Quick Actions */}
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button
-                onClick={() => openSecondDisplay()}
-                style={{
-                  flex: 1,
-                  padding: '14px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                }}
-              >
-                Open Display
-              </button>
-              <button
-                onClick={() => setActiveModal('none')}
-                style={{
-                  flex: 1,
-                  padding: '14px',
-                  background: '#f1f5f9',
-                  color: '#64748b',
-                  border: 'none',
-                  borderRadius: '12px',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  fontSize: '13px',
-                }}
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
       )}

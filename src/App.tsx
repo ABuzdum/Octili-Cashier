@@ -44,6 +44,9 @@ const PayoutTicketPage = lazy(() => import('@/pages/PhysicalTicket/PayoutTicketP
 // QR Ticket hub page - Access physical tickets, QR tickets, and account
 const QRTicketPage = lazy(() => import('@/pages/QRTicket/QRTicketPage').then(m => ({ default: m.QRTicketPage })))
 
+// TV Box Control - Manage TV displays in venue
+const TVBoxControlPage = lazy(() => import('@/pages/TVBox/TVBoxControlPage').then(m => ({ default: m.TVBoxControlPage })))
+
 // Second Display - Player-facing screen (opens in separate window)
 const SecondDisplayPage = lazy(() => import('@/pages/SecondDisplay/SecondDisplayPage').then(m => ({ default: m.SecondDisplayPage })))
 
@@ -215,6 +218,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <QRTicketPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* TV Box Control */}
+          <Route
+            path="/tvbox-control"
+            element={
+              <ProtectedRoute>
+                <TVBoxControlPage />
               </ProtectedRoute>
             }
           />
