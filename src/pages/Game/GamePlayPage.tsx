@@ -258,21 +258,23 @@ export function GamePlayPage() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header - Game Info + Draw Info */}
+      {/* Header - Game Info + Draw Info (Light Theme) */}
       <div style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        background: '#ffffff',
         padding: '12px 16px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: '12px',
+        borderBottom: '1px solid #f1f5f9',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
       }}>
         {/* Left: Back + Game Icon + Name */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
           <button
             onClick={() => navigate('/pos')}
             style={{
-              background: 'rgba(255,255,255,0.1)',
+              background: '#f1f5f9',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
@@ -281,7 +283,7 @@ export function GamePlayPage() {
               width: '36px',
               height: '36px',
               borderRadius: '10px',
-              color: 'white',
+              color: '#64748b',
               flexShrink: 0,
             }}
           >
@@ -299,7 +301,7 @@ export function GamePlayPage() {
             justifyContent: 'center',
             fontSize: '24px',
             flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
           }}>
             {game.icon}
           </div>
@@ -307,7 +309,7 @@ export function GamePlayPage() {
           {/* Game Name */}
           <div style={{ minWidth: 0 }}>
             <h1 style={{
-              color: 'white',
+              color: '#1e293b',
               fontSize: '16px',
               fontWeight: 700,
               margin: 0,
@@ -318,7 +320,7 @@ export function GamePlayPage() {
               {game.name}
             </h1>
             <p style={{
-              color: 'rgba(255,255,255,0.6)',
+              color: '#94a3b8',
               fontSize: '11px',
               margin: 0,
             }}>
@@ -333,8 +335,9 @@ export function GamePlayPage() {
           flexDirection: 'column',
           alignItems: 'center',
           padding: '8px 16px',
-          background: 'rgba(255,255,255,0.08)',
+          background: '#f8fafc',
           borderRadius: '12px',
+          border: '1px solid #e2e8f0',
           minWidth: '140px',
         }}>
           <div style={{
@@ -345,7 +348,7 @@ export function GamePlayPage() {
           }}>
             <span style={{
               fontSize: '10px',
-              color: 'rgba(255,255,255,0.5)',
+              color: '#94a3b8',
               textTransform: 'uppercase',
               fontWeight: 600,
               letterSpacing: '0.5px',
@@ -356,13 +359,13 @@ export function GamePlayPage() {
           <span style={{
             fontSize: '15px',
             fontWeight: 700,
-            color: 'white',
+            color: '#1e293b',
           }}>
             #{game.currentDraw}
           </span>
           <span style={{
             fontSize: '10px',
-            color: 'rgba(255,255,255,0.5)',
+            color: '#64748b',
           }}>
             {upcomingDraws[0]?.date || 'Today'} {upcomingDraws[0]?.time || '--:--'}
           </span>
@@ -404,7 +407,7 @@ export function GamePlayPage() {
           <button
             onClick={() => navigate('/cart')}
             style={{
-              background: 'rgba(255,255,255,0.1)',
+              background: '#f1f5f9',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
@@ -416,7 +419,7 @@ export function GamePlayPage() {
               position: 'relative',
             }}
           >
-            <ShoppingCart size={18} color="white" />
+            <ShoppingCart size={18} color="#64748b" />
             {cartTickets.length > 0 && (
               <span style={{
                 position: 'absolute',
