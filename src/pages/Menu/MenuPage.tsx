@@ -85,6 +85,7 @@ import {
 import { openSecondDisplay } from '@/hooks/useBroadcastSync'
 import { operatorInfo } from '@/data/games-mock-data'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { PauseCircle } from 'lucide-react'
 
 // Modal types for different operations
@@ -393,85 +394,39 @@ export function MenuPage() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-        padding: '16px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          position: 'absolute',
-          width: '200px',
-          height: '200px',
-          background: 'rgba(255,255,255,0.03)',
-          borderRadius: '50%',
-          top: '-80px',
-          right: '-60px',
-        }} />
-
-        <button
-          onClick={() => navigate('/games')}
-          style={{
-            background: 'rgba(255,255,255,0.1)',
-            border: 'none',
-            cursor: 'pointer',
+      {/* Header - consistent with other pages */}
+      <AppHeader
+        showBack
+        backPath="/physical-ticket/new"
+        title="My Station"
+        subtitle="Shift & Operations"
+        centerContent={
+          <div style={{
+            background: SHIFT_DATA.clockedIn ? 'rgba(36, 189, 104, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+            padding: '8px 16px',
+            borderRadius: '20px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            color: 'white',
-            zIndex: 1,
-          }}
-        >
-          <ArrowLeft size={20} />
-        </button>
-
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1,
-        }}>
-          <h1 style={{
-            color: 'white',
-            fontSize: '18px',
-            fontWeight: 700,
+            gap: '8px',
+            border: SHIFT_DATA.clockedIn ? '1px solid rgba(36, 189, 104, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
           }}>
-            Operator Menu
-          </h1>
-        </div>
-
-        {/* Shift Status Badge */}
-        <div style={{
-          background: SHIFT_DATA.clockedIn ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)',
-          padding: '6px 12px',
-          borderRadius: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          zIndex: 1,
-        }}>
-          <div style={{
-            width: '8px',
-            height: '8px',
-            background: SHIFT_DATA.clockedIn ? '#24BD68' : '#ef4444',
-            borderRadius: '50%',
-          }} />
-          <span style={{
-            fontSize: '12px',
-            fontWeight: 600,
-            color: SHIFT_DATA.clockedIn ? '#24BD68' : '#ef4444',
-          }}>
-            {SHIFT_DATA.clockedIn ? 'On Duty' : 'Off Duty'}
-          </span>
-        </div>
-      </div>
+            <div style={{
+              width: '10px',
+              height: '10px',
+              background: SHIFT_DATA.clockedIn ? '#24BD68' : '#ef4444',
+              borderRadius: '50%',
+              boxShadow: SHIFT_DATA.clockedIn ? '0 0 8px rgba(36, 189, 104, 0.5)' : '0 0 8px rgba(239, 68, 68, 0.5)',
+            }} />
+            <span style={{
+              fontSize: '13px',
+              fontWeight: 700,
+              color: SHIFT_DATA.clockedIn ? '#24BD68' : '#ef4444',
+            }}>
+              {SHIFT_DATA.clockedIn ? 'On Duty' : 'Off Duty'}
+            </span>
+          </div>
+        }
+      />
 
       {/* Main Content */}
       <div style={{
@@ -808,9 +763,9 @@ export function MenuPage() {
           />
         </div>
 
-        {/* Need Help Button - Direct phone call using tel: protocol */}
-        <a
-          href={`tel:${operatorInfo.supportPhone.replace(/\s/g, '')}`}
+        {/* Need Help Button - Opens support ticket modal */}
+        <button
+          onClick={() => setActiveModal('support')}
           style={{
             display: 'flex',
             alignItems: 'center',
@@ -819,18 +774,20 @@ export function MenuPage() {
             marginTop: '24px',
             padding: '16px 24px',
             minHeight: '56px',
+            width: '100%',
             background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            border: 'none',
             borderRadius: '16px',
-            textDecoration: 'none',
             boxShadow: '0 4px 16px rgba(220, 38, 38, 0.3)',
             transition: 'all 0.2s ease',
+            cursor: 'pointer',
           }}
         >
           <Phone size={24} color="white" />
           <span style={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>
             Need Help
           </span>
-        </a>
+        </button>
       </div>
 
       {/* ============= MODALS ============= */}
@@ -1032,31 +989,62 @@ export function MenuPage() {
                   </div>
                 </div>
 
-                {/* Submit Button */}
-                <button
-                  onClick={handleSubmitTicket}
-                  disabled={!supportCategory || !supportDescription}
-                  style={{
-                    width: '100%',
-                    padding: '16px',
-                    background: supportCategory && supportDescription
-                      ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
-                      : '#e2e8f0',
-                    color: supportCategory && supportDescription ? 'white' : '#94a3b8',
-                    border: 'none',
-                    borderRadius: '14px',
-                    fontWeight: 700,
-                    fontSize: '16px',
-                    cursor: supportCategory && supportDescription ? 'pointer' : 'not-allowed',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px',
-                  }}
-                >
-                  <Send size={20} />
-                  Submit Ticket
-                </button>
+                {/* Action Buttons - Call Now or Submit Ticket */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  {/* Call Now Button - For urgent issues or immediate help */}
+                  <a
+                    href={`tel:${operatorInfo.supportPhone.replace(/\s/g, '')}`}
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '14px',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '10px',
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+                    }}
+                  >
+                    <Phone size={20} />
+                    Call Now
+                  </a>
+
+                  {/* Submit Ticket Button */}
+                  <button
+                    onClick={handleSubmitTicket}
+                    disabled={!supportCategory || !supportDescription}
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      background: supportCategory && supportDescription
+                        ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
+                        : '#e2e8f0',
+                      color: supportCategory && supportDescription ? 'white' : '#94a3b8',
+                      border: 'none',
+                      borderRadius: '14px',
+                      fontWeight: 700,
+                      fontSize: '15px',
+                      cursor: supportCategory && supportDescription ? 'pointer' : 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '10px',
+                      boxShadow: supportCategory && supportDescription
+                        ? '0 4px 12px rgba(36, 189, 104, 0.3)'
+                        : 'none',
+                    }}
+                  >
+                    <Send size={20} />
+                    Submit Ticket
+                  </button>
+                </div>
               </>
             )}
           </div>
