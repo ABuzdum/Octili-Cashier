@@ -610,6 +610,7 @@ export function MenuPage() {
             onClick={() => setActiveModal('hostess-request')}
             style={{
               padding: '16px 12px',
+              minHeight: '88px',
               background: 'white',
               border: 'none',
               borderRadius: '14px',
@@ -622,15 +623,15 @@ export function MenuPage() {
             }}
           >
             <div style={{
-              width: '44px',
-              height: '44px',
+              width: '48px',
+              height: '48px',
               background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Phone size={20} color="white" />
+              <User size={22} color="white" />
             </div>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>Hostess</span>
           </button>
@@ -639,6 +640,7 @@ export function MenuPage() {
             onClick={() => setActiveModal('call-security')}
             style={{
               padding: '16px 12px',
+              minHeight: '88px',
               background: 'white',
               border: 'none',
               borderRadius: '14px',
@@ -651,15 +653,15 @@ export function MenuPage() {
             }}
           >
             <div style={{
-              width: '44px',
-              height: '44px',
+              width: '48px',
+              height: '48px',
               background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <Shield size={20} color="white" />
+              <Shield size={22} color="white" />
             </div>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>Security</span>
           </button>
@@ -668,6 +670,7 @@ export function MenuPage() {
             onClick={() => setActiveModal('call-manager')}
             style={{
               padding: '16px 12px',
+              minHeight: '88px',
               background: 'white',
               border: 'none',
               borderRadius: '14px',
@@ -680,15 +683,15 @@ export function MenuPage() {
             }}
           >
             <div style={{
-              width: '44px',
-              height: '44px',
+              width: '48px',
+              height: '48px',
               background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
               borderRadius: '12px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}>
-              <UserCog size={20} color="white" />
+              <UserCog size={22} color="white" />
             </div>
             <span style={{ fontSize: '12px', fontWeight: 600, color: '#1e293b' }}>Manager</span>
           </button>
@@ -800,20 +803,29 @@ export function MenuPage() {
           />
         </div>
 
-        {/* Support Phone */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          marginTop: '24px',
-          padding: '12px',
-        }}>
-          <Phone size={16} color="#94a3b8" />
-          <span style={{ fontSize: '13px', color: '#94a3b8' }}>
-            Support: <strong style={{ color: '#64748b' }}>{operatorInfo.supportPhone}</strong>
+        {/* Urgent Call Button - Direct phone call using tel: protocol */}
+        <a
+          href={`tel:${operatorInfo.supportPhone.replace(/\s/g, '')}`}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            marginTop: '24px',
+            padding: '16px 24px',
+            minHeight: '56px',
+            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+            borderRadius: '16px',
+            textDecoration: 'none',
+            boxShadow: '0 4px 16px rgba(220, 38, 38, 0.3)',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          <Phone size={24} color="white" />
+          <span style={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>
+            Urgent Call
           </span>
-        </div>
+        </a>
       </div>
 
       {/* ============= MODALS ============= */}
@@ -1107,7 +1119,7 @@ export function MenuPage() {
                       alignItems: 'center',
                       justifyContent: 'center',
                     }}>
-                      <Phone size={24} color="white" />
+                      <User size={24} color="white" />
                     </div>
                     <div>
                       <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
