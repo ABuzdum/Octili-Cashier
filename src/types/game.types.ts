@@ -25,6 +25,8 @@ export interface LotteryGame {
   name: string
   type: GameType
   image: string
+  /** Emoji icon for quick visual identification */
+  icon: string
   /** Available markets/options to select (multipliers or max numbers) */
   markets: string[]
   /** Maximum number of selections allowed */

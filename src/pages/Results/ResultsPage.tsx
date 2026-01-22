@@ -174,7 +174,7 @@ export function ResultsPage() {
                         marginRight: '16px',
                         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                       }}>
-                        {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+                        {game.icon}
                       </div>
 
                       <span style={{

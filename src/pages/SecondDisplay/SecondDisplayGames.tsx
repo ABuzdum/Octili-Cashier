@@ -183,7 +183,7 @@ function GameCard({
             transition: 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
         >
-          {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+          {game.icon}
         </div>
 
         {/* Sparkle effect */}

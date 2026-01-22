@@ -134,14 +134,14 @@ function GameCard({ game, index, onClick }: { game: LotteryGame; index: number; 
           left: '-20px',
         }} />
 
-        {/* Game icon */}
+        {/* Game icon - unique per game from Octili RGS */}
         <div style={{
           fontSize: '56px',
           filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.2))',
           transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
           transition: 'transform 0.3s ease',
         }}>
-          {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+          {game.icon}
         </div>
 
         {/* Sparkle effect */}

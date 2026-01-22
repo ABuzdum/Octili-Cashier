@@ -456,7 +456,7 @@ function TVBoxDetailModal({
                         fontSize: '20px',
                       }}
                     >
-                      {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+                      {game.icon}
                     </div>
                     <div>
                       <p style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>

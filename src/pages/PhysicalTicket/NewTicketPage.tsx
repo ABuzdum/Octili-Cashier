@@ -813,7 +813,7 @@ export function NewTicketPage() {
                         marginBottom: '8px',
                       }}
                     >
-                      {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+                      {game.icon}
                     </span>
                     <span
                       style={{

@@ -19,6 +19,7 @@
 
 import { ArrowLeft, ShoppingCart, Ticket, Sparkles, CreditCard } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
+import { lotteryGames } from '@/data/games-mock-data'
 import type { CartTicket } from '@/types/game.types'
 import type { DisplayMessageType, DisplayMessagePayload } from '@/hooks/useBroadcastSync'
 
@@ -44,6 +45,14 @@ const GAME_GRADIENTS = [
 function getGradientByGameId(gameId: string): string {
   const index = parseInt(gameId.replace('game-', '') || '0') - 1
   return GAME_GRADIENTS[Math.abs(index) % GAME_GRADIENTS.length]
+}
+
+/**
+ * Get game icon by game ID - uses unique icons from Octili RGS
+ */
+function getGameIcon(gameId: string): string {
+  const game = lotteryGames.find(g => g.id === gameId)
+  return game?.icon || '🎰'
 }
 
 /**
@@ -94,11 +103,7 @@ function CartTicketItem({ ticket, index }: { ticket: CartTicket; index: number }
             flexShrink: 0,
           }}
         >
-          {ticket.bet.gameType === 'keno'
-            ? '🎱'
-            : ticket.bet.gameType === 'roulette'
-            ? '🎰'
-            : '🎈'}
+          {getGameIcon(ticket.bet.gameId)}
         </div>
 
         {/* Ticket Details */}
