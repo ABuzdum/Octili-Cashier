@@ -276,13 +276,12 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
-      {/* Draws Tickets Section Label */}
+      {/* Draws Tickets Section - Label above buttons */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: '8px',
+        gap: '4px',
         flexShrink: 0,
       }}>
         <span style={{
@@ -296,34 +295,31 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         }}>
           Draws Tickets
         </span>
-      </div>
-
-      {/* Left Section: Draw (large) & Results */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-      }}>
-        {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'draw' }))}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}>
+          {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'draw' }))}
+        </div>
       </div>
 
       {/* Vertical Divider */}
       <div style={{
         width: '2px',
-        height: '44px',
+        height: '56px',
         background: 'linear-gradient(180deg, transparent 0%, #e2e8f0 20%, #e2e8f0 80%, transparent 100%)',
         margin: '0 12px',
         borderRadius: '1px',
         flexShrink: 0,
       }} />
 
-      {/* QR Tickets Section Label */}
+      {/* QR Tickets Section - Label above buttons */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: '8px',
+        gap: '4px',
         flexShrink: 0,
       }}>
         <span style={{
@@ -337,15 +333,13 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         }}>
           QR Tickets
         </span>
-      </div>
-
-      {/* Right Section: QR Ticket Sell & Payout */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-      }}>
-        {rightNavItems.map((item) => renderNavButton(item))}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
+        }}>
+          {rightNavItems.map((item) => renderNavButton(item))}
+        </div>
       </div>
 
       {/* Red Vertical Divider - Legacy Section */}
