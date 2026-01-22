@@ -56,9 +56,25 @@ import {
   Gamepad2,
   CircleDollarSign,
   MessageSquare,
+  Palette,
+  Sun,
+  Moon,
+  Layers,
+  Grid3X3,
+  Sparkle,
+  Box,
+  Minus,
+  Bold,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useGameStore } from '@/stores/gameStore'
+import {
+  useThemeStore,
+  COLOR_THEMES,
+  VISUAL_STYLES,
+  type ColorTheme,
+  type VisualStyle,
+} from '@/stores/themeStore'
 import { openSecondDisplay } from '@/hooks/useBroadcastSync'
 import { operatorInfo } from '@/data/games-mock-data'
 
@@ -78,6 +94,7 @@ type ModalType =
   | 'topup-request'
   | 'history'
   | 'settings'
+  | 'theme'
 
 // Support ticket categories
 const SUPPORT_CATEGORIES = [
@@ -122,6 +139,14 @@ export function MenuPage() {
   const navigate = useNavigate()
   const { logout } = useAuthStore()
   const { balance, cashCollection, cashReplenishment, ticketHistory } = useGameStore()
+  const {
+    colorTheme,
+    visualStyle,
+    isDarkMode,
+    setColorTheme,
+    setVisualStyle,
+    toggleDarkMode,
+  } = useThemeStore()
 
   const [activeModal, setActiveModal] = useState<ModalType>('none')
   const [amount, setAmount] = useState('')
@@ -2003,6 +2028,31 @@ export function MenuPage() {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Theme Settings - Primary */}
+              <button
+                onClick={() => setActiveModal('theme')}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  padding: '16px',
+                  background: COLOR_THEMES[colorTheme].gradient,
+                  border: 'none',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                <Palette size={20} color="white" />
+                <div style={{ flex: 1 }}>
+                  <p style={{ fontWeight: 600, color: 'white', fontSize: '14px' }}>Theme & Appearance</p>
+                  <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '12px' }}>
+                    {COLOR_THEMES[colorTheme].name} • {VISUAL_STYLES[visualStyle].name}
+                  </p>
+                </div>
+                <ChevronRight size={18} color="rgba(255,255,255,0.8)" />
+              </button>
+
               <button style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -2041,25 +2091,356 @@ export function MenuPage() {
                 <ChevronRight size={18} color="#94a3b8" />
               </button>
 
-              <button style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '14px',
-                padding: '16px',
-                background: '#f8fafc',
-                border: 'none',
-                borderRadius: '12px',
-                cursor: 'pointer',
-                textAlign: 'left',
-              }}>
-                <Monitor size={20} color="#f59e0b" />
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '14px',
+                  padding: '16px',
+                  background: isDarkMode ? '#1e293b' : '#f8fafc',
+                  border: 'none',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                {isDarkMode ? <Moon size={20} color="#fbbf24" /> : <Sun size={20} color="#f59e0b" />}
                 <div style={{ flex: 1 }}>
-                  <p style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px' }}>Display</p>
-                  <p style={{ color: '#64748b', fontSize: '12px' }}>Brightness: 100%</p>
+                  <p style={{ fontWeight: 600, color: isDarkMode ? 'white' : '#1e293b', fontSize: '14px' }}>
+                    {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+                  </p>
+                  <p style={{ color: isDarkMode ? '#94a3b8' : '#64748b', fontSize: '12px' }}>
+                    {isDarkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+                  </p>
                 </div>
-                <ChevronRight size={18} color="#94a3b8" />
+                <div style={{
+                  width: '48px',
+                  height: '26px',
+                  background: isDarkMode ? '#3b82f6' : '#cbd5e1',
+                  borderRadius: '13px',
+                  position: 'relative',
+                  transition: 'all 0.3s',
+                }}>
+                  <div style={{
+                    width: '22px',
+                    height: '22px',
+                    background: 'white',
+                    borderRadius: '50%',
+                    position: 'absolute',
+                    top: '2px',
+                    left: isDarkMode ? '24px' : '2px',
+                    transition: 'all 0.3s',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                  }} />
+                </div>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Theme Selector Modal */}
+      {activeModal === 'theme' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '420px',
+            maxHeight: '85vh',
+            overflow: 'auto',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '44px',
+                  height: '44px',
+                  background: COLOR_THEMES[colorTheme].gradient,
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Palette size={22} color="white" />
+                </div>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                  Theme & Appearance
+                </h3>
+              </div>
+              <button
+                onClick={() => setActiveModal('settings')}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            {/* Color Theme Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <p style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#94a3b8',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px',
+              }}>
+                Color Theme
+              </p>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(3, 1fr)',
+                gap: '10px',
+              }}>
+                {(Object.keys(COLOR_THEMES) as ColorTheme[]).map((theme) => {
+                  const isSelected = colorTheme === theme
+                  const themeData = COLOR_THEMES[theme]
+                  return (
+                    <button
+                      key={theme}
+                      onClick={() => setColorTheme(theme)}
+                      style={{
+                        padding: '14px 10px',
+                        background: isSelected ? themeData.gradient : '#f8fafc',
+                        border: isSelected ? 'none' : '2px solid #e2e8f0',
+                        borderRadius: '14px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <div style={{
+                        width: '32px',
+                        height: '32px',
+                        background: isSelected ? 'rgba(255,255,255,0.3)' : themeData.gradient,
+                        borderRadius: '50%',
+                        border: isSelected ? '2px solid rgba(255,255,255,0.5)' : 'none',
+                      }} />
+                      <span style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: isSelected ? 'white' : '#475569',
+                      }}>
+                        {themeData.name}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Visual Style Section */}
+            <div style={{ marginBottom: '24px' }}>
+              <p style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#94a3b8',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px',
+              }}>
+                Visual Style
+              </p>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}>
+                {(Object.keys(VISUAL_STYLES) as VisualStyle[]).map((style) => {
+                  const isSelected = visualStyle === style
+                  const styleData = VISUAL_STYLES[style]
+                  const icons: Record<VisualStyle, typeof Grid3X3> = {
+                    bento: Grid3X3,
+                    glass: Sparkle,
+                    neumorphic: Box,
+                    minimal: Minus,
+                    bold: Bold,
+                  }
+                  const StyleIcon = icons[style]
+                  return (
+                    <button
+                      key={style}
+                      onClick={() => setVisualStyle(style)}
+                      style={{
+                        padding: '14px 16px',
+                        background: isSelected ? COLOR_THEMES[colorTheme].colors[50] : '#f8fafc',
+                        border: isSelected
+                          ? `2px solid ${COLOR_THEMES[colorTheme].primary}`
+                          : '2px solid transparent',
+                        borderRadius: '14px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '14px',
+                        textAlign: 'left',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        background: isSelected
+                          ? COLOR_THEMES[colorTheme].gradient
+                          : '#e2e8f0',
+                        borderRadius: '10px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}>
+                        <StyleIcon size={20} color={isSelected ? 'white' : '#64748b'} />
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <p style={{
+                          fontWeight: 600,
+                          color: isSelected ? COLOR_THEMES[colorTheme].colors[700] : '#1e293b',
+                          fontSize: '14px',
+                        }}>
+                          {styleData.name}
+                        </p>
+                        <p style={{
+                          color: '#64748b',
+                          fontSize: '11px',
+                        }}>
+                          {styleData.description}
+                        </p>
+                      </div>
+                      {isSelected && (
+                        <div style={{
+                          width: '24px',
+                          height: '24px',
+                          background: COLOR_THEMES[colorTheme].gradient,
+                          borderRadius: '50%',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}>
+                          <Check size={14} color="white" />
+                        </div>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Preview Card */}
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#94a3b8',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px',
+              }}>
+                Preview
+              </p>
+              <div style={{
+                padding: '20px',
+                background: isDarkMode ? '#1e293b' : VISUAL_STYLES[visualStyle].cardBackground,
+                borderRadius: VISUAL_STYLES[visualStyle].borderRadius,
+                boxShadow: VISUAL_STYLES[visualStyle].cardShadow,
+                border: VISUAL_STYLES[visualStyle].cardBorder,
+                backdropFilter: visualStyle === 'glass' ? VISUAL_STYLES[visualStyle].backdropBlur : undefined,
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                  <div style={{
+                    width: '40px',
+                    height: '40px',
+                    background: COLOR_THEMES[colorTheme].gradient,
+                    borderRadius: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <Layers size={20} color="white" />
+                  </div>
+                  <div>
+                    <p style={{
+                      fontWeight: 600,
+                      color: isDarkMode ? 'white' : '#1e293b',
+                      fontSize: '14px',
+                    }}>
+                      Sample Card
+                    </p>
+                    <p style={{
+                      color: isDarkMode ? '#94a3b8' : '#64748b',
+                      fontSize: '12px',
+                    }}>
+                      This is how your UI will look
+                    </p>
+                  </div>
+                </div>
+                <button style={{
+                  width: '100%',
+                  padding: '12px',
+                  background: COLOR_THEMES[colorTheme].gradient,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                }}>
+                  Sample Button
+                </button>
+              </div>
+            </div>
+
+            {/* Apply Button */}
+            <button
+              onClick={() => setActiveModal('settings')}
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: COLOR_THEMES[colorTheme].gradient,
+                color: 'white',
+                border: 'none',
+                borderRadius: '14px',
+                fontWeight: 700,
+                fontSize: '16px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+              }}
+            >
+              <Check size={20} />
+              Done
+            </button>
           </div>
         </div>
       )}

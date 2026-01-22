@@ -20,3 +20,15 @@ export {
   type ActiveGameSelection,
   type DisplaySyncState,
 } from './displaySyncStore'
+export {
+  useThemeStore,
+  COLOR_THEMES,
+  VISUAL_STYLES,
+  getThemedCardStyle,
+  getThemedButtonStyle,
+  getSurfaceColors,
+  applyThemeToDocument,
+  type ColorTheme,
+  type VisualStyle,
+  type ColorMode,
+} from './themeStore'

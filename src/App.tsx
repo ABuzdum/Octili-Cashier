@@ -14,9 +14,10 @@
  * @version 1.0.0
  */
 
-import { Suspense, lazy } from 'react'
+import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
+import { useThemeStore, applyThemeToDocument } from '@/stores/themeStore'
 
 // Lazy load all pages for code splitting
 const LoginPage = lazy(() => import('@/pages/Auth/LoginPage').then(m => ({ default: m.LoginPage })))
@@ -76,6 +77,13 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
+
+  // Initialize theme on app load
+  useEffect(() => {
+    applyThemeToDocument(colorTheme, visualStyle, isDarkMode)
+  }, [colorTheme, visualStyle, isDarkMode])
+
   return (
     <BrowserRouter>
       <Suspense fallback={<LoadingSpinner />}>
