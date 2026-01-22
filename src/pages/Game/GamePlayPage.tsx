@@ -18,9 +18,55 @@
 
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ShoppingCart, Trash2, Clock, Ticket, Sparkles, Check, X } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Trash2, Clock, Ticket, Sparkles, Check, X, Calendar, Repeat, ChevronDown } from 'lucide-react'
 import { useGame, useGameStore } from '@/stores/gameStore'
 import type { GameBet } from '@/types/game.types'
+
+/**
+ * Draw selection mode:
+ * - 'multi': Play on next X draws (1x, 2x, 5x, 10x)
+ * - 'specific': Select a specific future draw
+ */
+type DrawMode = 'multi' | 'specific'
+
+/**
+ * Generate upcoming draws with estimated times
+ * Creates a list of future draws for selection
+ */
+function generateUpcomingDraws(currentDraw: number, count: number = 20): { draw: number; time: string; date: string }[] {
+  const draws: { draw: number; time: string; date: string }[] = []
+  const now = new Date()
+
+  // Assume draws every 5 minutes for demo (configurable per game)
+  for (let i = 0; i < count; i++) {
+    const drawTime = new Date(now.getTime() + (i + 1) * 5 * 60 * 1000)
+    const hours = drawTime.getHours().toString().padStart(2, '0')
+    const minutes = drawTime.getMinutes().toString().padStart(2, '0')
+
+    // Format date as "Today", "Tomorrow", or day name
+    const isToday = drawTime.toDateString() === now.toDateString()
+    const tomorrow = new Date(now)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const isTomorrow = drawTime.toDateString() === tomorrow.toDateString()
+
+    let dateLabel: string
+    if (isToday) {
+      dateLabel = 'Today'
+    } else if (isTomorrow) {
+      dateLabel = 'Tomorrow'
+    } else {
+      dateLabel = drawTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+    }
+
+    draws.push({
+      draw: currentDraw + i + 1,
+      time: `${hours}:${minutes}`,
+      date: dateLabel,
+    })
+  }
+
+  return draws
+}
 
 // Game gradients matching POSPage
 const GAME_GRADIENTS = [
@@ -60,6 +106,14 @@ export function GamePlayPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false)
   const [confirmAction, setConfirmAction] = useState<'buy' | 'cart'>('buy')
   const [showSuccess, setShowSuccess] = useState(false)
+
+  // Draw selection mode: 'multi' for next X draws, 'specific' for a specific draw
+  const [drawMode, setDrawMode] = useState<DrawMode>('multi')
+  const [selectedSpecificDraw, setSelectedSpecificDraw] = useState<number | null>(null)
+  const [showSpecificDrawPicker, setShowSpecificDrawPicker] = useState(false)
+
+  // Generate upcoming draws for specific selection
+  const upcomingDraws = game ? generateUpcomingDraws(game.currentDraw, 20) : []
 
   // Get game index for gradient
   const gameIndex = parseInt(gameId?.replace('game-', '') || '0') - 1
@@ -119,12 +173,13 @@ export function GamePlayPage() {
   const isUrgent = timer <= 30
   const isWarning = timer <= 60 && timer > 30
 
-  // Calculate total cost
+  // Calculate total cost based on draw mode
   const calculateTotalCost = () => {
+    const drawCount = drawMode === 'multi' ? numberOfDraws : 1
     if (game.type === 'keno') {
-      return betAmount * numberOfDraws
+      return betAmount * drawCount
     } else {
-      return selectedMarkets.length * betAmount * numberOfDraws
+      return selectedMarkets.length * betAmount * drawCount
     }
   }
 
@@ -149,21 +204,27 @@ export function GamePlayPage() {
     gameType: game.type,
     selections: selectedMarkets,
     betAmount,
-    numberOfDraws,
-    drawNumber: game.currentDraw,
+    numberOfDraws: drawMode === 'multi' ? numberOfDraws : 1,
+    drawNumber: drawMode === 'specific' && selectedSpecificDraw ? selectedSpecificDraw : game.currentDraw,
     totalCost,
+    // Include draw mode info for display
+    isSpecificDraw: drawMode === 'specific',
+    targetDraw: drawMode === 'specific' ? selectedSpecificDraw : null,
   })
+
+  // Check if bet is valid (has selections and valid draw)
+  const isBetValid = selectedMarkets.length > 0 && (drawMode === 'multi' || selectedSpecificDraw !== null)
 
   // Handle buy button
   const handleBuy = () => {
-    if (selectedMarkets.length === 0) return
+    if (!isBetValid) return
     setConfirmAction('buy')
     setShowConfirmModal(true)
   }
 
   // Handle add to cart
   const handleAddToCart = () => {
-    if (selectedMarkets.length === 0) return
+    if (!isBetValid) return
     setConfirmAction('cart')
     setShowConfirmModal(true)
   }
@@ -485,157 +546,392 @@ export function GamePlayPage() {
           </div>
         )}
 
-        {/* Bet Amount & Number of Draws */}
+        {/* Bet Amount */}
+        <div style={{ position: 'relative', marginBottom: '16px' }}>
+          <p style={{
+            fontSize: '12px',
+            color: '#94a3b8',
+            marginBottom: '8px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}>
+            Bet Amount
+          </p>
+          <button
+            onClick={() => {
+              setShowBetAmountDropdown(!showBetAmountDropdown)
+              setShowDrawsDropdown(false)
+              setShowSpecificDrawPicker(false)
+            }}
+            style={{
+              width: '100%',
+              padding: '16px',
+              borderRadius: '16px',
+              border: 'none',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              color: 'white',
+              fontWeight: 700,
+              fontSize: '18px',
+              cursor: 'pointer',
+              boxShadow: '0 4px 16px rgba(16, 185, 129, 0.3)',
+              transition: 'all 0.2s',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+            }}
+          >
+            {betAmount} BRL
+            <ChevronDown size={18} />
+          </button>
+          {showBetAmountDropdown && (
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              background: 'white',
+              borderRadius: '16px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
+              zIndex: 10,
+              maxHeight: '200px',
+              overflow: 'auto',
+              marginTop: '8px',
+            }}>
+              {game.betAmounts.map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => {
+                    setBetAmount(amount)
+                    setShowBetAmountDropdown(false)
+                  }}
+                  style={{
+                    width: '100%',
+                    padding: '14px 16px',
+                    border: 'none',
+                    background: betAmount === amount ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'white',
+                    color: betAmount === amount ? 'white' : '#334155',
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {amount} BRL
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Draw Selection - Mode Toggle + Options */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '16px',
+          background: 'white',
+          borderRadius: '20px',
+          padding: '16px',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
           marginBottom: '20px',
         }}>
-          {/* Bet Amount */}
-          <div style={{ position: 'relative' }}>
-            <p style={{
-              fontSize: '12px',
-              color: '#94a3b8',
-              marginBottom: '8px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-            }}>
-              Bet Amount
-            </p>
+          <p style={{
+            fontSize: '12px',
+            color: '#94a3b8',
+            marginBottom: '12px',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.5px',
+          }}>
+            Draw Selection
+          </p>
+
+          {/* Mode Toggle */}
+          <div style={{
+            display: 'flex',
+            gap: '8px',
+            marginBottom: '16px',
+            background: '#f1f5f9',
+            borderRadius: '14px',
+            padding: '4px',
+          }}>
             <button
               onClick={() => {
-                setShowBetAmountDropdown(!showBetAmountDropdown)
-                setShowDrawsDropdown(false)
+                setDrawMode('multi')
+                setSelectedSpecificDraw(null)
               }}
               style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '16px',
+                flex: 1,
+                padding: '12px 16px',
+                borderRadius: '10px',
                 border: 'none',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-                color: 'white',
-                fontWeight: 700,
-                fontSize: '18px',
+                background: drawMode === 'multi'
+                  ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                  : 'transparent',
+                color: drawMode === 'multi' ? 'white' : '#64748b',
+                fontWeight: 600,
+                fontSize: '13px',
                 cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(16, 185, 129, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
                 transition: 'all 0.2s',
+                boxShadow: drawMode === 'multi' ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
               }}
             >
-              {betAmount} BRL
+              <Repeat size={16} />
+              Multi-Draw
             </button>
-            {showBetAmountDropdown && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                background: 'white',
-                borderRadius: '16px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                zIndex: 10,
-                maxHeight: '200px',
-                overflow: 'auto',
-                marginTop: '8px',
-              }}>
-                {game.betAmounts.map((amount) => (
-                  <button
-                    key={amount}
-                    onClick={() => {
-                      setBetAmount(amount)
-                      setShowBetAmountDropdown(false)
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '14px 16px',
-                      border: 'none',
-                      background: betAmount === amount ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'white',
-                      color: betAmount === amount ? 'white' : '#334155',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      cursor: 'pointer',
-                      textAlign: 'center',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {amount} BRL
-                  </button>
-                ))}
-              </div>
-            )}
+            <button
+              onClick={() => setDrawMode('specific')}
+              style={{
+                flex: 1,
+                padding: '12px 16px',
+                borderRadius: '10px',
+                border: 'none',
+                background: drawMode === 'specific'
+                  ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                  : 'transparent',
+                color: drawMode === 'specific' ? 'white' : '#64748b',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                transition: 'all 0.2s',
+                boxShadow: drawMode === 'specific' ? '0 4px 12px rgba(245, 158, 11, 0.3)' : 'none',
+              }}
+            >
+              <Calendar size={16} />
+              Specific Draw
+            </button>
           </div>
 
-          {/* Number of Draws */}
-          <div style={{ position: 'relative' }}>
-            <p style={{
-              fontSize: '12px',
-              color: '#94a3b8',
-              marginBottom: '8px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
+          {/* Multi-Draw Options */}
+          {drawMode === 'multi' && (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '8px',
             }}>
-              Draws
-            </p>
-            <button
-              onClick={() => {
-                setShowDrawsDropdown(!showDrawsDropdown)
-                setShowBetAmountDropdown(false)
-              }}
-              style={{
-                width: '100%',
-                padding: '16px',
-                borderRadius: '16px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                color: 'white',
-                fontWeight: 700,
-                fontSize: '18px',
-                cursor: 'pointer',
-                boxShadow: '0 4px 16px rgba(99, 102, 241, 0.3)',
-                transition: 'all 0.2s',
-              }}
-            >
-              {numberOfDraws}x
-            </button>
-            {showDrawsDropdown && (
-              <div style={{
-                position: 'absolute',
-                top: '100%',
-                left: 0,
-                right: 0,
-                background: 'white',
-                borderRadius: '16px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.15)',
-                zIndex: 10,
-                marginTop: '8px',
-              }}>
-                {game.drawOptions.map((draws) => (
-                  <button
-                    key={draws}
-                    onClick={() => {
-                      setNumberOfDraws(draws)
-                      setShowDrawsDropdown(false)
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '14px 16px',
-                      border: 'none',
-                      background: numberOfDraws === draws ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' : 'white',
-                      color: numberOfDraws === draws ? 'white' : '#334155',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      cursor: 'pointer',
-                      textAlign: 'center',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {draws}x Draw{draws > 1 ? 's' : ''}
-                  </button>
-                ))}
-              </div>
-            )}
+              {game.drawOptions.map((draws) => (
+                <button
+                  key={draws}
+                  onClick={() => setNumberOfDraws(draws)}
+                  style={{
+                    padding: '14px 12px',
+                    borderRadius: '12px',
+                    border: 'none',
+                    background: numberOfDraws === draws
+                      ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                      : '#f8fafc',
+                    color: numberOfDraws === draws ? 'white' : '#334155',
+                    fontWeight: 700,
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    transform: numberOfDraws === draws ? 'scale(1.02)' : 'scale(1)',
+                    boxShadow: numberOfDraws === draws
+                      ? '0 4px 12px rgba(99, 102, 241, 0.3)'
+                      : 'none',
+                  }}
+                >
+                  {draws}x
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Specific Draw Selection */}
+          {drawMode === 'specific' && (
+            <div style={{ position: 'relative' }}>
+              <button
+                onClick={() => {
+                  setShowSpecificDrawPicker(!showSpecificDrawPicker)
+                  setShowBetAmountDropdown(false)
+                  setShowDrawsDropdown(false)
+                }}
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  borderRadius: '14px',
+                  border: selectedSpecificDraw ? 'none' : '2px dashed #cbd5e1',
+                  background: selectedSpecificDraw
+                    ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                    : '#f8fafc',
+                  color: selectedSpecificDraw ? 'white' : '#64748b',
+                  fontWeight: 600,
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  transition: 'all 0.2s',
+                  boxShadow: selectedSpecificDraw
+                    ? '0 4px 16px rgba(245, 158, 11, 0.3)'
+                    : 'none',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Calendar size={18} />
+                  {selectedSpecificDraw ? (
+                    <span>
+                      Draw #{selectedSpecificDraw}
+                      {upcomingDraws.find(d => d.draw === selectedSpecificDraw) && (
+                        <span style={{ opacity: 0.9, marginLeft: '8px', fontSize: '13px' }}>
+                          ({upcomingDraws.find(d => d.draw === selectedSpecificDraw)?.date} {upcomingDraws.find(d => d.draw === selectedSpecificDraw)?.time})
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span>Select a specific draw...</span>
+                  )}
+                </div>
+                <ChevronDown size={18} />
+              </button>
+
+              {/* Specific Draw Picker Dropdown */}
+              {showSpecificDrawPicker && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  background: 'white',
+                  borderRadius: '16px',
+                  boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                  zIndex: 20,
+                  maxHeight: '280px',
+                  overflow: 'auto',
+                  marginTop: '8px',
+                  border: '1px solid #e2e8f0',
+                }}>
+                  <div style={{
+                    padding: '12px 16px',
+                    background: '#f8fafc',
+                    borderBottom: '1px solid #e2e8f0',
+                    position: 'sticky',
+                    top: 0,
+                  }}>
+                    <p style={{
+                      fontSize: '11px',
+                      fontWeight: 700,
+                      color: '#94a3b8',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.5px',
+                    }}>
+                      Upcoming Draws
+                    </p>
+                  </div>
+                  {upcomingDraws.map((draw, index) => {
+                    const isSelected = selectedSpecificDraw === draw.draw
+                    const isNext = index === 0
+                    return (
+                      <button
+                        key={draw.draw}
+                        onClick={() => {
+                          setSelectedSpecificDraw(draw.draw)
+                          setShowSpecificDrawPicker(false)
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '14px 16px',
+                          border: 'none',
+                          background: isSelected
+                            ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                            : isNext
+                            ? '#fef3c7'
+                            : 'white',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          transition: 'all 0.15s',
+                          borderBottom: '1px solid #f1f5f9',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <div style={{
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '10px',
+                            background: isSelected
+                              ? 'rgba(255,255,255,0.2)'
+                              : isNext
+                              ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                              : '#f1f5f9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            color: isSelected || isNext ? 'white' : '#64748b',
+                          }}>
+                            #{draw.draw.toString().slice(-3)}
+                          </div>
+                          <div>
+                            <p style={{
+                              fontWeight: 600,
+                              fontSize: '14px',
+                              color: isSelected ? 'white' : '#1e293b',
+                            }}>
+                              Draw #{draw.draw}
+                              {isNext && !isSelected && (
+                                <span style={{
+                                  marginLeft: '8px',
+                                  fontSize: '10px',
+                                  padding: '2px 6px',
+                                  background: '#f59e0b',
+                                  color: 'white',
+                                  borderRadius: '4px',
+                                  fontWeight: 700,
+                                }}>
+                                  NEXT
+                                </span>
+                              )}
+                            </p>
+                            <p style={{
+                              fontSize: '12px',
+                              color: isSelected ? 'rgba(255,255,255,0.8)' : '#64748b',
+                            }}>
+                              {draw.date} at {draw.time}
+                            </p>
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <Check size={20} color="white" />
+                        )}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Selected Draw Info */}
+          <div style={{
+            marginTop: '12px',
+            padding: '12px 16px',
+            background: '#f8fafc',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <Clock size={16} color="#64748b" />
+            <span style={{ fontSize: '13px', color: '#64748b' }}>
+              {drawMode === 'multi' ? (
+                <>Playing <strong style={{ color: '#6366f1' }}>{numberOfDraws}</strong> consecutive draw{numberOfDraws > 1 ? 's' : ''} starting from next draw</>
+              ) : selectedSpecificDraw ? (
+                <>Playing on <strong style={{ color: '#f59e0b' }}>Draw #{selectedSpecificDraw}</strong> only</>
+              ) : (
+                <>Select a specific draw above</>
+              )}
+            </span>
           </div>
         </div>
 
@@ -729,20 +1025,20 @@ export function GamePlayPage() {
       }}>
         <button
           onClick={handleBuy}
-          disabled={selectedMarkets.length === 0}
+          disabled={!isBetValid}
           style={{
             flex: 2,
             padding: '18px',
             borderRadius: '16px',
             border: 'none',
-            background: selectedMarkets.length === 0
+            background: !isBetValid
               ? '#e2e8f0'
               : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-            color: selectedMarkets.length === 0 ? '#94a3b8' : 'white',
+            color: !isBetValid ? '#94a3b8' : 'white',
             fontWeight: 700,
             fontSize: '16px',
-            cursor: selectedMarkets.length === 0 ? 'not-allowed' : 'pointer',
-            boxShadow: selectedMarkets.length === 0
+            cursor: !isBetValid ? 'not-allowed' : 'pointer',
+            boxShadow: !isBetValid
               ? 'none'
               : '0 4px 16px rgba(245, 158, 11, 0.4)',
             transition: 'all 0.2s',
@@ -752,21 +1048,21 @@ export function GamePlayPage() {
         </button>
         <button
           onClick={handleAddToCart}
-          disabled={selectedMarkets.length === 0}
+          disabled={!isBetValid}
           style={{
             flex: 1,
             padding: '18px',
             borderRadius: '16px',
             border: 'none',
-            background: selectedMarkets.length === 0
+            background: !isBetValid
               ? '#e2e8f0'
               : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            color: selectedMarkets.length === 0 ? '#94a3b8' : 'white',
-            cursor: selectedMarkets.length === 0 ? 'not-allowed' : 'pointer',
+            color: !isBetValid ? '#94a3b8' : 'white',
+            cursor: !isBetValid ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: selectedMarkets.length === 0
+            boxShadow: !isBetValid
               ? 'none'
               : '0 4px 16px rgba(99, 102, 241, 0.4)',
             transition: 'all 0.2s',
@@ -858,7 +1154,9 @@ export function GamePlayPage() {
                 fontSize: '14px',
                 color: '#64748b',
               }}>
-                {game.name} - Draw #{game.currentDraw}
+                {game.name} - {drawMode === 'specific' && selectedSpecificDraw
+                  ? `Draw #${selectedSpecificDraw}`
+                  : `Next ${numberOfDraws} Draw${numberOfDraws > 1 ? 's' : ''}`}
               </p>
             </div>
 
@@ -898,7 +1196,9 @@ export function GamePlayPage() {
                 borderTop: '1px solid #e2e8f0',
               }}>
                 <span style={{ color: '#64748b', fontSize: '14px' }}>
-                  {numberOfDraws} draw{numberOfDraws > 1 ? 's' : ''} × {betAmount} BRL
+                  {drawMode === 'specific'
+                    ? `Draw #${selectedSpecificDraw} × ${betAmount} BRL`
+                    : `${numberOfDraws} draw${numberOfDraws > 1 ? 's' : ''} × ${betAmount} BRL`}
                 </span>
                 <span style={{
                   fontSize: '20px',

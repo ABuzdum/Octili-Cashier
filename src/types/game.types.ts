@@ -50,9 +50,15 @@ export interface GameBet {
   gameType: GameType
   selections: string[]
   betAmount: number
+  /** Number of consecutive draws to play (multi-draw mode) */
   numberOfDraws: number
+  /** Starting draw number */
   drawNumber: number
   totalCost: number
+  /** Whether this bet is for a specific future draw */
+  isSpecificDraw?: boolean
+  /** Target draw number if playing a specific draw */
+  targetDraw?: number | null
 }
 
 /**
