@@ -376,37 +376,35 @@ export function POSPage() {
           </>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', zIndex: 1 }}>
-          {/* Octili Logo - Themed */}
-          <div style={getLogoStyle()}>
-            <img
-              src="/octili-icon.svg"
-              alt="Octili"
-              style={{
-                width: '32px',
-                height: '32px',
-                objectFit: 'contain',
-              }}
-            />
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
+          {/* Simple O Logo - No background */}
+          <span style={{
+            fontSize: '36px',
+            fontWeight: 900,
+            color: getHeaderTextColor(),
+            lineHeight: 1,
+            textShadow: (visualStyle === 'glass' || visualStyle === 'bento') ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
+          }}>
+            O
+          </span>
           <div>
-            <h1 style={{
-              fontSize: '22px',
-              fontWeight: 800,
-              letterSpacing: '-0.5px',
-              color: getHeaderTextColor(),
-              textShadow: (visualStyle === 'glass' || visualStyle === 'bento') ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
-            }}>
-              Octili
-            </h1>
             <p style={{
               fontSize: '11px',
               color: getSubtextColor(),
-              fontWeight: 600,
-              letterSpacing: '0.5px',
+              fontWeight: 700,
+              letterSpacing: '1px',
               textTransform: 'uppercase',
             }}>
-              Lottery Terminal
+              PCT
+            </p>
+            <p style={{
+              fontSize: '9px',
+              color: getSubtextColor(),
+              fontWeight: 500,
+              letterSpacing: '0.3px',
+              opacity: 0.8,
+            }}>
+              PoS Cashier Terminal
             </p>
           </div>
         </div>
