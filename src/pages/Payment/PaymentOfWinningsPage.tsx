@@ -629,7 +629,7 @@ export function PaymentOfWinningsPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="pay" />
+      <BottomNavigation activeTab="scan" />
 
       {/* Global styles for animations */}
       <style>{`

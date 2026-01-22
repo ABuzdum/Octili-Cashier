@@ -369,7 +369,7 @@ export function AccountPage() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNavigation activeTab="account" />
+        <BottomNavigation activeTab="qrticket" />
       </div>
     )
   }
@@ -727,7 +727,7 @@ export function AccountPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="account" />
+      <BottomNavigation activeTab="qrticket" />
     </div>
   )
 }

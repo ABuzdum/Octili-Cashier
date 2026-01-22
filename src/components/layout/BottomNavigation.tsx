@@ -6,25 +6,24 @@
  * Purpose: Clean bottom navigation bar for cashier terminals
  * Uses international, easy-to-understand naming for any cashier
  *
- * Tabs: Play | Results | Pay | Account | Cart
+ * Tabs: Games | Results | Scan | QR Ticket
  *
  * Naming designed for clarity:
- * - Play = Select and play lottery games
+ * - Games = Select lottery games + cart (combined)
  * - Results = View draw results
- * - Pay = Pay out winnings to customers
- * - Account = Player account (deposit/withdraw)
- * - Cart = Pending tickets to purchase
+ * - Scan = Scan lottery tickets and instant cards for payout
+ * - QR Ticket = Physical QR ticket operations
  *
  * @author Octili Development Team
- * @version 3.0.0
+ * @version 4.0.0
  */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Gamepad2, Trophy, Banknote, Wallet, ShoppingCart } from 'lucide-react'
+import { Grid, Trophy, ScanLine, QrCode } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
-export type NavTab = 'play' | 'results' | 'pay' | 'account' | 'cart'
+export type NavTab = 'games' | 'results' | 'scan' | 'qrticket'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -33,7 +32,7 @@ interface BottomNavigationProps {
 interface NavItem {
   id: NavTab
   label: string
-  icon: typeof Gamepad2
+  icon: typeof Grid
   path: string
   gradient: string
 }
@@ -44,9 +43,9 @@ interface NavItem {
  */
 const navItems: NavItem[] = [
   {
-    id: 'play',
-    label: 'Play',
-    icon: Gamepad2,
+    id: 'games',
+    label: 'Games',
+    icon: Grid,
     path: '/pos',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
   },
@@ -58,24 +57,17 @@ const navItems: NavItem[] = [
     gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
   },
   {
-    id: 'pay',
-    label: 'Pay',
-    icon: Banknote,
+    id: 'scan',
+    label: 'Scan',
+    icon: ScanLine,
     path: '/payment',
     gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
   },
   {
-    id: 'account',
-    label: 'Account',
-    icon: Wallet,
-    path: '/account',
-    gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-  },
-  {
-    id: 'cart',
-    label: 'Cart',
-    icon: ShoppingCart,
-    path: '/cart',
+    id: 'qrticket',
+    label: 'QR Ticket',
+    icon: QrCode,
+    path: '/physical-ticket/payout',
     gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
   },
 ]
@@ -144,8 +136,8 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
                 }}
               />
 
-              {/* Cart badge */}
-              {item.id === 'cart' && cartCount > 0 && (
+              {/* Cart badge on Games tab */}
+              {item.id === 'games' && cartCount > 0 && (
                 <div style={{
                   position: 'absolute',
                   top: '-8px',
