@@ -248,4 +248,5 @@ export const operatorInfo = {
   balance: 4272.15,
   currency: 'BRL',
   supportPhone: '+38 068 777 22 89',
+  securityPhone: '+38 068 777 22 90',
 }

@@ -1,29 +1,46 @@
-# VV2S Plus - Integration Guide
+# SUNMI V2s Plus - Integration Guide
 
 ## Setup Instructions
 
 ### Initial Setup
 
-1. Power on the VV2S Plus terminal
-2. Connect to WiFi network
-3. Enable Developer Mode (if required)
-4. Install Octili Cashier app
+1. Power on the SUNMI V2s Plus terminal
+2. Complete initial Android 11 setup wizard
+3. Connect to WiFi network (2.4G/5G supported)
+4. Enable Developer Mode (see below)
+5. Install Octili Cashier app
 
 ### Developer Mode
 
-[Instructions to enable developer mode - to be documented]
+1. Go to **Settings** > **About Device**
+2. Find **Build Number** and tap it **7 times**
+3. Enter device PIN/password if prompted
+4. "You are now a developer!" message appears
+5. Go back to **Settings** > **System** > **Developer Options**
+6. Enable **USB Debugging** for ADB access
 
 ### App Installation
 
-#### Via APK Sideload
+#### Via APK Sideload (Development)
 
-1. Enable "Install from Unknown Sources" in Settings
-2. Transfer APK to device via USB or download
-3. Open APK and confirm installation
+1. Enable **Developer Options** (see above)
+2. Enable **USB Debugging** in Developer Options
+3. Enable **Install from Unknown Sources** in Settings > Security
+4. Connect device via USB Type-C cable
+5. Run: `adb install octili-cashier.apk`
 
-#### Via MDM
+Alternatively:
+1. Transfer APK to device via USB or download link
+2. Open file manager and locate APK
+3. Tap APK and confirm installation
 
-[MDM deployment instructions - to be documented]
+#### Via MDM (Production)
+
+SUNMI supports MDM deployment through:
+- SUNMI Device Management System (DMS)
+- Third-party MDM solutions (Knox, Intune, etc.)
+
+Contact SUNMI support for enterprise deployment options.
 
 ## Hardware Integration
 
@@ -31,31 +48,111 @@
 
 #### Thermal Printer Specs
 
-- Paper width: [e.g., 58mm]
-- Print speed: [e.g., 50mm/s]
-- Resolution: [e.g., 203 DPI]
+| Property | Value |
+|----------|-------|
+| Paper width | 80mm (60-80mm label range) |
+| Print speed | 80mm/s max |
+| Roll diameter | 50mm max |
+| Resolution | 203 DPI |
+| Supported | Receipt, label, black mark printing |
+| Protocol | ESC/POS compatible |
 
 #### Setup
 
-[Printer setup instructions - to be documented]
+1. **Add Gradle Dependency** (Android native):
+   ```gradle
+   implementation 'com.sunmi:printerlibrary:1.0.18'
+   ```
+
+2. **For React Native / Capacitor**:
+   - Use SUNMI printer bridge plugin
+   - Or implement native module with AIDL
+
+3. **Connection Modes**:
+   - **AIDL** (recommended): Direct service binding
+   - **Bluetooth**: Device name "InnerPrinter"
+   - **JS Bridge**: For web-based apps
 
 #### Code Example
 
 ```typescript
-// VV2S Plus Printer Integration
-// TODO: Implement based on manufacturer SDK
+// SUNMI V2s Plus Printer Integration
+// Uses SUNMI PrinterLibrary via native bridge
 
-import { VV2SPrinter } from '@/lib/terminals/vv2s-plus/printer'
+import { SunmiPrinter } from '@/lib/terminals/sunmi/printer'
+
+// Initialize printer service
+const printer = new SunmiPrinter()
 
 export async function printTicket(ticketData: TicketData): Promise<void> {
-  const printer = new VV2SPrinter()
+  try {
+    // Check printer status first
+    const status = await printer.getStatus()
+    if (status !== 'READY') {
+      throw new Error(`Printer not ready: ${status}`)
+    }
 
-  await printer.initialize()
-  await printer.printText(`Ticket #${ticketData.number}`)
-  await printer.printBarcode(ticketData.barcode)
-  await printer.printQRCode(ticketData.qrCode)
-  await printer.feedPaper(3)
-  await printer.cut()
+    // Begin transaction
+    await printer.beginTransaction()
+
+    // Print header
+    await printer.setAlignment('CENTER')
+    await printer.setBold(true)
+    await printer.printText('OCTILI LOTTERY')
+    await printer.setBold(false)
+    await printer.printLine('='.repeat(32))
+
+    // Print ticket info
+    await printer.setAlignment('LEFT')
+    await printer.printText(`Ticket: ${ticketData.number}`)
+    await printer.printText(`Game: ${ticketData.gameName}`)
+    await printer.printText(`Draw: #${ticketData.drawNumber}`)
+    await printer.printLine('-'.repeat(32))
+
+    // Print selections
+    await printer.printText(`Selections: ${ticketData.selections.join(', ')}`)
+    await printer.printText(`Bet Amount: ${ticketData.amount} BRL`)
+    await printer.printText(`Draws: ${ticketData.numberOfDraws}`)
+    await printer.printLine('-'.repeat(32))
+    await printer.printText(`Total: ${ticketData.totalCost} BRL`)
+    await printer.printLine('-'.repeat(32))
+
+    // Print date/time
+    await printer.printText(`Date: ${ticketData.date} ${ticketData.time}`)
+    await printer.printLine('='.repeat(32))
+
+    // Print QR code for validation
+    await printer.setAlignment('CENTER')
+    await printer.printQRCode(ticketData.qrCode, 200) // 200px size
+
+    // Footer
+    await printer.printLine('='.repeat(32))
+    await printer.printText('Good Luck!')
+    await printer.printLine('='.repeat(32))
+
+    // Feed and cut
+    await printer.feedPaper(4)
+    await printer.cutPaper(false) // partial cut
+
+    // Commit transaction
+    await printer.commitTransaction()
+
+  } catch (error) {
+    console.error('Print failed:', error)
+    throw error
+  }
+}
+
+// Check paper status
+export async function checkPrinterStatus(): Promise<PrinterStatus> {
+  const status = await printer.getStatus()
+  return {
+    ready: status === 'READY',
+    paperLow: status === 'PAPER_LOW',
+    noPaper: status === 'NO_PAPER',
+    overheated: status === 'OVERHEAT',
+    error: status === 'ERROR'
+  }
 }
 ```
 
@@ -87,66 +184,174 @@ Good Luck!
 
 #### Barcode/QR Scanner Specs
 
-- Scanner type: [1D/2D]
-- Supported formats: [QR, Code128, EAN13, etc.]
+| Property | Value |
+|----------|-------|
+| Scanner type | 1D and 2D (Scanner Version only) |
+| Supported formats | QR Code, Code 128, Code 39, EAN-13, EAN-8, UPC-A, UPC-E, PDF417, Data Matrix |
+| Special feature | Reads scratched, folded, or stained codes |
+| Light | Built-in LED for low-light scanning |
 
 #### Setup
 
-[Scanner setup instructions - to be documented]
+1. Scanner is available only on **V2s Plus Scanner (GMS)** variant
+2. No additional hardware setup required
+3. Integrate via SUNMI Scan Service
 
 #### Code Example
 
 ```typescript
-// VV2S Plus Scanner Integration
-// TODO: Implement based on manufacturer SDK
+// SUNMI V2s Plus Scanner Integration
+// Scanner Version (GMS) only
 
-import { VV2SScanner } from '@/lib/terminals/vv2s-plus/scanner'
+import { SunmiScanner } from '@/lib/terminals/sunmi/scanner'
 
+const scanner = new SunmiScanner()
+let scanCallback: ((code: string) => void) | null = null
+
+// Initialize scanner with event listener
 export function initializeScanner(onScan: (code: string) => void): void {
-  const scanner = new VV2SScanner()
+  scanCallback = onScan
 
-  scanner.on('scan', (result) => {
-    onScan(result.code)
+  // Configure scanner settings
+  scanner.configure({
+    formats: ['QR_CODE', 'CODE_128', 'EAN_13', 'EAN_8'],
+    beepEnabled: true,
+    vibrateEnabled: true,
+    flashlightEnabled: false, // Enable in low light
+    continuousMode: false
   })
 
+  // Register scan result listener
+  scanner.onScanResult((result) => {
+    if (scanCallback) {
+      scanCallback(result.code)
+    }
+  })
+
+  scanner.onScanError((error) => {
+    console.error('Scan error:', error)
+  })
+}
+
+// Start scanning session
+export function startScan(): void {
   scanner.start()
 }
 
+// Stop scanning session
 export function stopScanner(): void {
-  VV2SScanner.stop()
+  scanner.stop()
 }
+
+// Cleanup when component unmounts
+export function disposeScanner(): void {
+  scanner.dispose()
+  scanCallback = null
+}
+
+// Enable flashlight for low-light conditions
+export function toggleFlashlight(enabled: boolean): void {
+  scanner.setFlashlight(enabled)
+}
+
+// Example usage in React component
+/*
+useEffect(() => {
+  initializeScanner((code) => {
+    console.log('Scanned:', code)
+    // Process ticket QR code
+    validateTicket(code)
+  })
+
+  return () => disposeScanner()
+}, [])
+*/
 ```
 
 ### Payment Terminal Integration
 
 #### Supported Payment Methods
 
-- [ ] EMV Chip
-- [ ] Magnetic Stripe
-- [ ] Contactless/NFC
-- [ ] QR Code Payment
+| Method | Support | Notes |
+|--------|---------|-------|
+| NFC/Contactless | ✅ (NFC variant) | Type A&B, Mifare, Felica |
+| QR Code Payment | ✅ | Via camera or scanner |
+| EMV Chip | ❌ | No card slot - use external reader |
+| Magnetic Stripe | ❌ | No card slot - use external reader |
+
+> **Note**: V2s Plus does not have built-in card reader. For card payments, integrate with external Bluetooth card reader or use PIX/QR Code payments popular in Brazil.
 
 #### Code Example
 
 ```typescript
-// VV2S Plus Payment Integration
-// TODO: Implement based on manufacturer SDK
+// SUNMI V2s Plus Payment Integration
+// NFC payments and QR Code payments
 
-import { VV2SPayment } from '@/lib/terminals/vv2s-plus/payment'
+import { SunmiNFC } from '@/lib/terminals/sunmi/nfc'
+import { SunmiScanner } from '@/lib/terminals/sunmi/scanner'
 
+// PIX QR Code Payment (Brazil)
+export async function processPixPayment(
+  amount: number,
+  pixKey: string
+): Promise<PaymentResult> {
+  // Generate PIX QR code
+  const pixCode = await generatePixCode({
+    amount,
+    pixKey,
+    merchantName: 'OCTILI LOTTERY',
+    city: 'SAO PAULO'
+  })
+
+  // Display QR code for customer to scan with their app
+  return {
+    type: 'PIX',
+    qrCode: pixCode,
+    amount,
+    status: 'PENDING',
+    expiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes
+  }
+}
+
+// NFC Card Reading (for loyalty/voucher cards)
+export async function readNFCCard(): Promise<NFCCardData> {
+  const nfc = new SunmiNFC()
+
+  return new Promise((resolve, reject) => {
+    nfc.onCardDetected(async (card) => {
+      try {
+        const data = await nfc.readCard(card)
+        nfc.stop()
+        resolve({
+          id: card.id,
+          type: card.type,
+          data
+        })
+      } catch (error) {
+        reject(error)
+      }
+    })
+
+    nfc.start()
+
+    // Timeout after 30 seconds
+    setTimeout(() => {
+      nfc.stop()
+      reject(new Error('NFC read timeout'))
+    }, 30000)
+  })
+}
+
+// External Bluetooth Card Reader Integration
 export async function processCardPayment(
   amount: number,
   currency: string = 'BRL'
 ): Promise<PaymentResult> {
-  const payment = new VV2SPayment()
+  // Connect to external Bluetooth card reader
+  // Implementation depends on specific reader model
+  // Common options: PAX, Ingenico, Stone, PagSeguro readers
 
-  const result = await payment.process({
-    amount,
-    currency,
-    methods: ['chip', 'contactless', 'swipe']
-  })
-
-  return result
+  throw new Error('External card reader required - not built-in')
 }
 ```
 
@@ -154,43 +359,125 @@ export async function processCardPayment(
 
 ### WiFi Setup
 
-1. Go to Settings > WiFi
-2. Select network
-3. Enter credentials
-4. Verify connection
+| Property | Value |
+|----------|-------|
+| Bands | 2.4GHz and 5GHz |
+| Standards | IEEE 802.11 a/b/g/n/ac |
+
+**Setup Steps:**
+1. Go to **Settings** > **Network & Internet** > **WiFi**
+2. Enable WiFi toggle
+3. Select your network from the list
+4. Enter password (WPA2/WPA3 recommended)
+5. Verify connection with connectivity check
+
+**For Enterprise Networks (WPA2-Enterprise):**
+1. Select network > **Advanced options**
+2. Choose EAP method (PEAP, TLS, TTLS)
+3. Enter credentials or install certificate
+4. Configure Phase 2 authentication if required
 
 ### Ethernet Setup
 
-[If applicable - to be documented]
+V2s Plus does **not** have built-in Ethernet port. Use USB-C to Ethernet adapter if wired connection is required.
 
-### Cellular Setup
+### Cellular Setup (4G/LTE)
 
-[If applicable - to be documented]
+| Property | Value |
+|----------|-------|
+| SIM Type | Dual Nano SIM |
+| Bands | 4G/3G/2G |
+
+**Setup Steps:**
+1. Power off the device
+2. Insert Nano SIM card(s) into slot(s)
+3. Power on the device
+4. Go to **Settings** > **Network & Internet** > **Mobile Network**
+5. Enable mobile data
+6. Select preferred SIM for data if dual SIM
+7. APN settings should auto-configure (manual config available)
+
+**Recommended for Lottery Terminals:**
+- Use cellular as **backup** when WiFi fails
+- Configure auto-failover in app settings
+- Monitor data usage (limited plans)
 
 ## Security Considerations
 
 ### Data Encryption
 
-- All sensitive data must be encrypted at rest
-- Use Android Keystore for cryptographic keys
-- Implement certificate pinning for API calls
+| Requirement | Implementation |
+|-------------|----------------|
+| Data at rest | Android Keystore + EncryptedSharedPreferences |
+| Data in transit | TLS 1.2+ with certificate pinning |
+| Sensitive data | Never store in plain SharedPreferences |
 
 ### Certificate Management
 
-[Document certificate installation process]
+**Installing Custom CA Certificate:**
+1. Transfer certificate file (.crt/.cer) to device
+2. Go to **Settings** > **Security** > **Encryption & Credentials**
+3. Select **Install a certificate** > **CA certificate**
+4. Browse and select your certificate file
+5. Confirm installation
+
+**For Certificate Pinning (in-app):**
+```typescript
+// Configure in network layer
+const pinnedCertificates = [
+  'sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=', // Primary
+  'sha256/BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB='  // Backup
+]
+```
 
 ### Secure Storage
 
 ```typescript
-// Use Android EncryptedSharedPreferences or equivalent
-import { SecureStorage } from '@/lib/terminals/vv2s-plus/secure-storage'
+// SUNMI V2s Plus Secure Storage
+// Uses Android Keystore + EncryptedSharedPreferences
 
-// Store sensitive data
-await SecureStorage.set('auth_token', token)
+import { SecureStorage } from '@/lib/terminals/sunmi/secure-storage'
 
-// Retrieve sensitive data
-const token = await SecureStorage.get('auth_token')
+// Initialize with encryption
+const storage = new SecureStorage({
+  keyAlias: 'octili_cashier_key',
+  authenticationRequired: false // Set true for biometric
+})
+
+// Store sensitive data (encrypted automatically)
+export async function storeAuthToken(token: string): Promise<void> {
+  await storage.set('auth_token', token)
+}
+
+// Retrieve sensitive data (decrypted automatically)
+export async function getAuthToken(): Promise<string | null> {
+  return await storage.get('auth_token')
+}
+
+// Delete sensitive data
+export async function clearAuthToken(): Promise<void> {
+  await storage.delete('auth_token')
+}
+
+// Store complex objects
+export async function storeUserSession(session: UserSession): Promise<void> {
+  await storage.setObject('user_session', session)
+}
+
+// Clear all secure storage (on logout)
+export async function clearAllSecureData(): Promise<void> {
+  await storage.clear()
+}
 ```
+
+### Additional Security Best Practices
+
+1. **Disable USB Debugging** in production
+2. **Enable Screen Lock** with PIN/Password
+3. **Use SUNMI Device Management** for remote wipe capability
+4. **Implement session timeout** for inactive cashiers
+5. **Log all transactions** for audit trail
+6. **Validate all input** from scanner/NFC
 
 ## Troubleshooting
 

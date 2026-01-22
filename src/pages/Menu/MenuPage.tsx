@@ -251,8 +251,12 @@ export function MenuPage() {
     }
   }
 
-  // Handle call confirmation
+  // Handle call confirmation - triggers actual phone call for security
   const handleCallConfirm = () => {
+    // For security, trigger phone call immediately
+    if (activeModal === 'call-security') {
+      window.location.href = `tel:${operatorInfo.securityPhone.replace(/\s/g, '')}`
+    }
     setCallConfirmed(true)
     setTimeout(() => {
       setCallConfirmed(false)
@@ -804,7 +808,7 @@ export function MenuPage() {
           />
         </div>
 
-        {/* Urgent Call Button - Direct phone call using tel: protocol */}
+        {/* Need Help Button - Direct phone call using tel: protocol */}
         <a
           href={`tel:${operatorInfo.supportPhone.replace(/\s/g, '')}`}
           style={{
@@ -824,7 +828,7 @@ export function MenuPage() {
         >
           <Phone size={24} color="white" />
           <span style={{ fontSize: '16px', fontWeight: 700, color: 'white' }}>
-            Urgent Call
+            Need Help
           </span>
         </a>
       </div>
