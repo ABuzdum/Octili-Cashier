@@ -63,8 +63,8 @@ const rightNavItems: NavItem[] = [
     label: 'Sell Ticket',
     icon: ShoppingBag,
     path: '/qr-ticket',
-    color: '#10b981',
-    activeColor: '#059669',
+    color: '#24BD68',
+    activeColor: '#00A77E',
   },
   {
     id: 'topup',
@@ -168,21 +168,22 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '6px',
-          padding: '10px 16px',
+          gap: '4px',
+          padding: '8px 10px',
           background: isActive
             ? `linear-gradient(135deg, ${item.color} 0%, ${item.activeColor} 100%)`
             : isHovered
             ? `${item.color}15`
             : 'transparent',
           border: 'none',
-          borderRadius: '14px',
+          borderRadius: '12px',
           cursor: 'pointer',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'all 0.2s ease',
           position: 'relative',
-          transform: isActive ? 'scale(1.05)' : isHovered ? 'scale(1.02)' : 'scale(1)',
-          boxShadow: isActive ? `0 6px 20px ${item.color}40` : 'none',
-          minWidth: '70px',
+          transform: isActive ? 'scale(1.02)' : 'scale(1)',
+          boxShadow: isActive ? `0 4px 12px ${item.color}40` : 'none',
+          minWidth: '56px',
+          flexShrink: 0,
         }}
       >
         <div style={{
@@ -192,11 +193,11 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           justifyContent: 'center',
         }}>
           <Icon
-            size={22}
+            size={20}
             color={isActive ? 'white' : isHovered ? item.color : '#64748b'}
             strokeWidth={isActive ? 2.5 : 2}
             style={{
-              transition: 'all 0.3s ease',
+              transition: 'all 0.2s ease',
               filter: isActive ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none',
             }}
           />
@@ -228,12 +229,12 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         </div>
 
         <span style={{
-          fontSize: '11px',
+          fontSize: '10px',
           fontWeight: isActive ? 700 : 600,
           fontFamily: 'Montserrat, sans-serif',
           color: isActive ? 'white' : isHovered ? item.color : '#64748b',
-          transition: 'all 0.3s ease',
-          letterSpacing: '0.2px',
+          transition: 'all 0.2s ease',
+          letterSpacing: '0.1px',
           whiteSpace: 'nowrap',
         }}>
           {item.label}
@@ -243,24 +244,31 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
   }
 
   return (
-    <nav style={{
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      background: 'rgba(255, 255, 255, 0.95)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '8px 16px',
-      paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
-      boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
-      borderTop: '1px solid rgba(0,0,0,0.05)',
-      zIndex: 100,
-      gap: '4px',
-    }}>
+    <nav
+      className="bottom-nav-container"
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        background: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        padding: '8px 12px',
+        paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
+        boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
+        borderTop: '1px solid rgba(0,0,0,0.05)',
+        zIndex: 100,
+        gap: '4px',
+        overflowX: 'auto',
+        overflowY: 'hidden',
+        WebkitOverflowScrolling: 'touch',
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
+      }}>
       {/* Left Section: Draw & Results */}
       <div style={{
         display: 'flex',
@@ -273,10 +281,11 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
       {/* Vertical Divider */}
       <div style={{
         width: '2px',
-        height: '44px',
+        height: '36px',
         background: 'linear-gradient(180deg, transparent 0%, #e2e8f0 20%, #e2e8f0 80%, transparent 100%)',
-        margin: '0 12px',
+        margin: '0 8px',
         borderRadius: '1px',
+        flexShrink: 0,
       }} />
 
       {/* Right Section: Sell Ticket & Top Up */}
@@ -290,12 +299,13 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
 
       {/* Red Vertical Divider - Legacy Section */}
       <div style={{
-        width: '3px',
-        height: '44px',
+        width: '2px',
+        height: '36px',
         background: 'linear-gradient(180deg, transparent 0%, #ef4444 20%, #ef4444 80%, transparent 100%)',
-        margin: '0 12px',
-        borderRadius: '2px',
-        boxShadow: '0 0 8px rgba(239, 68, 68, 0.4)',
+        margin: '0 6px',
+        borderRadius: '1px',
+        boxShadow: '0 0 6px rgba(239, 68, 68, 0.3)',
+        flexShrink: 0,
       }} />
 
       {/* Legacy Label */}
@@ -304,15 +314,16 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: '8px',
+        marginRight: '4px',
+        flexShrink: 0,
       }}>
         <span style={{
-          fontSize: '8px',
+          fontSize: '7px',
           fontWeight: 700,
           fontFamily: 'Montserrat, sans-serif',
           color: '#ef4444',
           textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          letterSpacing: '0.3px',
         }}>
           Legacy
         </span>

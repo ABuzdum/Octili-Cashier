@@ -134,7 +134,7 @@ html, body, #root {
 }
 
 body {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Montserrat', system-ui, -apple-system, sans-serif;
   background-color: var(--color-surface);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
@@ -177,4 +177,57 @@ body {
   background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(40px);
   -webkit-backdrop-filter: blur(40px);
+}
+
+/* ============================================================================
+ * SAMVI V2 Pro POS Terminal Optimizations
+ * Device: 5.99" HD+ Display
+ * Resolution: 1440 x 720 pixels (2:1 aspect ratio)
+ * ============================================================================
+ */
+
+/* SAMVI V2 Pro specific styles (720px width) */
+@media screen and (max-width: 720px) {
+  /* Reduce base font size slightly for compact display */
+  html {
+    font-size: 14px;
+  }
+
+  /* Ensure touch targets remain accessible */
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Reduce padding on containers */
+  .samvi-compact {
+    padding: 12px !important;
+  }
+}
+
+/* Portrait mode (most common for POS terminals) */
+@media screen and (max-width: 720px) and (orientation: portrait) {
+  /* Optimize for tall narrow screens */
+  .bottom-nav-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .bottom-nav-container::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* High-DPI display optimizations for SAMVI */
+@media screen and (max-width: 720px) and (-webkit-min-device-pixel-ratio: 2) {
+  /* Sharper text rendering */
+  body {
+    -webkit-font-smoothing: subpixel-antialiased;
+  }
+
+  /* Thinner borders on high-DPI */
+  .thin-border {
+    border-width: 0.5px;
+  }
 }
