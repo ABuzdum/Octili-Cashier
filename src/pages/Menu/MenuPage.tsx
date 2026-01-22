@@ -88,7 +88,7 @@ import { PauseCircle } from 'lucide-react'
 type ModalType =
   | 'none'
   | 'support'
-  | 'call-hostess'
+  | 'hostess-request'
   | 'call-security'
   | 'call-manager'
   | 'display-control'
@@ -166,6 +166,12 @@ export function MenuPage() {
   const [supportPriority, setSupportPriority] = useState<'normal' | 'urgent'>('normal')
   const [ticketSubmitted, setTicketSubmitted] = useState(false)
   const [callConfirmed, setCallConfirmed] = useState(false)
+
+  // Hostess request form state
+  const [hostessDate, setHostessDate] = useState('')
+  const [hostessTime, setHostessTime] = useState('')
+  const [hostessReason, setHostessReason] = useState('')
+  const [hostessRequestSubmitted, setHostessRequestSubmitted] = useState(false)
 
   // Handle logout
   const handleLogout = () => {
@@ -569,7 +575,7 @@ export function MenuPage() {
           marginBottom: '8px',
         }}>
           <button
-            onClick={() => setActiveModal('call-hostess')}
+            onClick={() => setActiveModal('hostess-request')}
             style={{
               padding: '16px 12px',
               background: 'white',
@@ -1008,8 +1014,250 @@ export function MenuPage() {
         </div>
       )}
 
-      {/* Call Confirmation Modals (Hostess, Security, Manager) */}
-      {(activeModal === 'call-hostess' || activeModal === 'call-security' || activeModal === 'call-manager') && (
+      {/* Hostess Request Modal */}
+      {activeModal === 'hostess-request' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '400px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            {hostessRequestSubmitted ? (
+              <div style={{ textAlign: 'center' }}>
+                <div style={{
+                  width: '80px',
+                  height: '80px',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 20px',
+                }}>
+                  <CheckCircle2 size={40} color="white" />
+                </div>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>
+                  Request Submitted!
+                </h3>
+                <p style={{ color: '#64748b', fontSize: '14px', marginTop: '8px' }}>
+                  Hostess will be notified for {hostessDate} at {hostessTime}
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Header */}
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '24px',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{
+                      width: '48px',
+                      height: '48px',
+                      background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                      borderRadius: '14px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Phone size={24} color="white" />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                        Request Hostess
+                      </h3>
+                      <p style={{ fontSize: '12px', color: '#64748b' }}>
+                        Schedule hostess visit
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setActiveModal('none')
+                      setHostessDate('')
+                      setHostessTime('')
+                      setHostessReason('')
+                    }}
+                    style={{
+                      background: '#f1f5f9',
+                      border: 'none',
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <X size={20} color="#64748b" />
+                  </button>
+                </div>
+
+                {/* Date Input */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#475569',
+                    marginBottom: '8px',
+                  }}>
+                    Date
+                  </label>
+                  <input
+                    type="date"
+                    value={hostessDate}
+                    onChange={(e) => setHostessDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    style={{
+                      width: '100%',
+                      padding: '14px 16px',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
+                      fontSize: '15px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                  />
+                </div>
+
+                {/* Time Input */}
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#475569',
+                    marginBottom: '8px',
+                  }}>
+                    Time
+                  </label>
+                  <input
+                    type="time"
+                    value={hostessTime}
+                    onChange={(e) => setHostessTime(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '14px 16px',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
+                      fontSize: '15px',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                  />
+                </div>
+
+                {/* Reason Input */}
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{
+                    display: 'block',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: '#475569',
+                    marginBottom: '8px',
+                  }}>
+                    Reason
+                  </label>
+                  <textarea
+                    value={hostessReason}
+                    onChange={(e) => setHostessReason(e.target.value)}
+                    placeholder="Why do you need hostess at this time?"
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      padding: '14px 16px',
+                      border: '2px solid #e2e8f0',
+                      borderRadius: '12px',
+                      fontSize: '15px',
+                      outline: 'none',
+                      resize: 'none',
+                      fontFamily: 'inherit',
+                    }}
+                  />
+                </div>
+
+                {/* Buttons */}
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button
+                    onClick={() => {
+                      setActiveModal('none')
+                      setHostessDate('')
+                      setHostessTime('')
+                      setHostessReason('')
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      background: '#f1f5f9',
+                      color: '#64748b',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (hostessDate && hostessTime && hostessReason.trim()) {
+                        setHostessRequestSubmitted(true)
+                        setTimeout(() => {
+                          setActiveModal('none')
+                          setHostessRequestSubmitted(false)
+                          setHostessDate('')
+                          setHostessTime('')
+                          setHostessReason('')
+                        }, 2000)
+                      }
+                    }}
+                    disabled={!hostessDate || !hostessTime || !hostessReason.trim()}
+                    style={{
+                      flex: 1,
+                      padding: '14px',
+                      background: hostessDate && hostessTime && hostessReason.trim()
+                        ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
+                        : '#e2e8f0',
+                      color: hostessDate && hostessTime && hostessReason.trim() ? 'white' : '#94a3b8',
+                      border: 'none',
+                      borderRadius: '12px',
+                      fontWeight: 700,
+                      cursor: hostessDate && hostessTime && hostessReason.trim() ? 'pointer' : 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px',
+                    }}
+                  >
+                    <Send size={18} />
+                    Submit
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Call Confirmation Modals (Security, Manager) */}
+      {(activeModal === 'call-security' || activeModal === 'call-manager') && (
         <div style={{
           position: 'fixed',
           inset: 0,
@@ -1045,7 +1293,6 @@ export function MenuPage() {
                   <CheckCircle2 size={40} color="white" />
                 </div>
                 <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b' }}>
-                  {activeModal === 'call-hostess' && 'Hostess Notified!'}
                   {activeModal === 'call-security' && 'Security Notified!'}
                   {activeModal === 'call-manager' && 'Manager Notified!'}
                 </h3>
@@ -1058,9 +1305,7 @@ export function MenuPage() {
                 <div style={{
                   width: '80px',
                   height: '80px',
-                  background: activeModal === 'call-hostess'
-                    ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-                    : activeModal === 'call-security'
+                  background: activeModal === 'call-security'
                     ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
                     : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
                   borderRadius: '50%',
@@ -1069,12 +1314,10 @@ export function MenuPage() {
                   justifyContent: 'center',
                   margin: '0 auto 20px',
                 }}>
-                  {activeModal === 'call-hostess' && <Phone size={36} color="white" />}
                   {activeModal === 'call-security' && <Shield size={36} color="white" />}
                   {activeModal === 'call-manager' && <UserCog size={36} color="white" />}
                 </div>
                 <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: '8px' }}>
-                  {activeModal === 'call-hostess' && 'Call Hostess?'}
                   {activeModal === 'call-security' && 'Call Security?'}
                   {activeModal === 'call-manager' && 'Call Manager?'}
                 </h3>
