@@ -27,6 +27,14 @@ const TransactionsPage = lazy(() => import('@/pages/Transactions/TransactionsPag
 const ReportsPage = lazy(() => import('@/pages/Reports/ReportsPage').then(m => ({ default: m.ReportsPage })))
 const SettingsPage = lazy(() => import('@/pages/Settings/SettingsPage').then(m => ({ default: m.SettingsPage })))
 
+// Lottery POS pages
+const GamePlayPage = lazy(() => import('@/pages/Game/GamePlayPage').then(m => ({ default: m.GamePlayPage })))
+const PaymentOfWinningsPage = lazy(() => import('@/pages/Payment/PaymentOfWinningsPage').then(m => ({ default: m.PaymentOfWinningsPage })))
+const ResultsPage = lazy(() => import('@/pages/Results/ResultsPage').then(m => ({ default: m.ResultsPage })))
+const MenuPage = lazy(() => import('@/pages/Menu/MenuPage').then(m => ({ default: m.MenuPage })))
+const QRPage = lazy(() => import('@/pages/QR/QRPage').then(m => ({ default: m.QRPage })))
+const CartPage = lazy(() => import('@/pages/Cart/CartPage').then(m => ({ default: m.CartPage })))
+
 /**
  * Loading spinner component shown during lazy loading
  */
@@ -125,6 +133,56 @@ function App() {
             element={
               <ProtectedRoute>
                 <SettingsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Lottery POS routes */}
+          <Route
+            path="/game/:gameId"
+            element={
+              <ProtectedRoute>
+                <GamePlayPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <PaymentOfWinningsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/results"
+            element={
+              <ProtectedRoute>
+                <ResultsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/menu"
+            element={
+              <ProtectedRoute>
+                <MenuPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/qr"
+            element={
+              <ProtectedRoute>
+                <QRPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <CartPage />
               </ProtectedRoute>
             }
           />

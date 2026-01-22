@@ -1,264 +1,288 @@
 /**
  * ============================================================================
- * POS PAGE (MAIN CASHIER INTERFACE)
+ * POS PAGE - LOTTERY GAMES GRID
  * ============================================================================
  *
- * Purpose: Main point-of-sale interface for cashier operations
+ * Purpose: Main lottery POS interface showing available games
+ * Based on SUMUS POS Terminal design
  *
  * Features:
- * - Product grid with categories
- * - Cart panel with running totals
- * - Quick actions
- * - Search and barcode scanning
+ * - Grid of lottery games with countdown timers
+ * - Payment of Winnings card
+ * - Bottom navigation bar
  *
  * @author Octili Development Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, LogOut, Receipt, Settings, BarChart3 } from 'lucide-react'
-import { useAuthStore } from '@/stores/authStore'
-import { useCartStore } from '@/stores/cartStore'
-import { categories, products } from '@/data/mock-data'
-import { formatCurrency } from '@/lib/utils'
-import { Button } from '@/components/ui'
-import type { Product } from '@/types/product.types'
+import { Banknote } from 'lucide-react'
+import { useLotteryGames, useGameStore } from '@/stores/gameStore'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import type { LotteryGame } from '@/types/game.types'
+
+// Brand colors
+const BRAND = {
+  green: '#24BD68',
+  teal: '#00A77E',
+  deepTeal: '#006E7E',
+  darkBlue: '#28455B',
+  charcoal: '#282E3A',
+}
+
+/**
+ * Format timer seconds to MM:SS
+ */
+function formatTimer(seconds: number): string {
+  const mins = Math.floor(seconds / 60)
+  const secs = seconds % 60
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+}
+
+/**
+ * Game card component with countdown timer
+ */
+function GameCard({ game, onClick }: { game: LotteryGame; onClick: () => void }) {
+  const [timer, setTimer] = useState(game.timerSeconds)
+
+  // Countdown timer effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          // Reset to a new random time between 1-5 minutes
+          return Math.floor(Math.random() * 240) + 60
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Timer color based on remaining time
+  const timerColor = timer <= 30 ? '#ef4444' : timer <= 60 ? '#f59e0b' : BRAND.green
+
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: 'white',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        textAlign: 'left',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.02)'
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)'
+        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)'
+      }}
+    >
+      {/* Game Name Header */}
+      <div style={{
+        background: BRAND.darkBlue,
+        color: 'white',
+        padding: '8px 12px',
+        fontSize: '12px',
+        fontWeight: 700,
+        textAlign: 'center',
+        textTransform: 'uppercase',
+        letterSpacing: '0.5px',
+      }}>
+        {game.name}
+      </div>
+
+      {/* Game Image */}
+      <div style={{
+        aspectRatio: '4/3',
+        background: `linear-gradient(135deg, ${BRAND.deepTeal}20, ${BRAND.green}10)`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+      }}>
+        {/* Placeholder for game image */}
+        <div style={{
+          fontSize: '48px',
+          opacity: 0.8,
+        }}>
+          {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+        </div>
+
+        {/* Game image overlay - would use actual images in production */}
+        <img
+          src={game.image}
+          alt={game.name}
+          style={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+          }}
+          onError={(e) => {
+            e.currentTarget.style.display = 'none'
+          }}
+        />
+      </div>
+
+      {/* Timer */}
+      <div style={{
+        background: timerColor,
+        color: 'white',
+        padding: '6px 12px',
+        fontSize: '14px',
+        fontWeight: 700,
+        textAlign: 'center',
+        fontFamily: 'monospace',
+      }}>
+        {formatTimer(timer)}
+      </div>
+    </button>
+  )
+}
+
+/**
+ * Payment of Winnings card component
+ */
+function PaymentOfWinningsCard({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        background: BRAND.green,
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 16px rgba(36, 189, 104, 0.3)',
+        transition: 'transform 0.2s, box-shadow 0.2s',
+        border: 'none',
+        cursor: 'pointer',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '24px',
+        gap: '12px',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'scale(1.02)'
+        e.currentTarget.style.boxShadow = '0 8px 32px rgba(36, 189, 104, 0.4)'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'scale(1)'
+        e.currentTarget.style.boxShadow = '0 4px 16px rgba(36, 189, 104, 0.3)'
+      }}
+    >
+      <div style={{
+        width: '64px',
+        height: '64px',
+        background: 'rgba(255,255,255,0.2)',
+        borderRadius: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
+        <Banknote size={32} color="white" />
+      </div>
+      <div style={{
+        color: 'white',
+        fontSize: '16px',
+        fontWeight: 700,
+        textAlign: 'center',
+        lineHeight: 1.3,
+      }}>
+        Payment of<br />winnings
+      </div>
+    </button>
+  )
+}
 
 export function POSPage() {
   const navigate = useNavigate()
-  const { user, logout } = useAuthStore()
-  const { items, total, itemCount, addItem, removeItem, updateQuantity, clearCart } = useCartStore()
+  const games = useLotteryGames()
+  const { balance } = useGameStore()
 
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-
-  // Filter products by category and search
-  const filteredProducts = products.filter((product) => {
-    const matchesCategory = !selectedCategory || product.categoryId === selectedCategory
-    const matchesSearch = !searchQuery ||
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.barcode?.includes(searchQuery)
-    return matchesCategory && matchesSearch && product.isActive
-  })
-
-  const handleProductClick = (product: Product) => {
-    addItem(product)
+  const handleGameClick = (game: LotteryGame) => {
+    navigate(`/game/${game.id}`)
   }
 
-  const handleCheckout = () => {
-    if (items.length === 0) return
-    navigate('/checkout')
-  }
-
-  const handleLogout = () => {
-    logout()
-    navigate('/login')
+  const handlePaymentOfWinnings = () => {
+    navigate('/payment')
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-brand-600">Octili</h1>
-          <span className="text-gray-500">|</span>
-          <span className="text-gray-700">{user?.name}</span>
-        </div>
+    <div style={{
+      minHeight: '100vh',
+      background: '#f1f5f9',
+      display: 'flex',
+      flexDirection: 'column',
+    }}>
+      {/* Status Bar (simulated) */}
+      <div style={{
+        background: BRAND.darkBlue,
+        color: 'white',
+        padding: '8px 16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        fontSize: '12px',
+      }}>
+        <span style={{ fontWeight: 600 }}>Octili Cashier</span>
+        <span style={{ fontWeight: 500 }}>
+          Balance: <span style={{ color: BRAND.green }}>{balance.toFixed(2)} BRL</span>
+        </span>
+      </div>
 
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" onClick={() => navigate('/transactions')}>
-            <Receipt className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/reports')}>
-            <BarChart3 className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
-            <Settings className="w-5 h-5" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleLogout}>
-            <LogOut className="w-5 h-5" />
-          </Button>
-        </div>
-      </header>
-
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Panel: Products */}
-        <div className="flex-1 flex flex-col p-4 overflow-hidden">
-          {/* Search */}
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products or scan barcode..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500"
+      {/* Games Grid */}
+      <div style={{
+        flex: 1,
+        padding: '16px',
+        paddingBottom: '80px', // Space for bottom nav
+        overflow: 'auto',
+      }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+          gap: '16px',
+          maxWidth: '800px',
+          margin: '0 auto',
+        }}>
+          {/* First game */}
+          {games.length > 0 && (
+            <GameCard
+              key={games[0].id}
+              game={games[0]}
+              onClick={() => handleGameClick(games[0])}
             />
-          </div>
+          )}
 
-          {/* Categories */}
-          <div className="flex gap-2 mb-4 overflow-x-auto pb-2">
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-colors ${
-                !selectedCategory
-                  ? 'bg-brand-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              All
-            </button>
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-colors ${
-                  selectedCategory === category.id
-                    ? 'bg-brand-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
+          {/* Payment of Winnings Card */}
+          <PaymentOfWinningsCard onClick={handlePaymentOfWinnings} />
 
-          {/* Product Grid */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-              {filteredProducts.map((product) => (
-                <button
-                  key={product.id}
-                  onClick={() => handleProductClick(product)}
-                  className="bg-white rounded-xl p-4 text-left hover:shadow-md transition-shadow focus:outline-none focus:ring-2 focus:ring-brand-500"
-                >
-                  <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                    <span className="text-3xl">
-                      {product.categoryId === '1' ? '🥤' :
-                       product.categoryId === '2' ? '🍔' :
-                       product.categoryId === '3' ? '🍪' :
-                       product.categoryId === '4' ? '🎰' :
-                       product.categoryId === '5' ? '🚬' : '📦'}
-                    </span>
-                  </div>
-                  <h3 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">
-                    {product.name}
-                  </h3>
-                  <p className="text-brand-600 font-semibold">
-                    {formatCurrency(product.price)}
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Right Panel: Cart */}
-        <div className="w-96 bg-white border-l border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">Cart</h2>
-              {items.length > 0 && (
-                <button
-                  onClick={clearCart}
-                  className="text-sm text-danger hover:text-danger-dark"
-                >
-                  Clear all
-                </button>
-              )}
-            </div>
-            <p className="text-sm text-gray-500">{itemCount} items</p>
-          </div>
-
-          {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {items.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
-                <p>Cart is empty</p>
-                <p className="text-sm mt-1">Add products to get started</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {items.map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-gray-50 rounded-lg p-3 flex items-center gap-3"
-                  >
-                    <div className="flex-1">
-                      <h4 className="font-medium text-gray-900 text-sm">
-                        {item.product.name}
-                      </h4>
-                      <p className="text-sm text-gray-500">
-                        {formatCurrency(item.product.price)} each
-                      </p>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100"
-                      >
-                        -
-                      </button>
-                      <span className="w-8 text-center font-medium">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-full bg-white border border-gray-300 text-gray-600 hover:bg-gray-100"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <div className="w-20 text-right">
-                      <p className="font-semibold text-gray-900">
-                        {formatCurrency(item.subtotal)}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="text-gray-400 hover:text-danger"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Cart Footer */}
-          <div className="border-t border-gray-200 p-4 space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Subtotal</span>
-                <span>{formatCurrency(total / 1.21)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>Tax (21%)</span>
-                <span>{formatCurrency(total - total / 1.21)}</span>
-              </div>
-              <div className="flex justify-between text-xl font-bold text-gray-900 pt-2 border-t">
-                <span>Total</span>
-                <span>{formatCurrency(total)}</span>
-              </div>
-            </div>
-
-            <Button
-              onClick={handleCheckout}
-              disabled={items.length === 0}
-              className="w-full"
-              size="lg"
-              variant="success"
-            >
-              Pay {formatCurrency(total)}
-            </Button>
-          </div>
+          {/* Rest of the games */}
+          {games.slice(1).map((game) => (
+            <GameCard
+              key={game.id}
+              game={game}
+              onClick={() => handleGameClick(game)}
+            />
+          ))}
         </div>
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNavigation activeTab="games" />
     </div>
   )
 }
