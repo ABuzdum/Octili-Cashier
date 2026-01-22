@@ -581,12 +581,14 @@ export function POSPage() {
             </p>
           </div>
 
-          {/* Menu Button - Themed */}
+          {/* Menu Button - Themed - 48px minimum touch target */}
           <button
             onClick={() => navigate('/menu')}
             style={{
-              width: '46px',
-              height: '46px',
+              width: '48px',
+              height: '48px',
+              minWidth: '48px',
+              minHeight: '48px',
               background: visualStyle === 'neumorphic'
                 ? (isDarkMode ? '#1e293b' : '#f0f4f8')
                 : visualStyle === 'minimal'
@@ -619,7 +621,7 @@ export function POSPage() {
             title="Operator Menu"
           >
             <Menu
-              size={22}
+              size={24}
               color={
                 visualStyle === 'bold' || (visualStyle === 'neumorphic' && !isDarkMode)
                   ? theme.colors[600]
@@ -729,7 +731,7 @@ export function POSPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="tickets" />
+      <BottomNavigation activeTab="draw" />
 
       {/* Global styles for animations */}
       <style>{`

@@ -168,21 +168,23 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: '4px',
-          padding: '8px 10px',
+          padding: '10px 14px',
+          minWidth: '64px',
+          minHeight: '56px',
           background: isActive
             ? `linear-gradient(135deg, ${item.color} 0%, ${item.activeColor} 100%)`
             : isHovered
             ? `${item.color}15`
             : 'transparent',
           border: 'none',
-          borderRadius: '12px',
+          borderRadius: '14px',
           cursor: 'pointer',
           transition: 'all 0.2s ease',
           position: 'relative',
           transform: isActive ? 'scale(1.02)' : 'scale(1)',
           boxShadow: isActive ? `0 4px 12px ${item.color}40` : 'none',
-          minWidth: '56px',
           flexShrink: 0,
         }}
       >
@@ -193,7 +195,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           justifyContent: 'center',
         }}>
           <Icon
-            size={20}
+            size={24}
             color={isActive ? 'white' : isHovered ? item.color : '#64748b'}
             strokeWidth={isActive ? 2.5 : 2}
             style={{
@@ -208,15 +210,15 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
               position: 'absolute',
               top: '-8px',
               right: '-12px',
-              minWidth: '18px',
-              height: '18px',
-              padding: '0 5px',
+              minWidth: '20px',
+              height: '20px',
+              padding: '0 6px',
               background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-              borderRadius: '9px',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '10px',
+              fontSize: '11px',
               fontWeight: 700,
               fontFamily: 'Montserrat, sans-serif',
               color: 'white',
@@ -229,7 +231,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         </div>
 
         <span style={{
-          fontSize: '10px',
+          fontSize: '11px',
           fontWeight: isActive ? 700 : 600,
           fontFamily: 'Montserrat, sans-serif',
           color: isActive ? 'white' : isHovered ? item.color : '#64748b',
@@ -257,12 +259,12 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        padding: '8px 12px',
-        paddingBottom: 'max(8px, env(safe-area-inset-bottom))',
+        padding: '10px 16px',
+        paddingBottom: 'max(10px, env(safe-area-inset-bottom))',
         boxShadow: '0 -4px 24px rgba(0,0,0,0.08)',
         borderTop: '1px solid rgba(0,0,0,0.05)',
         zIndex: 100,
-        gap: '4px',
+        gap: '6px',
         overflowX: 'auto',
         overflowY: 'hidden',
         WebkitOverflowScrolling: 'touch',
@@ -273,7 +275,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '4px',
+        gap: '6px',
       }}>
         {leftNavItems.map((item) => renderNavButton(item, item.id === 'draw'))}
       </div>
@@ -281,9 +283,9 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
       {/* Vertical Divider */}
       <div style={{
         width: '2px',
-        height: '36px',
+        height: '40px',
         background: 'linear-gradient(180deg, transparent 0%, #e2e8f0 20%, #e2e8f0 80%, transparent 100%)',
-        margin: '0 8px',
+        margin: '0 10px',
         borderRadius: '1px',
         flexShrink: 0,
       }} />

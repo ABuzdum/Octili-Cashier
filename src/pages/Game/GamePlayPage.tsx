@@ -151,7 +151,8 @@ export function GamePlayPage() {
           <button
             onClick={() => navigate('/pos')}
             style={{
-              padding: '14px 32px',
+              padding: '16px 32px',
+              minHeight: '52px',
               background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
               color: 'white',
               border: 'none',
@@ -409,7 +410,7 @@ export function GamePlayPage() {
             </span>
           </div>
 
-          {/* Cart Button */}
+          {/* Cart Button - 48px minimum touch target */}
           <button
             onClick={() => navigate('/cart')}
             style={{
@@ -419,13 +420,15 @@ export function GamePlayPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '44px',
-              height: '44px',
+              width: '48px',
+              height: '48px',
+              minWidth: '48px',
+              minHeight: '48px',
               borderRadius: '12px',
               position: 'relative',
             }}
           >
-            <ShoppingCart size={20} color="#64748b" />
+            <ShoppingCart size={22} color="#64748b" />
             {cartTickets.length > 0 && (
               <span style={{
                 position: 'absolute',
@@ -570,8 +573,8 @@ export function GamePlayPage() {
         }}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: game.type === 'keno' ? 'repeat(8, 1fr)' : 'repeat(6, 1fr)',
-            gap: '8px',
+            gridTemplateColumns: game.type === 'keno' ? 'repeat(5, 1fr)' : 'repeat(5, 1fr)',
+            gap: '10px',
           }}>
             {game.markets.slice(0, game.type === 'roulette' ? 37 : game.markets.length).map((market) => {
               const isSelected = selectedMarkets.includes(market)
@@ -580,6 +583,8 @@ export function GamePlayPage() {
                   key={market}
                   onClick={() => toggleMarket(market)}
                   style={{
+                    minWidth: '48px',
+                    minHeight: '48px',
                     aspectRatio: '1',
                     borderRadius: '12px',
                     border: 'none',
@@ -588,7 +593,7 @@ export function GamePlayPage() {
                       : '#f1f5f9',
                     color: isSelected ? 'white' : '#334155',
                     fontWeight: 700,
-                    fontSize: game.type === 'keno' ? '14px' : '15px',
+                    fontSize: '16px',
                     cursor: 'pointer',
                     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     transform: isSelected ? 'scale(1.05)' : 'scale(1)',
@@ -628,8 +633,8 @@ export function GamePlayPage() {
             </p>
             <div style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '8px',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '10px',
             }}>
               {game.markets.slice(37).map((market) => {
                 const isSelected = selectedMarkets.includes(market)
@@ -638,15 +643,16 @@ export function GamePlayPage() {
                     key={market}
                     onClick={() => toggleMarket(market)}
                     style={{
-                      padding: '10px 8px',
-                      borderRadius: '10px',
+                      padding: '14px 12px',
+                      minHeight: '48px',
+                      borderRadius: '12px',
                       border: 'none',
                       background: isSelected
                         ? GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length]
                         : '#f1f5f9',
                       color: isSelected ? 'white' : '#334155',
                       fontWeight: 600,
-                      fontSize: '11px',
+                      fontSize: '13px',
                       cursor: 'pointer',
                       transition: 'all 0.2s',
                       transform: isSelected ? 'scale(1.02)' : 'scale(1)',
@@ -681,14 +687,15 @@ export function GamePlayPage() {
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '8px',
+            gap: '10px',
           }}>
             {game.betAmounts.map((amount) => (
               <button
                 key={amount}
                 onClick={() => setBetAmount(amount)}
                 style={{
-                  padding: '14px 8px',
+                  padding: '16px 12px',
+                  minHeight: '52px',
                   borderRadius: '12px',
                   border: 'none',
                   background: betAmount === amount
@@ -696,7 +703,7 @@ export function GamePlayPage() {
                     : '#f8fafc',
                   color: betAmount === amount ? 'white' : '#334155',
                   fontWeight: 700,
-                  fontSize: '15px',
+                  fontSize: '16px',
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   transform: betAmount === amount ? 'scale(1.02)' : 'scale(1)',
@@ -730,14 +737,14 @@ export function GamePlayPage() {
             Draw Selection
           </p>
 
-          {/* Mode Toggle */}
+          {/* Mode Toggle - 48px minimum touch targets */}
           <div style={{
             display: 'flex',
             gap: '8px',
             marginBottom: '16px',
             background: '#f1f5f9',
-            borderRadius: '14px',
-            padding: '4px',
+            borderRadius: '16px',
+            padding: '6px',
           }}>
             <button
               onClick={() => {
@@ -746,15 +753,16 @@ export function GamePlayPage() {
               }}
               style={{
                 flex: 1,
-                padding: '12px 16px',
-                borderRadius: '10px',
+                padding: '14px 16px',
+                minHeight: '48px',
+                borderRadius: '12px',
                 border: 'none',
                 background: drawMode === 'multi'
                   ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
                   : 'transparent',
                 color: drawMode === 'multi' ? 'white' : '#64748b',
                 fontWeight: 600,
-                fontSize: '13px',
+                fontSize: '14px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -764,22 +772,23 @@ export function GamePlayPage() {
                 boxShadow: drawMode === 'multi' ? '0 4px 12px rgba(99, 102, 241, 0.3)' : 'none',
               }}
             >
-              <Repeat size={16} />
+              <Repeat size={18} />
               Multi-Draw
             </button>
             <button
               onClick={() => setDrawMode('specific')}
               style={{
                 flex: 1,
-                padding: '12px 16px',
-                borderRadius: '10px',
+                padding: '14px 16px',
+                minHeight: '48px',
+                borderRadius: '12px',
                 border: 'none',
                 background: drawMode === 'specific'
                   ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
                   : 'transparent',
                 color: drawMode === 'specific' ? 'white' : '#64748b',
                 fontWeight: 600,
-                fontSize: '13px',
+                fontSize: '14px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -789,24 +798,25 @@ export function GamePlayPage() {
                 boxShadow: drawMode === 'specific' ? '0 4px 12px rgba(245, 158, 11, 0.3)' : 'none',
               }}
             >
-              <Calendar size={16} />
+              <Calendar size={18} />
               Specific Draw
             </button>
           </div>
 
-          {/* Multi-Draw Options */}
+          {/* Multi-Draw Options - 48px minimum touch targets */}
           {drawMode === 'multi' && (
             <div style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '8px',
+              gap: '10px',
             }}>
               {game.drawOptions.map((draws) => (
                 <button
                   key={draws}
                   onClick={() => setNumberOfDraws(draws)}
                   style={{
-                    padding: '14px 12px',
+                    padding: '16px 12px',
+                    minHeight: '52px',
                     borderRadius: '12px',
                     border: 'none',
                     background: numberOfDraws === draws
@@ -814,7 +824,7 @@ export function GamePlayPage() {
                       : '#f8fafc',
                     color: numberOfDraws === draws ? 'white' : '#334155',
                     fontWeight: 700,
-                    fontSize: '16px',
+                    fontSize: '17px',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                     transform: numberOfDraws === draws ? 'scale(1.02)' : 'scale(1)',
@@ -829,7 +839,7 @@ export function GamePlayPage() {
             </div>
           )}
 
-          {/* Specific Draw Selection */}
+          {/* Specific Draw Selection - 48px minimum touch target */}
           {drawMode === 'specific' && (
             <div style={{ position: 'relative' }}>
               <button
@@ -838,7 +848,8 @@ export function GamePlayPage() {
                 }}
                 style={{
                   width: '100%',
-                  padding: '16px',
+                  padding: '16px 18px',
+                  minHeight: '56px',
                   borderRadius: '14px',
                   border: selectedSpecificDraw ? 'none' : '2px dashed #cbd5e1',
                   background: selectedSpecificDraw
@@ -921,6 +932,7 @@ export function GamePlayPage() {
                         style={{
                           width: '100%',
                           padding: '14px 16px',
+                          minHeight: '56px',
                           border: 'none',
                           background: isSelected
                             ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
@@ -1093,7 +1105,7 @@ export function GamePlayPage() {
         )}
       </div>
 
-      {/* Bottom Action Buttons */}
+      {/* Bottom Action Buttons - 56px minimum touch targets */}
       <div style={{
         position: 'fixed',
         bottom: 0,
@@ -1112,6 +1124,7 @@ export function GamePlayPage() {
           style={{
             flex: 2,
             padding: '18px',
+            minHeight: '56px',
             borderRadius: '16px',
             border: 'none',
             background: !isBetValid
@@ -1119,7 +1132,7 @@ export function GamePlayPage() {
               : 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
             color: !isBetValid ? '#94a3b8' : 'white',
             fontWeight: 700,
-            fontSize: '16px',
+            fontSize: '17px',
             cursor: !isBetValid ? 'not-allowed' : 'pointer',
             boxShadow: !isBetValid
               ? 'none'
@@ -1135,6 +1148,8 @@ export function GamePlayPage() {
           style={{
             flex: 1,
             padding: '18px',
+            minHeight: '56px',
+            minWidth: '56px',
             borderRadius: '16px',
             border: 'none',
             background: !isBetValid
@@ -1151,7 +1166,7 @@ export function GamePlayPage() {
             transition: 'all 0.2s',
           }}
         >
-          <ShoppingCart size={22} />
+          <ShoppingCart size={24} />
         </button>
         <button
           onClick={handleClear}
@@ -1159,6 +1174,8 @@ export function GamePlayPage() {
           style={{
             flex: 1,
             padding: '18px',
+            minHeight: '56px',
+            minWidth: '56px',
             borderRadius: '16px',
             border: 'none',
             background: selectedMarkets.length === 0
@@ -1175,7 +1192,7 @@ export function GamePlayPage() {
             transition: 'all 0.2s',
           }}
         >
-          <Trash2 size={22} />
+          <Trash2 size={24} />
         </button>
       </div>
 
@@ -1299,6 +1316,7 @@ export function GamePlayPage() {
                 style={{
                   flex: 1,
                   padding: '16px',
+                  minHeight: '52px',
                   borderRadius: '14px',
                   border: 'none',
                   background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
@@ -1313,7 +1331,7 @@ export function GamePlayPage() {
                   boxShadow: '0 4px 16px rgba(36, 189, 104, 0.4)',
                 }}
               >
-                <Check size={20} />
+                <Check size={22} />
                 Confirm
               </button>
               <button
@@ -1321,6 +1339,7 @@ export function GamePlayPage() {
                 style={{
                   flex: 1,
                   padding: '16px',
+                  minHeight: '52px',
                   borderRadius: '14px',
                   border: 'none',
                   background: '#f1f5f9',
@@ -1334,7 +1353,7 @@ export function GamePlayPage() {
                   gap: '8px',
                 }}
               >
-                <X size={20} />
+                <X size={22} />
                 Cancel
               </button>
             </div>

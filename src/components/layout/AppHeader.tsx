@@ -254,17 +254,19 @@ export function AppHeader({
 
       {/* Left Section */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px', zIndex: 1 }}>
-        {/* Back button (if enabled) */}
+        {/* Back button (if enabled) - 48px minimum touch target */}
         {showBack && (
           <button
             onClick={handleBack}
             style={{
-              width: '40px',
-              height: '40px',
+              width: '48px',
+              height: '48px',
+              minWidth: '48px',
+              minHeight: '48px',
               background: getButtonBackground(),
               backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
               border: getButtonBorder(),
-              borderRadius: visualStyle === 'bold' ? '8px' : '12px',
+              borderRadius: visualStyle === 'bold' ? '12px' : '14px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -273,7 +275,7 @@ export function AppHeader({
               boxShadow: getButtonShadow(),
             }}
           >
-            <ArrowLeft size={20} color={getIconColor()} />
+            <ArrowLeft size={24} color={getIconColor()} />
           </button>
         )}
 
@@ -325,15 +327,16 @@ export function AppHeader({
       )}
 
       {/* Right Section: Balance + Menu */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', zIndex: 1 }}>
-        {/* Balance Card - Clickable */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
+        {/* Balance Card - Clickable - 48px minimum height */}
         <button
           onClick={handleBalanceClick}
           style={{
             background: getButtonBackground(),
             backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
-            padding: '10px 16px',
-            borderRadius: visualStyle === 'bold' ? '8px' : '14px',
+            padding: '12px 20px',
+            minHeight: '48px',
+            borderRadius: visualStyle === 'bold' ? '12px' : '16px',
             border: getButtonBorder(),
             boxShadow: getButtonShadow(),
             cursor: 'pointer',
@@ -342,7 +345,7 @@ export function AppHeader({
           }}
         >
           <p style={{
-            fontSize: '10px',
+            fontSize: '11px',
             color: visualStyle === 'bold' || (visualStyle === 'neumorphic' && !isDarkMode) || visualStyle === 'minimal'
               ? theme.colors[500]
               : 'rgba(255,255,255,0.75)',
@@ -354,7 +357,7 @@ export function AppHeader({
             Balance
           </p>
           <p style={{
-            fontSize: '16px',
+            fontSize: '18px',
             fontWeight: 800,
             color: visualStyle === 'bold' || (visualStyle === 'neumorphic' && !isDarkMode)
               ? theme.colors[700]
@@ -363,20 +366,22 @@ export function AppHeader({
               : 'white',
             fontFamily: 'ui-monospace, monospace',
           }}>
-            {balance.toFixed(2)} <span style={{ fontSize: '11px', opacity: 0.8 }}>BRL</span>
+            {balance.toFixed(2)} <span style={{ fontSize: '12px', opacity: 0.8 }}>BRL</span>
           </p>
         </button>
 
-        {/* Menu Button */}
+        {/* Menu Button - 48px minimum touch target */}
         <button
           onClick={handleMenuClick}
           style={{
-            width: '46px',
-            height: '46px',
+            width: '48px',
+            height: '48px',
+            minWidth: '48px',
+            minHeight: '48px',
             background: getButtonBackground(),
             backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
             border: getButtonBorder(),
-            borderRadius: visualStyle === 'bold' ? '8px' : '14px',
+            borderRadius: visualStyle === 'bold' ? '12px' : '14px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -386,7 +391,7 @@ export function AppHeader({
           }}
           title="Menu"
         >
-          <Menu size={22} color={getIconColor()} strokeWidth={2} />
+          <Menu size={24} color={getIconColor()} strokeWidth={2} />
         </button>
       </div>
     </header>

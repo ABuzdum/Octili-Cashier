@@ -195,19 +195,20 @@ function CartTicketItem({
               style={{
                 background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
                 border: 'none',
-                borderRadius: '10px',
-                padding: '8px 12px',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                minHeight: '44px',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '6px',
+                gap: '8px',
                 color: '#ef4444',
-                fontSize: '12px',
+                fontSize: '13px',
                 fontWeight: 600,
                 transition: 'all 0.2s ease',
               }}
             >
-              <Trash2 size={14} />
+              <Trash2 size={16} />
               Remove
             </button>
           </div>
@@ -300,18 +301,19 @@ export function CartPage() {
             style={{
               background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
               border: 'none',
-              borderRadius: '10px',
-              padding: '8px 14px',
+              borderRadius: '12px',
+              padding: '12px 18px',
+              minHeight: '44px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
+              gap: '8px',
               color: '#dc2626',
-              fontSize: '13px',
+              fontSize: '14px',
               fontWeight: 600,
             }}
           >
-            <Trash2 size={14} />
+            <Trash2 size={18} />
             Clear All
           </button>
         </div>
@@ -367,6 +369,7 @@ export function CartPage() {
               onClick={() => navigate('/pos')}
               style={{
                 padding: '16px 32px',
+                minHeight: '56px',
                 background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
                 border: 'none',
@@ -380,7 +383,7 @@ export function CartPage() {
                 gap: '10px',
               }}
             >
-              <Sparkles size={20} />
+              <Sparkles size={22} />
               Browse Games
             </button>
           </div>
@@ -463,6 +466,7 @@ export function CartPage() {
               style={{
                 width: '100%',
                 padding: '18px',
+                minHeight: '60px',
                 background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 color: 'white',
                 border: 'none',
@@ -477,7 +481,7 @@ export function CartPage() {
                 boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4)',
               }}
             >
-              <Check size={22} />
+              <Check size={24} />
               Purchase All Tickets
             </button>
           </div>
@@ -542,12 +546,13 @@ export function CartPage() {
                 onClick={() => setShowClearConfirm(false)}
                 style={{
                   flex: 1,
-                  padding: '14px',
+                  padding: '16px',
+                  minHeight: '52px',
                   background: '#f1f5f9',
                   color: '#475569',
                   border: 'none',
                   borderRadius: '14px',
-                  fontSize: '15px',
+                  fontSize: '16px',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -558,12 +563,13 @@ export function CartPage() {
                 onClick={handleClearCart}
                 style={{
                   flex: 1,
-                  padding: '14px',
+                  padding: '16px',
+                  minHeight: '52px',
                   background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                   color: 'white',
                   border: 'none',
                   borderRadius: '14px',
-                  fontSize: '15px',
+                  fontSize: '16px',
                   fontWeight: 600,
                   cursor: 'pointer',
                   boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
