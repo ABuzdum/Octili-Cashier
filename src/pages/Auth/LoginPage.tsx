@@ -6,7 +6,7 @@
  * Purpose: Login page - exact copy of Octili Admin Panel design
  *
  * @author Octili Development Team
- * @version 4.0.0
+ * @version 5.0.0
  * @lastUpdated 2026-01-22
  */
 
@@ -26,14 +26,18 @@ import {
   ClipboardPaste
 } from 'lucide-react'
 
-// Brand Colors from Brand Guidelines
-const BRAND_COLORS = {
+// Brand Colors
+const BRAND = {
   green: '#24BD68',
   teal: '#00A77E',
   deepTeal: '#006E7E',
   darkBlue: '#28455B',
   charcoal: '#282E3A',
 }
+
+// Demo credentials
+const DEMO_USERNAME = 'cashier'
+const DEMO_PASSWORD = 'password'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -46,11 +50,7 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 })
 
-  // Demo credentials
-  const DEMO_USERNAME = 'cashier'
-  const DEMO_PASSWORD = 'password'
-
-  // Animated liquid glass background effect
+  // Animated background
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -61,7 +61,6 @@ export function LoginPage() {
     let animationId: number
     let time = 0
 
-    // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
@@ -69,7 +68,6 @@ export function LoginPage() {
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
 
-    // Blob class for liquid effect
     class Blob {
       x: number
       y: number
@@ -108,14 +106,10 @@ export function LoginPage() {
       }
 
       draw(ctx: CanvasRenderingContext2D) {
-        const gradient = ctx.createRadialGradient(
-          this.x, this.y, 0,
-          this.x, this.y, this.radius
-        )
+        const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius)
         gradient.addColorStop(0, this.color.replace(')', `, ${this.opacity})`).replace('rgb', 'rgba'))
         gradient.addColorStop(0.5, this.color.replace(')', `, ${this.opacity * 0.5})`).replace('rgb', 'rgba'))
         gradient.addColorStop(1, 'rgba(255, 255, 255, 0)')
-
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
         ctx.fillStyle = gradient
@@ -154,7 +148,6 @@ export function LoginPage() {
       })
       animationId = requestAnimationFrame(animate)
     }
-
     animate()
 
     return () => {
@@ -165,386 +158,231 @@ export function LoginPage() {
   }, [])
 
   const copyCredentials = async () => {
-    try {
-      await navigator.clipboard.writeText(`${DEMO_USERNAME}\n${DEMO_PASSWORD}`)
-    } catch {
-      // Silently fail
-    }
+    try { await navigator.clipboard.writeText(`${DEMO_USERNAME}\n${DEMO_PASSWORD}`) } catch {}
   }
-
   const pasteUsername = () => setUsername(DEMO_USERNAME)
   const pastePassword = () => setPassword(DEMO_PASSWORD)
-  const fillBoth = () => {
-    setUsername(DEMO_USERNAME)
-    setPassword(DEMO_PASSWORD)
-  }
+  const fillBoth = () => { setUsername(DEMO_USERNAME); setPassword(DEMO_PASSWORD) }
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
-
-    if (!username || !password) {
-      setError('Please enter username and password')
-      return
-    }
-
+    if (!username || !password) { setError('Please enter username and password'); return }
     const success = await login(username, password)
-    if (success) {
-      navigate('/pos')
-    } else {
-      setError('Invalid username or password')
-    }
+    if (success) navigate('/pos')
+    else setError('Invalid username or password')
+  }
+
+  // Inline styles for glass card (works with Tailwind v4)
+  const cardStyle: React.CSSProperties = {
+    background: 'rgba(255, 255, 255, 0.6)',
+    backdropFilter: 'blur(40px)',
+    WebkitBackdropFilter: 'blur(40px)',
+    border: '1px solid rgba(255, 255, 255, 0.7)',
+    borderRadius: '2rem',
+    padding: '2.5rem',
+    boxShadow: '0 8px 40px rgba(0, 0, 0, 0.08)',
+    position: 'relative',
+    overflow: 'hidden',
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    height: '56px',
+    paddingLeft: '48px',
+    paddingRight: '16px',
+    borderRadius: '12px',
+    background: 'rgba(255, 255, 255, 0.5)',
+    border: '2px solid rgba(226, 232, 240, 0.8)',
+    fontSize: '16px',
+    fontWeight: 500,
+    color: BRAND.charcoal,
+    outline: 'none',
+    transition: 'all 0.3s',
+  }
+
+  const buttonStyle: React.CSSProperties = {
+    width: '100%',
+    height: '64px',
+    borderRadius: '16px',
+    background: `linear-gradient(135deg, ${BRAND.darkBlue} 0%, ${BRAND.deepTeal} 25%, ${BRAND.teal} 50%, ${BRAND.green} 75%, ${BRAND.teal} 100%)`,
+    backgroundSize: '200% 100%',
+    color: 'white',
+    fontSize: '18px',
+    fontWeight: 700,
+    border: 'none',
+    cursor: 'pointer',
+    boxShadow: `0 8px 32px ${BRAND.green}40`,
+    transition: 'all 0.3s',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '12px',
   }
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
-      {/* Animated Canvas Background */}
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full"
-        style={{ filter: 'blur(80px)' }}
-      />
+    <div style={{
+      minHeight: '100vh',
+      position: 'relative',
+      overflow: 'hidden',
+      background: 'linear-gradient(to bottom right, #f8fafc, white, rgba(236, 253, 245, 0.3))'
+    }}>
+      {/* Canvas Background */}
+      <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', filter: 'blur(80px)' }} />
 
-      {/* Subtle moving gradient overlay */}
-      <div
-        className="absolute inset-0 transition-all duration-[2000ms] ease-out"
-        style={{
-          background: `
-            radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(36, 189, 104, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at ${100 - mousePosition.x}% ${100 - mousePosition.y}%, rgba(0, 167, 126, 0.1) 0%, transparent 40%)
-          `,
-        }}
-      />
+      {/* Gradient overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(36, 189, 104, 0.15) 0%, transparent 50%),
+                     radial-gradient(circle at ${100 - mousePosition.x}% ${100 - mousePosition.y}%, rgba(0, 167, 126, 0.1) 0%, transparent 40%)`,
+        transition: 'all 2s ease-out',
+      }} />
 
-      {/* Subtle grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, ${BRAND_COLORS.charcoal} 1px, transparent 0)`,
-          backgroundSize: '32px 32px'
-        }}
-      />
-
-      {/* Noise texture for glass effect */}
-      <div
-        className="absolute inset-0 opacity-[0.015] pointer-events-none"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
-        }}
-      />
-
-      {/* Main content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-12">
+      {/* Main Content */}
+      <div style={{
+        position: 'relative', zIndex: 10,
+        minHeight: '100vh',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        padding: '48px 16px',
+      }}>
         {/* Logo Section */}
-        <div className="text-center mb-10 animate-fade-in">
-          {/* Logo container with brand glow */}
-          <div className="relative inline-block mb-6">
-            {/* Subtle glow behind logo using brand colors */}
-            <div
-              className="absolute inset-0 blur-3xl scale-150 opacity-50"
-              style={{
-                background: `linear-gradient(135deg, ${BRAND_COLORS.green}40, ${BRAND_COLORS.teal}30, ${BRAND_COLORS.deepTeal}20)`,
-              }}
-            />
-
-            {/* Logo */}
-            <img
-              src="/octili-primary-logo.svg"
-              alt="Octili"
-              className="relative h-24 sm:h-32 md:h-40 w-auto mx-auto drop-shadow-lg"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
-            />
+        <div style={{ textAlign: 'center', marginBottom: '40px' }} className="animate-fade-in">
+          <div style={{ position: 'relative', display: 'inline-block', marginBottom: '24px' }}>
+            <div style={{
+              position: 'absolute', inset: 0,
+              filter: 'blur(48px)', transform: 'scale(1.5)', opacity: 0.5,
+              background: `linear-gradient(135deg, ${BRAND.green}40, ${BRAND.teal}30, ${BRAND.deepTeal}20)`,
+            }} />
+            <img src="/octili-primary-logo.svg" alt="Octili" style={{ position: 'relative', height: '160px', width: 'auto', margin: '0 auto' }} onError={(e) => { e.currentTarget.style.display = 'none' }} />
           </div>
-
-          {/* Tagline with brand typography */}
-          <div className="space-y-2">
-            <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight"
-              style={{ color: BRAND_COLORS.charcoal }}
-            >
-              Cashier
-            </h1>
-            <p
-              className="text-base sm:text-lg font-medium tracking-wide"
-              style={{ color: BRAND_COLORS.darkBlue }}
-            >
-              POS Terminal
-            </p>
-          </div>
+          <h1 style={{ fontSize: '3rem', fontWeight: 900, color: BRAND.charcoal, letterSpacing: '-0.025em' }}>Cashier</h1>
+          <p style={{ fontSize: '1.125rem', fontWeight: 500, color: BRAND.darkBlue }}>POS Terminal</p>
         </div>
 
         {/* Glass Card */}
-        <div className="w-full max-w-lg animate-slide-up" style={{ animationDelay: '0.15s' }}>
-          <div className="relative group">
-            {/* Card outer glow on hover - brand colors */}
-            <div
-              className="absolute -inset-1 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-              style={{
-                background: `linear-gradient(135deg, ${BRAND_COLORS.green}20, ${BRAND_COLORS.teal}15, ${BRAND_COLORS.deepTeal}10)`,
-              }}
-            />
+        <div style={{ width: '100%', maxWidth: '512px' }} className="animate-slide-up">
+          <div style={cardStyle}>
+            {/* Secure Login Badge */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px',
+                padding: '10px 20px', borderRadius: '9999px',
+                background: `linear-gradient(135deg, ${BRAND.green}15, ${BRAND.teal}10)`,
+                border: `1px solid ${BRAND.green}30`,
+              }}>
+                <Sparkles style={{ width: '16px', height: '16px', color: BRAND.green }} />
+                <span style={{ fontSize: '14px', fontWeight: 600, color: BRAND.darkBlue }}>Secure Login</span>
+              </div>
+            </div>
 
-            {/* Glass card */}
-            <div className="relative backdrop-blur-2xl bg-white/60 border border-white/70 rounded-[2rem] p-8 sm:p-10 shadow-[0_8px_40px_rgba(0,0,0,0.08)] overflow-hidden">
-              {/* Inner glass shine */}
-              <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/70 via-white/30 to-transparent pointer-events-none" />
+            {/* Error Alert */}
+            {error && (
+              <div style={{
+                marginBottom: '24px', padding: '16px',
+                background: 'rgba(254, 226, 226, 0.8)', border: '1px solid rgba(254, 202, 202, 0.6)',
+                borderRadius: '16px', display: 'flex', alignItems: 'flex-start', gap: '12px',
+              }} className="animate-shake">
+                <AlertCircle style={{ width: '20px', height: '20px', color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
+                <div>
+                  <p style={{ fontSize: '14px', fontWeight: 600, color: '#b91c1c' }}>Login Failed</p>
+                  <p style={{ fontSize: '14px', color: '#dc2626', marginTop: '4px' }}>{error}</p>
+                </div>
+              </div>
+            )}
 
-              {/* Animated border glow - brand gradient */}
-              <div
-                className="absolute inset-0 rounded-[2rem] opacity-40 pointer-events-none transition-opacity duration-500"
-                style={{
-                  background: `conic-gradient(from ${mousePosition.x * 3.6}deg at 50% 50%, transparent 0deg, ${BRAND_COLORS.green}30 60deg, ${BRAND_COLORS.teal}20 120deg, transparent 180deg)`,
-                }}
-              />
-
-              {/* Welcome badge with brand colors */}
-              <div className="relative flex items-center justify-center gap-2 mb-8">
-                <div
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full backdrop-blur-sm"
-                  style={{
-                    background: `linear-gradient(135deg, ${BRAND_COLORS.green}15, ${BRAND_COLORS.teal}10)`,
-                    border: `1px solid ${BRAND_COLORS.green}30`,
-                  }}
-                >
-                  <Sparkles className="w-4 h-4" style={{ color: BRAND_COLORS.green }} />
-                  <span className="text-sm font-semibold" style={{ color: BRAND_COLORS.darkBlue }}>
-                    Secure Login
-                  </span>
+            <form onSubmit={handleSubmit}>
+              {/* Username */}
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: BRAND.darkBlue, marginBottom: '8px' }}>Username</label>
+                <div style={{ position: 'relative' }}>
+                  <User style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', color: '#94a3b8' }} />
+                  <input
+                    type="text" value={username} onChange={(e) => setUsername(e.target.value)}
+                    placeholder="cashier" autoComplete="username"
+                    style={inputStyle}
+                    onFocus={(e) => { e.target.style.borderColor = BRAND.green; e.target.style.background = 'rgba(255,255,255,0.7)' }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(226, 232, 240, 0.8)'; e.target.style.background = 'rgba(255,255,255,0.5)' }}
+                  />
                 </div>
               </div>
 
-              {/* Error Alert */}
-              {error && (
-                <div className="relative mb-6 p-4 bg-red-50/80 border border-red-200/60 rounded-2xl flex items-start gap-3 animate-shake backdrop-blur-sm">
-                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-semibold text-red-700">Login Failed</p>
-                    <p className="text-sm text-red-600 mt-1">{error}</p>
-                  </div>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6 relative">
-                {/* Username */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-semibold"
-                    style={{ color: BRAND_COLORS.darkBlue }}
-                  >
-                    Username
-                  </label>
-                  <div className="relative group/input">
-                    <div
-                      className="absolute -inset-0.5 rounded-xl blur opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(135deg, ${BRAND_COLORS.green}30, ${BRAND_COLORS.teal}20)` }}
-                    />
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        autoComplete="username"
-                        className="w-full h-14 pl-12 pr-4 rounded-xl bg-white/50 border-2 border-slate-200/80 backdrop-blur-sm placeholder-slate-400 text-base font-medium focus:outline-none focus:bg-white/70 focus:border-[#24BD68] transition-all duration-300"
-                        style={{ color: BRAND_COLORS.charcoal }}
-                        placeholder="cashier"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div className="space-y-2">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-semibold"
-                    style={{ color: BRAND_COLORS.darkBlue }}
-                  >
-                    Password
-                  </label>
-                  <div className="relative group/input">
-                    <div
-                      className="absolute -inset-0.5 rounded-xl blur opacity-0 group-focus-within/input:opacity-100 transition-opacity duration-300"
-                      style={{ background: `linear-gradient(135deg, ${BRAND_COLORS.green}30, ${BRAND_COLORS.teal}20)` }}
-                    />
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                      <input
-                        type={showPassword ? 'text' : 'password'}
-                        id="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        autoComplete="current-password"
-                        className="w-full h-14 pl-12 pr-14 rounded-xl bg-white/50 border-2 border-slate-200/80 backdrop-blur-sm placeholder-slate-400 text-base font-medium focus:outline-none focus:bg-white/70 focus:border-[#24BD68] transition-all duration-300"
-                        style={{ color: BRAND_COLORS.charcoal }}
-                        placeholder="Enter your password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1"
-                      >
-                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Remember Me & Forgot Password */}
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-3 cursor-pointer group/check">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        className="peer sr-only"
-                      />
-                      <div className="w-5 h-5 rounded-md border-2 border-slate-300 bg-white/50 peer-checked:border-[#24BD68] peer-checked:bg-[#24BD68] transition-all duration-200 flex items-center justify-center">
-                        <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                    </div>
-                    <span
-                      className="text-sm group-hover/check:opacity-80 transition-colors font-medium"
-                      style={{ color: BRAND_COLORS.darkBlue }}
-                    >
-                      Remember me
-                    </span>
-                  </label>
-                  <button
-                    type="button"
-                    className="text-sm font-semibold transition-colors hover:opacity-80"
-                    style={{ color: BRAND_COLORS.green }}
-                  >
-                    Forgot password?
+              {/* Password */}
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, color: BRAND.darkBlue, marginBottom: '8px' }}>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <Lock style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', width: '20px', height: '20px', color: '#94a3b8' }} />
+                  <input
+                    type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password" autoComplete="current-password"
+                    style={{ ...inputStyle, paddingRight: '56px' }}
+                    onFocus={(e) => { e.target.style.borderColor = BRAND.green; e.target.style.background = 'rgba(255,255,255,0.7)' }}
+                    onBlur={(e) => { e.target.style.borderColor = 'rgba(226, 232, 240, 0.8)'; e.target.style.background = 'rgba(255,255,255,0.5)' }}
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}>
+                    {showPassword ? <EyeOff style={{ width: '20px', height: '20px' }} /> : <Eye style={{ width: '20px', height: '20px' }} />}
                   </button>
                 </div>
+              </div>
 
-                {/* Large Submit Button - Brand Gradient */}
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="relative w-full h-16 rounded-2xl font-bold text-lg text-white overflow-hidden group/btn disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                  style={{
-                    boxShadow: `0 8px 32px ${BRAND_COLORS.green}40`,
-                  }}
-                >
-                  {/* Button gradient background - Brand Colors */}
-                  <div
-                    className="absolute inset-0 bg-[length:200%_100%] group-hover/btn:bg-[position:100%_0] transition-all duration-500"
-                    style={{
-                      background: `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.deepTeal} 25%, ${BRAND_COLORS.teal} 50%, ${BRAND_COLORS.green} 75%, ${BRAND_COLORS.teal} 100%)`,
-                      backgroundSize: '200% 100%',
-                    }}
-                  />
-
-                  {/* Button shine effect */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
-
-                  {/* Subtle inner glow */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
-
-                  {/* Button content */}
-                  <span className="relative flex items-center justify-center gap-3">
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-6 h-6 animate-spin" />
-                        <span>Signing in...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Sign in to Dashboard</span>
-                        <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                      </>
-                    )}
-                  </span>
+              {/* Remember Me & Forgot Password */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                  <input type="checkbox" style={{ width: '20px', height: '20px', accentColor: BRAND.green, cursor: 'pointer' }} />
+                  <span style={{ fontSize: '14px', fontWeight: 500, color: BRAND.darkBlue }}>Remember me</span>
+                </label>
+                <button type="button" style={{ background: 'none', border: 'none', fontSize: '14px', fontWeight: 600, color: BRAND.green, cursor: 'pointer' }}>
+                  Forgot password?
                 </button>
-              </form>
+              </div>
 
-              {/* Demo Credentials - INSIDE the card */}
-              <div className="relative mt-8 pt-6 border-t border-slate-200/50">
-                <p
-                  className="text-xs text-center mb-4 uppercase tracking-widest font-semibold"
-                  style={{ color: BRAND_COLORS.darkBlue, opacity: 0.6 }}
-                >
-                  Demo Credentials
-                </p>
-                <div
-                  className="p-4 rounded-xl space-y-2.5 backdrop-blur-sm"
-                  style={{
-                    background: `linear-gradient(135deg, ${BRAND_COLORS.green}08, ${BRAND_COLORS.teal}05)`,
-                    border: `1px solid ${BRAND_COLORS.green}20`,
-                  }}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium" style={{ color: BRAND_COLORS.darkBlue }}>Username</span>
-                    <div className="flex items-center gap-2">
-                      <code
-                        className="text-sm font-mono font-semibold px-3 py-1 rounded-lg"
-                        style={{
-                          color: BRAND_COLORS.green,
-                          background: `${BRAND_COLORS.green}15`,
-                        }}
-                      >
-                        {DEMO_USERNAME}
-                      </code>
-                      <button
-                        type="button"
-                        onClick={pasteUsername}
-                        className="p-1.5 rounded-lg hover:bg-white/50 transition-colors"
-                        title="Paste to username field"
-                      >
-                        <ClipboardPaste className="w-4 h-4" style={{ color: BRAND_COLORS.teal }} />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium" style={{ color: BRAND_COLORS.darkBlue }}>Password</span>
-                    <div className="flex items-center gap-2">
-                      <code
-                        className="text-sm font-mono font-semibold px-3 py-1 rounded-lg"
-                        style={{
-                          color: BRAND_COLORS.green,
-                          background: `${BRAND_COLORS.green}15`,
-                        }}
-                      >
-                        {DEMO_PASSWORD}
-                      </code>
-                      <button
-                        type="button"
-                        onClick={pastePassword}
-                        className="p-1.5 rounded-lg hover:bg-white/50 transition-colors"
-                        title="Paste to password field"
-                      >
-                        <ClipboardPaste className="w-4 h-4" style={{ color: BRAND_COLORS.teal }} />
-                      </button>
-                    </div>
-                  </div>
-                  {/* Quick action buttons */}
-                  <div className="flex items-center gap-2 pt-2 mt-2 border-t border-slate-200/30">
-                    <button
-                      type="button"
-                      onClick={copyCredentials}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/50"
-                      style={{ color: BRAND_COLORS.darkBlue }}
-                    >
-                      <Copy className="w-4 h-4" />
-                      Copy All
-                    </button>
-                    <button
-                      type="button"
-                      onClick={fillBoth}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:scale-105"
-                      style={{ background: BRAND_COLORS.green }}
-                    >
-                      <ClipboardPaste className="w-4 h-4" />
-                      Fill Both
+              {/* Submit Button */}
+              <button type="submit" disabled={isLoading} style={buttonStyle}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(1.02)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'scale(1)' }}
+              >
+                {isLoading ? (
+                  <><Loader2 style={{ width: '24px', height: '24px', animation: 'spin 1s linear infinite' }} /><span>Signing in...</span></>
+                ) : (
+                  <><span>Sign in to Dashboard</span><ArrowRight style={{ width: '20px', height: '20px' }} /></>
+                )}
+              </button>
+            </form>
+
+            {/* Demo Credentials */}
+            <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(226, 232, 240, 0.5)' }}>
+              <p style={{ fontSize: '12px', textAlign: 'center', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600, color: BRAND.darkBlue, opacity: 0.6, marginBottom: '16px' }}>
+                Demo Credentials
+              </p>
+              <div style={{
+                padding: '16px', borderRadius: '12px',
+                background: `linear-gradient(135deg, ${BRAND.green}08, ${BRAND.teal}05)`,
+                border: `1px solid ${BRAND.green}20`,
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 500, color: BRAND.darkBlue }}>Username</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <code style={{ fontSize: '14px', fontFamily: 'monospace', fontWeight: 600, padding: '4px 12px', borderRadius: '8px', color: BRAND.green, background: `${BRAND.green}15` }}>{DEMO_USERNAME}</code>
+                    <button type="button" onClick={pasteUsername} style={{ padding: '6px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }} title="Paste">
+                      <ClipboardPaste style={{ width: '16px', height: '16px', color: BRAND.teal }} />
                     </button>
                   </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <span style={{ fontSize: '14px', fontWeight: 500, color: BRAND.darkBlue }}>Password</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <code style={{ fontSize: '14px', fontFamily: 'monospace', fontWeight: 600, padding: '4px 12px', borderRadius: '8px', color: BRAND.green, background: `${BRAND.green}15` }}>{DEMO_PASSWORD}</code>
+                    <button type="button" onClick={pastePassword} style={{ padding: '6px', borderRadius: '8px', background: 'none', border: 'none', cursor: 'pointer' }} title="Paste">
+                      <ClipboardPaste style={{ width: '16px', height: '16px', color: BRAND.teal }} />
+                    </button>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', paddingTop: '12px', borderTop: '1px solid rgba(226, 232, 240, 0.3)' }}>
+                  <button type="button" onClick={copyCredentials} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 12px', borderRadius: '8px', fontSize: '14px', fontWeight: 500, color: BRAND.darkBlue, background: 'none', border: 'none', cursor: 'pointer' }}>
+                    <Copy style={{ width: '16px', height: '16px' }} />Copy All
+                  </button>
+                  <button type="button" onClick={fillBoth} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '8px 12px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, color: 'white', background: BRAND.green, border: 'none', cursor: 'pointer' }}>
+                    <ClipboardPaste style={{ width: '16px', height: '16px' }} />Fill Both
+                  </button>
                 </div>
               </div>
             </div>
@@ -552,10 +390,7 @@ export function LoginPage() {
         </div>
 
         {/* Footer */}
-        <p
-          className="text-center text-sm mt-12 animate-fade-in font-medium"
-          style={{ animationDelay: '0.3s', color: BRAND_COLORS.darkBlue, opacity: 0.6 }}
-        >
+        <p style={{ textAlign: 'center', fontSize: '14px', marginTop: '48px', fontWeight: 500, color: BRAND.darkBlue, opacity: 0.6 }}>
           © {new Date().getFullYear()} Octili IT Consulting. All rights reserved.
         </p>
       </div>
