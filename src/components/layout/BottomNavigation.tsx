@@ -14,10 +14,9 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode, Banknote, Dices, Award, HandCoins, LayoutGrid } from 'lucide-react'
-import { useGameStore } from '@/stores/gameStore'
+import { QrCode, Dices, Award, HandCoins, LayoutGrid } from 'lucide-react'
 
-export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay' | 'menu'
+export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'payout' | 'menu'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -90,88 +89,16 @@ const controlCenterItem: NavItem = {
   activeColor: '#1e293b',
 }
 
-/**
- * Legacy navigation items - pages not currently in main navigation
- * These are shown after a red divider for visibility during development
- */
-const legacyNavItems: NavItem[] = [
-  {
-    id: 'cart',
-    label: 'Cart',
-    icon: ShoppingCart,
-    path: '/cart',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'checkout',
-    label: 'Checkout',
-    icon: CreditCard,
-    path: '/checkout',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'transactions',
-    label: 'Trans',
-    icon: Receipt,
-    path: '/transactions',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'payout',
-    label: 'Payout',
-    icon: DollarSign,
-    path: '/payment',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'account',
-    label: 'Account',
-    icon: User,
-    path: '/account',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'tvbox',
-    label: 'TV Box',
-    icon: Tv,
-    path: '/tvbox-control',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    icon: Settings,
-    path: '/settings',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-  {
-    id: 'seconddisplay',
-    label: '2nd Disp',
-    icon: Monitor,
-    path: '/second-display',
-    color: '#64748b',
-    activeColor: '#475569',
-  },
-]
 
 export function BottomNavigation({ activeTab }: BottomNavigationProps) {
   const navigate = useNavigate()
-  const { cartTickets } = useGameStore()
-  const cartCount = cartTickets.length
   const [hoveredTab, setHoveredTab] = useState<NavTab | null>(null)
 
   /**
    * Render a standard navigation button
    */
-  const renderNavButton = (item: NavItem, options: { large?: boolean; showBadge?: boolean } = {}) => {
-    const { large = false, showBadge = false } = options
+  const renderNavButton = (item: NavItem, options: { large?: boolean } = {}) => {
+    const { large = false } = options
     const isActive = activeTab === item.id
     const isHovered = hoveredTab === item.id
     const Icon = item.icon
@@ -221,31 +148,6 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
               filter: isActive ? 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))' : 'none',
             }}
           />
-
-          {/* Cart badge */}
-          {showBadge && cartCount > 0 && (
-            <div style={{
-              position: 'absolute',
-              top: '-8px',
-              right: '-12px',
-              minWidth: '20px',
-              height: '20px',
-              padding: '0 6px',
-              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-              borderRadius: '10px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '11px',
-              fontWeight: 700,
-              fontFamily: 'Montserrat, sans-serif',
-              color: 'white',
-              boxShadow: '0 2px 8px rgba(239, 68, 68, 0.4)',
-              border: '2px solid white',
-            }}>
-              {cartCount > 9 ? '9+' : cartCount}
-            </div>
-          )}
         </div>
 
         <span style={{
@@ -328,48 +230,6 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
 
       {/* Control Center - Operator menu */}
       {renderNavButton(controlCenterItem)}
-
-      {/* Red Vertical Divider - Legacy Section */}
-      <div style={{
-        width: '2px',
-        height: '36px',
-        background: 'linear-gradient(180deg, transparent 0%, #ef4444 20%, #ef4444 80%, transparent 100%)',
-        margin: '0 6px',
-        borderRadius: '1px',
-        boxShadow: '0 0 6px rgba(239, 68, 68, 0.3)',
-        flexShrink: 0,
-      }} />
-
-      {/* Legacy Label */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: '4px',
-        flexShrink: 0,
-      }}>
-        <span style={{
-          fontSize: '7px',
-          fontWeight: 700,
-          fontFamily: 'Montserrat, sans-serif',
-          color: '#ef4444',
-          textTransform: 'uppercase',
-          letterSpacing: '0.3px',
-        }}>
-          Legacy
-        </span>
-      </div>
-
-      {/* Legacy Section: Hidden pages */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '2px',
-        opacity: 0.7,
-      }}>
-        {legacyNavItems.map((item) => renderNavButton(item))}
-      </div>
     </nav>
   )
 }
