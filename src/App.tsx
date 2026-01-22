@@ -40,6 +40,9 @@ const CartPage = lazy(() => import('@/pages/Cart/CartPage').then(m => ({ default
 const NewTicketPage = lazy(() => import('@/pages/PhysicalTicket/NewTicketPage').then(m => ({ default: m.NewTicketPage })))
 const PayoutTicketPage = lazy(() => import('@/pages/PhysicalTicket/PayoutTicketPage').then(m => ({ default: m.PayoutTicketPage })))
 
+// QR Ticket hub page - Access physical tickets, QR tickets, and account
+const QRTicketPage = lazy(() => import('@/pages/QRTicket/QRTicketPage').then(m => ({ default: m.QRTicketPage })))
+
 // Second Display - Player-facing screen (opens in separate window)
 const SecondDisplayPage = lazy(() => import('@/pages/SecondDisplay/SecondDisplayPage').then(m => ({ default: m.SecondDisplayPage })))
 
@@ -198,6 +201,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <CartPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* QR Ticket hub */}
+          <Route
+            path="/qr-ticket"
+            element={
+              <ProtectedRoute>
+                <QRTicketPage />
               </ProtectedRoute>
             }
           />

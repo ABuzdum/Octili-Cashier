@@ -67,7 +67,7 @@ const navItems: NavItem[] = [
     id: 'qrticket',
     label: 'QR Ticket',
     icon: QrCode,
-    path: '/physical-ticket/payout',
+    path: '/qr-ticket',
     gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
   },
 ]
