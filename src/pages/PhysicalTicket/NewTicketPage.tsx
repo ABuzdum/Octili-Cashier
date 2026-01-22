@@ -36,7 +36,7 @@ import { usePhysicalTicketStore } from '@/stores/physicalTicketStore'
 import { useLotteryGames } from '@/stores/gameStore'
 import { QRCodeDisplay } from '@/components/shared/QRCodeDisplay'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
-import { useSwipeNavigation } from '@/hooks'
+import { SwipePageWrapper } from '@/components/shared/SwipePageWrapper'
 import { QUICK_AMOUNTS, type GameScope } from '@/types/physical-ticket.types'
 import type { PhysicalTicket } from '@/types/physical-ticket.types'
 
@@ -333,9 +333,6 @@ export function NewTicketPage() {
   const games = useLotteryGames()
   const createTicket = usePhysicalTicketStore((state) => state.createTicket)
 
-  // Swipe navigation handlers
-  const swipeHandlers = useSwipeNavigation({ currentPage: 'qrticket-sell' })
-
   // Form state
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null)
   const [showCustomAmount, setShowCustomAmount] = useState(false)
@@ -403,15 +400,9 @@ export function NewTicketPage() {
     (gameScope === 'all' || (gameScope === 'single' && selectedGameId))
 
   return (
-    <div
-      {...swipeHandlers}
-      style={{
-        minHeight: '100vh',
-        background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        touchAction: 'pan-y',
-      }}
+    <SwipePageWrapper
+      currentPage="qrticket-sell"
+      background="linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)"
     >
       {/* Header */}
       <div
@@ -996,7 +987,7 @@ export function NewTicketPage() {
 
       {/* Bottom Navigation - Always visible */}
       <BottomNavigation activeTab="qrticket-sell" />
-    </div>
+    </SwipePageWrapper>
   )
 }
 
