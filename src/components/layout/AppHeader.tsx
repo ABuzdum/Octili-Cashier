@@ -19,7 +19,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Menu, ArrowLeft } from 'lucide-react'
+import { Menu, ArrowLeft, ShoppingCart } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BalanceOverview } from '@/components/shared/BalanceOverview'
@@ -52,8 +52,9 @@ export function AppHeader({
   leftContent,
 }: AppHeaderProps) {
   const navigate = useNavigate()
-  const { pocketBalances, getTotalBalance } = useGameStore()
+  const { pocketBalances, getTotalBalance, cartTickets } = useGameStore()
   const balance = getTotalBalance()
+  const cartCount = cartTickets.length
   const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
 
   /** State for showing balance details modal */
@@ -378,6 +379,56 @@ export function AppHeader({
           </p>
         </button>
 
+        {/* Cart Button - Only visible when cart has items */}
+        {cartCount > 0 && (
+          <button
+            onClick={() => navigate('/cart')}
+            className="cart-glow-animation"
+            style={{
+              position: 'relative',
+              width: '48px',
+              height: '48px',
+              minWidth: '48px',
+              minHeight: '48px',
+              background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
+              backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
+              border: '2px solid rgba(255,255,255,0.3)',
+              borderRadius: visualStyle === 'bold' ? '12px' : '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 0 20px rgba(36, 189, 104, 0.6), 0 4px 12px rgba(36, 189, 104, 0.4)',
+              animation: 'cartPulse 2s ease-in-out infinite',
+            }}
+            title={`Cart (${cartCount} items)`}
+          >
+            <ShoppingCart size={22} color="white" strokeWidth={2.5} />
+            {/* Badge showing count */}
+            <div style={{
+              position: 'absolute',
+              top: '-6px',
+              right: '-6px',
+              minWidth: '22px',
+              height: '22px',
+              padding: '0 6px',
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              borderRadius: '11px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '12px',
+              fontWeight: 800,
+              color: 'white',
+              boxShadow: '0 2px 8px rgba(239, 68, 68, 0.5)',
+              border: '2px solid white',
+            }}>
+              {cartCount > 9 ? '9+' : cartCount}
+            </div>
+          </button>
+        )}
+
         {/* Menu Button - 48px minimum touch target */}
         <button
           onClick={handleMenuClick}
@@ -403,6 +454,20 @@ export function AppHeader({
         </button>
       </div>
     </header>
+
+    {/* Cart Glow Animation Styles */}
+    <style>{`
+      @keyframes cartPulse {
+        0%, 100% {
+          box-shadow: 0 0 20px rgba(36, 189, 104, 0.6), 0 4px 12px rgba(36, 189, 104, 0.4);
+          transform: scale(1);
+        }
+        50% {
+          box-shadow: 0 0 30px rgba(36, 189, 104, 0.8), 0 6px 16px rgba(36, 189, 104, 0.6);
+          transform: scale(1.05);
+        }
+      }
+    `}</style>
 
     {/* Balance Details Modal */}
     {showBalanceModal && (

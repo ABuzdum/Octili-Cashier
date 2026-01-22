@@ -65,6 +65,16 @@ import {
   Box,
   Minus,
   Bold,
+  // Additional icons for All Pages section
+  LayoutGrid,
+  FileBarChart,
+  QrCode,
+  Banknote,
+  ShoppingCart,
+  Receipt,
+  Ticket,
+  Trophy,
+  ScreenShare,
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useGameStore } from '@/stores/gameStore'
@@ -398,7 +408,7 @@ export function MenuPage() {
       <AppHeader
         showBack
         backPath="/physical-ticket/new"
-        title="My Station"
+        title="Control Center"
         subtitle="Shift & Operations"
         centerContent={
           <div style={{
@@ -760,6 +770,96 @@ export function MenuPage() {
             label="Exit / Logout"
             gradient="linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
             onClick={handleLogout}
+          />
+        </div>
+
+        {/* All Pages Section - Development access to all pages */}
+        <SectionHeader title="All Pages (Dev)" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {/* Main Navigation Pages */}
+          <MenuItem
+            icon={QrCode}
+            label="QR Tickets (Main)"
+            gradient="linear-gradient(135deg, #24BD68 0%, #00A77E 100%)"
+            onClick={() => navigate('/physical-ticket/new')}
+          />
+          <MenuItem
+            icon={Ticket}
+            label="Draw Games"
+            gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+            onClick={() => navigate('/games')}
+          />
+          <MenuItem
+            icon={Trophy}
+            label="Draw Results"
+            gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+            onClick={() => navigate('/results')}
+          />
+          <MenuItem
+            icon={Banknote}
+            label="Payout"
+            gradient="linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+            onClick={() => navigate('/payout')}
+          />
+          <MenuItem
+            icon={ShoppingCart}
+            label="Cart"
+            gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)"
+            onClick={() => navigate('/cart')}
+          />
+          <MenuItem
+            icon={CreditCard}
+            label="Checkout"
+            gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+            onClick={() => navigate('/checkout')}
+          />
+          <MenuItem
+            icon={Receipt}
+            label="Transactions"
+            gradient="linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)"
+            onClick={() => navigate('/transactions')}
+          />
+          <MenuItem
+            icon={FileBarChart}
+            label="Reports"
+            gradient="linear-gradient(135deg, #ec4899 0%, #db2777 100%)"
+            onClick={() => navigate('/reports')}
+          />
+          <MenuItem
+            icon={User}
+            label="Account"
+            gradient="linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)"
+            onClick={() => navigate('/account')}
+          />
+          <MenuItem
+            icon={LayoutGrid}
+            label="QR Ticket Hub"
+            gradient="linear-gradient(135deg, #f97316 0%, #ea580c 100%)"
+            onClick={() => navigate('/qr-ticket')}
+          />
+          <MenuItem
+            icon={Tv}
+            label="TV Box Control"
+            gradient="linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)"
+            onClick={() => navigate('/tvbox-control')}
+          />
+          <MenuItem
+            icon={ScreenShare}
+            label="Second Display"
+            gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+            onClick={() => navigate('/second-display')}
+          />
+          <MenuItem
+            icon={LayoutGrid}
+            label="Menu (This Page)"
+            gradient="linear-gradient(135deg, #64748b 0%, #475569 100%)"
+            onClick={() => navigate('/menu')}
+          />
+          <MenuItem
+            icon={Settings}
+            label="Settings Page"
+            gradient="linear-gradient(135deg, #64748b 0%, #475569 100%)"
+            onClick={() => navigate('/settings')}
           />
         </div>
 

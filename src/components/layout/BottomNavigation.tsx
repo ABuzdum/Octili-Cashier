@@ -14,10 +14,10 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode, Banknote } from 'lucide-react'
+import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode, Banknote, Sliders } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
-export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay'
+export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay' | 'menu'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -76,6 +76,18 @@ const payoutItem: NavItem = {
   path: '/payout',
   color: '#f59e0b',
   activeColor: '#d97706',
+}
+
+/**
+ * Control Center button - operator menu for shift & operations
+ */
+const controlCenterItem: NavItem = {
+  id: 'menu',
+  label: 'Control',
+  icon: Sliders,
+  path: '/menu',
+  color: '#28455B',
+  activeColor: '#1e293b',
 }
 
 /**
@@ -313,6 +325,9 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
 
       {/* Payout - Single button */}
       {renderNavButton(payoutItem)}
+
+      {/* Control Center - Operator menu */}
+      {renderNavButton(controlCenterItem)}
 
       {/* Red Vertical Divider - Legacy Section */}
       <div style={{
