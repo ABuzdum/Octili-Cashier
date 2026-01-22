@@ -21,6 +21,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, Trash2, Clock, Ticket, Sparkles, Check, X, Calendar, Repeat, ChevronDown } from 'lucide-react'
 import { useGame, useGameStore } from '@/stores/gameStore'
 import { AppHeader } from '@/components/layout/AppHeader'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import type { GameBet } from '@/types/game.types'
 
 /**
@@ -1397,6 +1398,9 @@ export function GamePlayPage() {
           </h3>
         </div>
       )}
+
+      {/* Bottom Navigation - Always visible */}
+      <BottomNavigation activeTab="draw" />
     </div>
   )
 }

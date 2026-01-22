@@ -6,18 +6,18 @@
  * Purpose: Beautiful bottom navigation bar for cashier terminals
  * Design: Octili brand with Montserrat font, clean white background
  *
- * Layout: Draw | Results | (divider) | Sell Ticket | Top Up
+ * Layout: Draw (large) | Results | (divider) | QR Ticket: Sell | Payout
  *
  * @author Octili Development Team
- * @version 6.0.0
+ * @version 7.0.0
  */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Ticket, Trophy, ShoppingBag, Wallet, ShoppingCart, CreditCard, FileText, Settings, Tv, User, Receipt, DollarSign, Monitor } from 'lucide-react'
+import { Ticket, Trophy, ShoppingBag, Wallet, ShoppingCart, CreditCard, FileText, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
-export type NavTab = 'draw' | 'results' | 'sellticket' | 'topup' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay'
+export type NavTab = 'draw' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -55,24 +55,24 @@ const leftNavItems: NavItem[] = [
 ]
 
 /**
- * Right navigation items: Sell Ticket & Top Up
+ * Right navigation items: QR Ticket Sell & Payout
  */
 const rightNavItems: NavItem[] = [
   {
-    id: 'sellticket',
-    label: 'Sell Ticket',
-    icon: ShoppingBag,
-    path: '/qr-ticket',
+    id: 'qrticket-sell',
+    label: 'Sell',
+    icon: QrCode,
+    path: '/physical-ticket/new',
     color: '#24BD68',
     activeColor: '#00A77E',
   },
   {
-    id: 'topup',
-    label: 'Top Up',
-    icon: Wallet,
-    path: '/qr-ticket',
-    color: '#3b82f6',
-    activeColor: '#2563eb',
+    id: 'qrticket-payout',
+    label: 'Payout',
+    icon: DollarSign,
+    path: '/physical-ticket/payout',
+    color: '#f59e0b',
+    activeColor: '#d97706',
   },
 ]
 
@@ -153,7 +153,11 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
   const cartCount = cartTickets.length
   const [hoveredTab, setHoveredTab] = useState<NavTab | null>(null)
 
-  const renderNavButton = (item: NavItem, showBadge: boolean = false) => {
+  /**
+   * Render a standard navigation button
+   */
+  const renderNavButton = (item: NavItem, options: { large?: boolean; showBadge?: boolean } = {}) => {
+    const { large = false, showBadge = false } = options
     const isActive = activeTab === item.id
     const isHovered = hoveredTab === item.id
     const Icon = item.icon
@@ -169,17 +173,17 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '4px',
-          padding: '10px 14px',
-          minWidth: '64px',
-          minHeight: '56px',
+          gap: large ? '6px' : '4px',
+          padding: large ? '12px 24px' : '10px 14px',
+          minWidth: large ? '90px' : '64px',
+          minHeight: large ? '64px' : '56px',
           background: isActive
             ? `linear-gradient(135deg, ${item.color} 0%, ${item.activeColor} 100%)`
             : isHovered
             ? `${item.color}15`
             : 'transparent',
           border: 'none',
-          borderRadius: '14px',
+          borderRadius: large ? '16px' : '14px',
           cursor: 'pointer',
           transition: 'all 0.2s ease',
           position: 'relative',
@@ -195,7 +199,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           justifyContent: 'center',
         }}>
           <Icon
-            size={24}
+            size={large ? 28 : 24}
             color={isActive ? 'white' : isHovered ? item.color : '#64748b'}
             strokeWidth={isActive ? 2.5 : 2}
             style={{
@@ -231,7 +235,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         </div>
 
         <span style={{
-          fontSize: '11px',
+          fontSize: large ? '13px' : '11px',
           fontWeight: isActive ? 700 : 600,
           fontFamily: 'Montserrat, sans-serif',
           color: isActive ? 'white' : isHovered ? item.color : '#64748b',
@@ -271,30 +275,52 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
-      {/* Left Section: Draw & Results */}
+      {/* Left Section: Draw (large) & Results */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         gap: '6px',
       }}>
-        {leftNavItems.map((item) => renderNavButton(item, item.id === 'draw'))}
+        {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'draw' }))}
       </div>
 
       {/* Vertical Divider */}
       <div style={{
         width: '2px',
-        height: '40px',
+        height: '44px',
         background: 'linear-gradient(180deg, transparent 0%, #e2e8f0 20%, #e2e8f0 80%, transparent 100%)',
-        margin: '0 10px',
+        margin: '0 12px',
         borderRadius: '1px',
         flexShrink: 0,
       }} />
 
-      {/* Right Section: Sell Ticket & Top Up */}
+      {/* QR Ticket Section Label */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: '8px',
+        flexShrink: 0,
+      }}>
+        <span style={{
+          fontSize: '9px',
+          fontWeight: 700,
+          fontFamily: 'Montserrat, sans-serif',
+          color: '#64748b',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+          whiteSpace: 'nowrap',
+        }}>
+          QR Ticket
+        </span>
+      </div>
+
+      {/* Right Section: QR Ticket Sell & Payout */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '4px',
+        gap: '6px',
       }}>
         {rightNavItems.map((item) => renderNavButton(item))}
       </div>

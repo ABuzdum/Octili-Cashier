@@ -84,6 +84,7 @@ import {
 } from '@/stores/terminalStore'
 import { openSecondDisplay } from '@/hooks/useBroadcastSync'
 import { operatorInfo } from '@/data/games-mock-data'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { PauseCircle } from 'lucide-react'
 
 // Modal types for different operations
@@ -3056,6 +3057,9 @@ export function MenuPage() {
           </div>
         </div>
       )}
+
+      {/* Bottom Navigation - Always visible */}
+      <BottomNavigation activeTab="draw" />
     </div>
   )
 }

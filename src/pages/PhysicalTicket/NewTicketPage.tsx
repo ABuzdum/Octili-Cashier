@@ -1,9 +1,9 @@
 /**
  * ============================================================================
- * NEW TICKET PAGE - ISSUE PHYSICAL LOTTERY TICKETS
+ * QR TICKET NEW PAGE - ISSUE QR LOTTERY TICKETS
  * ============================================================================
  *
- * Purpose: Interface for cashiers to issue new physical lottery tickets.
+ * Purpose: Interface for cashiers to issue new QR lottery tickets.
  * Customers purchase tickets with a deposit, receive a QR code, play on their
  * phone, and return to the cashier for payout.
  *
@@ -35,6 +35,7 @@ import {
 import { usePhysicalTicketStore } from '@/stores/physicalTicketStore'
 import { useLotteryGames } from '@/stores/gameStore'
 import { QRCodeDisplay } from '@/components/shared/QRCodeDisplay'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { QUICK_AMOUNTS, type GameScope } from '@/types/physical-ticket.types'
 import type { PhysicalTicket } from '@/types/physical-ticket.types'
 
@@ -475,7 +476,7 @@ export function NewTicketPage() {
             }}
           >
             <Ticket size={24} />
-            New Ticket
+            QR Ticket - Sell
           </h1>
           <p
             style={{
@@ -484,7 +485,7 @@ export function NewTicketPage() {
               marginTop: '2px',
             }}
           >
-            Issue physical lottery ticket
+            Issue QR lottery ticket
           </p>
         </div>
       </div>
@@ -494,6 +495,7 @@ export function NewTicketPage() {
         style={{
           flex: 1,
           padding: '20px',
+          paddingBottom: '100px',
           overflow: 'auto',
         }}
       >
@@ -985,6 +987,9 @@ export function NewTicketPage() {
           onPrint={handlePrint}
         />
       )}
+
+      {/* Bottom Navigation - Always visible */}
+      <BottomNavigation activeTab="qrticket-sell" />
     </div>
   )
 }

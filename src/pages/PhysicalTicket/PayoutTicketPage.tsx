@@ -1,9 +1,9 @@
 /**
  * ============================================================================
- * PAYOUT TICKET PAGE - REDEEM PHYSICAL LOTTERY TICKETS
+ * QR TICKET PAYOUT PAGE - REDEEM QR LOTTERY TICKETS
  * ============================================================================
  *
- * Purpose: Interface for cashiers to process payouts for physical lottery tickets.
+ * Purpose: Interface for cashiers to process payouts for QR lottery tickets.
  * Cashiers scan or enter the QR code, view ticket status, and process payment.
  *
  * Features:
@@ -34,6 +34,7 @@ import {
 } from 'lucide-react'
 import { usePhysicalTicketStore } from '@/stores/physicalTicketStore'
 import { useAuthStore } from '@/stores/authStore'
+import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import { STATUS_DISPLAY_CONFIG, type PayoutMode } from '@/types/physical-ticket.types'
 import type { PhysicalTicket, PayoutCalculation } from '@/types/physical-ticket.types'
 
@@ -165,7 +166,7 @@ function TicketStatusModal({
                     style={{
                       fontSize: '22px',
                       fontWeight: 700,
-                      color: '#10b981',
+                      color: '#24BD68',
                       fontFamily: 'ui-monospace, monospace',
                     }}
                   >
@@ -186,7 +187,7 @@ function TicketStatusModal({
                   style={{
                     padding: '16px',
                     borderRadius: '12px',
-                    border: payoutMode === 'winnings_plus_balance' ? '2px solid #10b981' : '2px solid #e2e8f0',
+                    border: payoutMode === 'winnings_plus_balance' ? '2px solid #24BD68' : '2px solid #e2e8f0',
                     background: payoutMode === 'winnings_plus_balance' ? '#ecfdf5' : 'white',
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -203,7 +204,7 @@ function TicketStatusModal({
                       Pay everything
                     </p>
                   </div>
-                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#10b981' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#24BD68' }}>
                     {(ticket.totalWinnings + ticket.remainingBalance).toFixed(2)} BRL
                   </span>
                 </button>
@@ -212,7 +213,7 @@ function TicketStatusModal({
                   style={{
                     padding: '16px',
                     borderRadius: '12px',
-                    border: payoutMode === 'winnings_only' ? '2px solid #10b981' : '2px solid #e2e8f0',
+                    border: payoutMode === 'winnings_only' ? '2px solid #24BD68' : '2px solid #e2e8f0',
                     background: payoutMode === 'winnings_only' ? '#ecfdf5' : 'white',
                     cursor: 'pointer',
                     textAlign: 'left',
@@ -229,7 +230,7 @@ function TicketStatusModal({
                       Balance stays on ticket
                     </p>
                   </div>
-                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#10b981' }}>
+                  <span style={{ fontSize: '18px', fontWeight: 700, color: '#24BD68' }}>
                     {ticket.totalWinnings.toFixed(2)} BRL
                   </span>
                 </button>
@@ -249,11 +250,11 @@ function TicketStatusModal({
               marginBottom: '20px',
             }}
           >
-            <Trophy size={56} color="#10b981" style={{ marginBottom: '12px' }} />
+            <Trophy size={56} color="#24BD68" style={{ marginBottom: '12px' }} />
             <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#047857', marginBottom: '8px' }}>
               Winner! 🎉
             </h3>
-            <p style={{ fontSize: '14px', color: '#10b981', marginBottom: '16px' }}>
+            <p style={{ fontSize: '14px', color: '#24BD68', marginBottom: '16px' }}>
               Customer finished playing with winnings
             </p>
             <div
@@ -271,7 +272,7 @@ function TicketStatusModal({
                 style={{
                   fontSize: '40px',
                   fontWeight: 800,
-                  color: '#10b981',
+                  color: '#24BD68',
                   fontFamily: 'ui-monospace, monospace',
                 }}
               >
@@ -654,7 +655,7 @@ function PayoutSuccessModal({
             marginBottom: '24px',
           }}
         >
-          <p style={{ fontSize: '12px', color: '#10b981', marginBottom: '4px' }}>
+          <p style={{ fontSize: '12px', color: '#24BD68', marginBottom: '4px' }}>
             Amount Paid
           </p>
           <p
@@ -843,7 +844,7 @@ export function PayoutTicketPage() {
             }}
           >
             <Banknote size={24} />
-            Pay Out Ticket
+            QR Ticket - Payout
           </h1>
           <p
             style={{
@@ -862,6 +863,7 @@ export function PayoutTicketPage() {
         style={{
           flex: 1,
           padding: '20px',
+          paddingBottom: '100px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -1077,6 +1079,9 @@ export function PayoutTicketPage() {
       {payoutSuccess !== null && (
         <PayoutSuccessModal amount={payoutSuccess} onClose={handleSuccessClose} />
       )}
+
+      {/* Bottom Navigation - Always visible */}
+      <BottomNavigation activeTab="qrticket-payout" />
     </div>
   )
 }
