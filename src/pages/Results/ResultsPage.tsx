@@ -3,241 +3,391 @@
  * RESULTS PAGE - DRAW RESULTS
  * ============================================================================
  *
- * Purpose: Display draw results for all games
- * Based on SUMUS POS Terminal design
+ * Purpose: Beautiful display of draw results for all games
+ * Designed for VLT terminals and player-facing displays
  *
  * @author Octili Development Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Printer, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Printer, ChevronRight, Target, Trophy, Calendar } from 'lucide-react'
 import { useLotteryGames } from '@/stores/gameStore'
 import { mockDrawResults } from '@/data/games-mock-data'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 
-// Brand colors
-const BRAND = {
-  green: '#24BD68',
-  teal: '#00A77E',
-  deepTeal: '#006E7E',
-  darkBlue: '#28455B',
-  charcoal: '#282E3A',
-}
+// Game gradients matching POSPage
+const GAME_GRADIENTS = [
+  'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+  'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+  'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+  'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+  'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+  'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+]
 
 export function ResultsPage() {
   const navigate = useNavigate()
   const games = useLotteryGames()
   const [selectedGame, setSelectedGame] = useState<string | null>(null)
+  const [hoveredGame, setHoveredGame] = useState<string | null>(null)
 
   // Get results for selected game
   const gameResults = selectedGame
     ? mockDrawResults.filter((r) => r.gameId === selectedGame)
     : []
 
+  // Get game index for gradient
+  const getGameIndex = (gameId: string) => {
+    return games.findIndex(g => g.id === gameId)
+  }
+
   // Handle print (simulated)
   const handlePrint = (gameId: string) => {
     console.log('Printing results for game:', gameId)
-    // In production, this would trigger the thermal printer
   }
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#f8fafc',
+      background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
       display: 'flex',
       flexDirection: 'column',
     }}>
       {/* Header */}
       <div style={{
-        background: 'white',
-        padding: '12px 16px',
+        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        padding: '16px 20px',
         display: 'flex',
         alignItems: 'center',
-        borderBottom: '1px solid #e2e8f0',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute',
+          width: '150px',
+          height: '150px',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: '50%',
+          top: '-60px',
+          right: '-40px',
+        }} />
+
         <button
           onClick={() => selectedGame ? setSelectedGame(null) : navigate('/pos')}
           style={{
-            background: 'none',
+            background: 'rgba(255,255,255,0.2)',
+            backdropFilter: 'blur(10px)',
             border: 'none',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
-            color: BRAND.darkBlue,
+            justifyContent: 'center',
+            width: '40px',
+            height: '40px',
+            borderRadius: '12px',
+            color: 'white',
+            zIndex: 1,
           }}
         >
-          <ArrowLeft size={24} />
+          <ArrowLeft size={20} />
         </button>
+
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '12px',
+          zIndex: 1,
+        }}>
+          <Target size={28} color="white" />
+          <h1 style={{
+            color: 'white',
+            fontSize: '20px',
+            fontWeight: 700,
+            textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}>
+            {selectedGame ? games.find(g => g.id === selectedGame)?.name : 'Draw Results'}
+          </h1>
+        </div>
+
+        <div style={{ width: '40px' }} />
       </div>
 
       {/* Main Content */}
       <div style={{
         flex: 1,
-        padding: '16px',
-        paddingBottom: '80px',
+        padding: '20px',
+        paddingBottom: '100px',
         overflow: 'auto',
       }}>
         {!selectedGame ? (
           <>
-            <h2 style={{
-              textAlign: 'center',
-              fontSize: '20px',
-              fontWeight: 700,
-              color: BRAND.charcoal,
-              marginBottom: '24px',
-            }}>
-              Draw Results
-            </h2>
-
             {/* Games List */}
             <div style={{
-              background: 'white',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              maxWidth: '500px',
+              margin: '0 auto',
             }}>
-              {games.map((game, index) => (
-                <div
-                  key={game.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    padding: '16px',
-                    borderBottom: index < games.length - 1 ? '1px solid #e2e8f0' : 'none',
-                  }}
-                >
-                  <span style={{
-                    flex: 1,
-                    fontWeight: 600,
-                    color: BRAND.charcoal,
-                  }}>
-                    {game.name}
-                  </span>
-                  <button
-                    onClick={() => handlePrint(game.id)}
+              {games.map((game, index) => {
+                const isHovered = hoveredGame === game.id
+                return (
+                  <div
+                    key={game.id}
+                    onMouseEnter={() => setHoveredGame(game.id)}
+                    onMouseLeave={() => setHoveredGame(null)}
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '8px 16px',
-                      background: 'none',
-                      border: 'none',
-                      color: BRAND.green,
-                      fontWeight: 600,
-                      cursor: 'pointer',
+                      background: 'white',
+                      borderRadius: '16px',
+                      overflow: 'hidden',
+                      boxShadow: isHovered
+                        ? '0 12px 32px rgba(0,0,0,0.12)'
+                        : '0 4px 16px rgba(0,0,0,0.06)',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
                     }}
                   >
-                    <Printer size={18} />
-                    Printing
-                  </button>
-                  <button
-                    onClick={() => setSelectedGame(game.id)}
-                    style={{
+                    <div style={{
                       display: 'flex',
                       alignItems: 'center',
-                      padding: '8px',
-                      background: 'none',
-                      border: 'none',
-                      color: BRAND.darkBlue,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <ChevronRight size={24} />
-                  </button>
-                </div>
-              ))}
+                      padding: '16px',
+                    }}>
+                      {/* Game Icon */}
+                      <div style={{
+                        width: '48px',
+                        height: '48px',
+                        background: GAME_GRADIENTS[index % GAME_GRADIENTS.length],
+                        borderRadius: '14px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '24px',
+                        marginRight: '16px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                      }}>
+                        {game.type === 'keno' ? '🎱' : game.type === 'roulette' ? '🎰' : '🎈'}
+                      </div>
+
+                      <span style={{
+                        flex: 1,
+                        fontWeight: 700,
+                        color: '#1e293b',
+                        fontSize: '16px',
+                      }}>
+                        {game.name}
+                      </span>
+
+                      <button
+                        onClick={() => handlePrint(game.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '6px',
+                          padding: '10px 16px',
+                          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                          border: 'none',
+                          borderRadius: '12px',
+                          color: 'white',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                          marginRight: '12px',
+                        }}
+                      >
+                        <Printer size={16} />
+                        Print
+                      </button>
+
+                      <button
+                        onClick={() => setSelectedGame(game.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '40px',
+                          height: '40px',
+                          background: '#f1f5f9',
+                          border: 'none',
+                          borderRadius: '12px',
+                          color: '#64748b',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s',
+                        }}
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </>
         ) : (
           <>
             {/* Game Results Detail */}
-            <h2 style={{
-              textAlign: 'left',
-              fontSize: '18px',
-              fontWeight: 700,
-              color: BRAND.charcoal,
-              marginBottom: '8px',
-              textTransform: 'uppercase',
-            }}>
-              {games.find((g) => g.id === selectedGame)?.name}
-            </h2>
-            <p style={{
-              fontSize: '14px',
-              color: '#64748b',
-              marginBottom: '16px',
-            }}>
-              Draw Results: {gameResults.length}
-            </p>
-
-            {/* Results Table */}
             <div style={{
-              background: 'white',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+              maxWidth: '500px',
+              margin: '0 auto',
             }}>
-              {/* Table Header */}
+              {/* Results Summary Card */}
               <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                padding: '12px 16px',
-                background: '#f8fafc',
-                borderBottom: '1px solid #e2e8f0',
+                background: GAME_GRADIENTS[getGameIndex(selectedGame) % GAME_GRADIENTS.length],
+                borderRadius: '20px',
+                padding: '24px',
+                marginBottom: '20px',
+                position: 'relative',
+                overflow: 'hidden',
               }}>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>Number</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>Date</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>Time</span>
-                <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748b' }}>Result</span>
+                <div style={{
+                  position: 'absolute',
+                  width: '150px',
+                  height: '150px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  top: '-40px',
+                  right: '-40px',
+                }} />
+
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '16px',
+                }}>
+                  <Trophy size={24} color="white" />
+                  <span style={{
+                    color: 'white',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px',
+                  }}>
+                    Results Available
+                  </span>
+                </div>
+
+                <p style={{
+                  color: 'white',
+                  fontSize: '32px',
+                  fontWeight: 700,
+                }}>
+                  {gameResults.length}
+                </p>
+                <p style={{
+                  color: 'rgba(255,255,255,0.8)',
+                  fontSize: '14px',
+                }}>
+                  Draw results for this game
+                </p>
               </div>
 
-              {/* Table Rows */}
-              {gameResults.map((result, index) => (
-                <div
-                  key={result.id}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                    padding: '12px 16px',
-                    borderBottom: index < gameResults.length - 1 ? '1px solid #e2e8f0' : 'none',
-                  }}
-                >
-                  <span style={{ fontSize: '13px', color: BRAND.charcoal }}>{result.drawNumber}</span>
-                  <span style={{ fontSize: '13px', color: BRAND.charcoal }}>{result.date}</span>
-                  <span style={{ fontSize: '13px', color: BRAND.charcoal }}>{result.time}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: BRAND.green }}>{result.result}</span>
+              {/* Results Table */}
+              <div style={{
+                background: 'white',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+              }}>
+                {/* Table Header */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1.2fr 0.8fr 1fr',
+                  padding: '16px 20px',
+                  background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                }}>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Draw</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Date</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Time</span>
+                  <span style={{ fontSize: '12px', fontWeight: 600, color: 'white', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Result</span>
                 </div>
-              ))}
 
-              {gameResults.length === 0 && (
-                <div style={{ padding: '24px', textAlign: 'center', color: '#64748b' }}>
-                  No results available
-                </div>
-              )}
+                {/* Table Rows */}
+                {gameResults.map((result, index) => (
+                  <div
+                    key={result.id}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1.2fr 0.8fr 1fr',
+                      padding: '16px 20px',
+                      borderBottom: index < gameResults.length - 1 ? '1px solid #f1f5f9' : 'none',
+                      background: index % 2 === 0 ? 'white' : '#fafafa',
+                    }}
+                  >
+                    <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>#{result.drawNumber}</span>
+                    <span style={{ fontSize: '14px', color: '#334155', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Calendar size={14} color="#94a3b8" />
+                      {result.date}
+                    </span>
+                    <span style={{ fontSize: '14px', color: '#334155' }}>{result.time}</span>
+                    <span style={{
+                      fontSize: '14px',
+                      fontWeight: 700,
+                      background: GAME_GRADIENTS[getGameIndex(selectedGame) % GAME_GRADIENTS.length],
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}>
+                      {result.result}
+                    </span>
+                  </div>
+                ))}
+
+                {gameResults.length === 0 && (
+                  <div style={{
+                    padding: '40px',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{
+                      width: '64px',
+                      height: '64px',
+                      background: '#f1f5f9',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: '0 auto 16px',
+                    }}>
+                      <Target size={28} color="#94a3b8" />
+                    </div>
+                    <p style={{ color: '#64748b', fontSize: '14px' }}>No results available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Print Button */}
+              <button
+                onClick={() => handlePrint(selectedGame)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '12px',
+                  width: '100%',
+                  padding: '18px',
+                  marginTop: '20px',
+                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  border: 'none',
+                  borderRadius: '16px',
+                  color: 'white',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4)',
+                }}
+              >
+                <Printer size={22} />
+                Print Results
+              </button>
             </div>
-
-            {/* Print Button */}
-            <button
-              onClick={() => handlePrint(selectedGame)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                width: '100%',
-                padding: '14px',
-                marginTop: '16px',
-                background: 'none',
-                border: 'none',
-                color: BRAND.green,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              <Printer size={20} />
-              Printing
-            </button>
           </>
         )}
       </div>

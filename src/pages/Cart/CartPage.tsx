@@ -3,127 +3,214 @@
  * CART PAGE - PENDING LOTTERY TICKETS
  * ============================================================================
  *
- * Purpose: Display and manage pending lottery tickets in cart
- * Based on SUMUS POS Terminal design
+ * Purpose: Beautiful cart management for pending lottery tickets
+ * Designed for VLT terminals and player-facing displays
  *
  * Features:
- * - List of pending tickets with game info
- * - Remove individual tickets
- * - Clear entire cart
- * - Purchase all tickets at once
- * - Total calculation
+ * - Stunning list of pending tickets with game gradients
+ * - Animated remove and clear actions
+ * - Beautiful purchase confirmation
+ * - Total calculation with elegant display
  *
  * @author Octili Development Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash2, ShoppingCart, X, Check } from 'lucide-react'
+import {
+  ArrowLeft,
+  Trash2,
+  ShoppingCart,
+  Check,
+  AlertTriangle,
+  CheckCircle2,
+  Ticket,
+  Sparkles,
+} from 'lucide-react'
 import { useGameStore, useLotteryGames } from '@/stores/gameStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import type { CartTicket, LotteryGame } from '@/types/game.types'
 
-// Brand colors
-const BRAND = {
-  green: '#24BD68',
-  teal: '#00A77E',
-  deepTeal: '#006E7E',
-  darkBlue: '#28455B',
-  charcoal: '#282E3A',
-}
+// Game gradients matching POSPage
+const GAME_GRADIENTS = [
+  'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+  'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+  'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+  'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+  'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+  'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+  'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)',
+  'linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%)',
+]
 
 /**
- * Individual cart ticket item component
+ * Individual cart ticket item component with beautiful design
  */
 function CartTicketItem({
   ticket,
   game,
+  gameIndex,
   onRemove,
+  isHovered,
+  onHover,
 }: {
   ticket: CartTicket
   game: LotteryGame | undefined
+  gameIndex: number
   onRemove: () => void
+  isHovered: boolean
+  onHover: (hovered: boolean) => void
 }) {
+  const gradient = GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length]
+
   return (
-    <div style={{
-      background: 'white',
-      borderRadius: '12px',
-      padding: '16px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '12px',
-    }}>
-      {/* Game Icon */}
-      <div style={{
-        width: '48px',
-        height: '48px',
-        background: `linear-gradient(135deg, ${BRAND.deepTeal}20, ${BRAND.green}20)`,
-        borderRadius: '12px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontSize: '24px',
-        flexShrink: 0,
-      }}>
-        {game?.type === 'keno' ? '🎱' : game?.type === 'roulette' ? '🎰' : '🎈'}
-      </div>
-
-      {/* Ticket Info */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <h3 style={{
-          fontSize: '14px',
-          fontWeight: 700,
-          color: BRAND.charcoal,
-          marginBottom: '4px',
-        }}>
-          {game?.name || 'Unknown Game'}
-        </h3>
-        <p style={{
-          fontSize: '12px',
-          color: '#64748b',
-          marginBottom: '2px',
-        }}>
-          Selection: {ticket.bet.selectedMarkets.join(', ')}
-        </p>
-        <p style={{
-          fontSize: '12px',
-          color: '#64748b',
-        }}>
-          {ticket.bet.numberOfDraws} draw{ticket.bet.numberOfDraws > 1 ? 's' : ''} × {ticket.bet.betAmount} BRL
-        </p>
-      </div>
-
-      {/* Price and Remove */}
+    <div
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
+      style={{
+        background: 'white',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        boxShadow: isHovered
+          ? '0 12px 32px rgba(0,0,0,0.12)'
+          : '0 4px 16px rgba(0,0,0,0.06)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+      }}
+    >
       <div style={{
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '8px',
+        alignItems: 'stretch',
       }}>
-        <span style={{
-          fontSize: '16px',
-          fontWeight: 700,
-          color: BRAND.green,
+        {/* Game Color Bar */}
+        <div style={{
+          width: '6px',
+          background: gradient,
+        }} />
+
+        <div style={{
+          flex: 1,
+          padding: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '14px',
         }}>
-          {ticket.totalCost.toFixed(2)} BRL
-        </span>
-        <button
-          onClick={onRemove}
-          style={{
-            background: '#fee2e2',
-            border: 'none',
-            borderRadius: '8px',
-            padding: '6px',
-            cursor: 'pointer',
+          {/* Game Icon */}
+          <div style={{
+            width: '52px',
+            height: '52px',
+            background: gradient,
+            borderRadius: '16px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-          }}
-        >
-          <Trash2 size={16} color="#ef4444" />
-        </button>
+            fontSize: '24px',
+            flexShrink: 0,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          }}>
+            {game?.type === 'keno' ? '🎱' : game?.type === 'roulette' ? '🎰' : '🎈'}
+          </div>
+
+          {/* Ticket Info */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              color: '#1e293b',
+              marginBottom: '6px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}>
+              {game?.name || 'Unknown Game'}
+              {isHovered && <Sparkles size={14} color="#f59e0b" />}
+            </h3>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '6px',
+              marginBottom: '6px',
+            }}>
+              {ticket.bet.selectedMarkets.slice(0, 5).map((market, idx) => (
+                <span
+                  key={idx}
+                  style={{
+                    padding: '4px 8px',
+                    background: `${gradient.includes('#667eea') ? '#667eea' : gradient.split(',')[1].split(' ')[1]}15`,
+                    borderRadius: '8px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: '#475569',
+                  }}
+                >
+                  {market}
+                </span>
+              ))}
+              {ticket.bet.selectedMarkets.length > 5 && (
+                <span style={{
+                  padding: '4px 8px',
+                  background: '#f1f5f9',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#64748b',
+                }}>
+                  +{ticket.bet.selectedMarkets.length - 5}
+                </span>
+              )}
+            </div>
+            <p style={{
+              fontSize: '12px',
+              color: '#64748b',
+            }}>
+              {ticket.bet.numberOfDraws} draw{ticket.bet.numberOfDraws > 1 ? 's' : ''} × {ticket.bet.betAmount} BRL
+            </p>
+          </div>
+
+          {/* Price and Remove */}
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
+            gap: '10px',
+          }}>
+            <span style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              background: gradient,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>
+              {ticket.totalCost.toFixed(2)} BRL
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onRemove()
+              }}
+              style={{
+                background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '8px 12px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#ef4444',
+                fontSize: '12px',
+                fontWeight: 600,
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Trash2 size={14} />
+              Remove
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -136,12 +223,18 @@ export function CartPage() {
   const [showClearConfirm, setShowClearConfirm] = useState(false)
   const [showPurchaseSuccess, setShowPurchaseSuccess] = useState(false)
   const [purchasedAmount, setPurchasedAmount] = useState(0)
+  const [hoveredTicket, setHoveredTicket] = useState<string | null>(null)
 
   const cartTotal = getCartTotal()
 
   // Get game by ID
   const getGame = (gameId: string): LotteryGame | undefined => {
     return games.find(g => g.id === gameId)
+  }
+
+  // Get game index for gradient
+  const getGameIndex = (gameId: string): number => {
+    return games.findIndex(g => g.id === gameId)
   }
 
   // Handle purchase all
@@ -165,77 +258,110 @@ export function CartPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#f8fafc',
+      background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
       display: 'flex',
       flexDirection: 'column',
     }}>
       {/* Header */}
       <div style={{
-        background: 'white',
-        padding: '12px 16px',
+        background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        padding: '16px 20px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderBottom: '1px solid #e2e8f0',
+        position: 'relative',
+        overflow: 'hidden',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute',
+          width: '150px',
+          height: '150px',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: '50%',
+          top: '-60px',
+          right: '-40px',
+        }} />
+        <div style={{
+          position: 'absolute',
+          width: '80px',
+          height: '80px',
+          background: 'rgba(255,255,255,0.1)',
+          borderRadius: '50%',
+          bottom: '-30px',
+          left: '10%',
+        }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
           <button
             onClick={() => navigate('/pos')}
             style={{
-              background: 'none',
+              background: 'rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(10px)',
               border: 'none',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              color: BRAND.darkBlue,
+              justifyContent: 'center',
+              width: '40px',
+              height: '40px',
+              borderRadius: '12px',
+              color: 'white',
             }}
           >
-            <ArrowLeft size={24} />
+            <ArrowLeft size={20} />
           </button>
-          <h1 style={{
-            fontSize: '18px',
-            fontWeight: 700,
-            color: BRAND.charcoal,
+          <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '10px',
           }}>
-            <ShoppingCart size={20} />
-            Cart
+            <ShoppingCart size={24} color="white" />
+            <h1 style={{
+              fontSize: '20px',
+              fontWeight: 700,
+              color: 'white',
+              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}>
+              My Cart
+            </h1>
             {cartTickets.length > 0 && (
               <span style={{
-                background: BRAND.green,
+                background: 'rgba(255,255,255,0.3)',
+                backdropFilter: 'blur(10px)',
                 color: 'white',
-                fontSize: '12px',
+                fontSize: '13px',
                 fontWeight: 700,
-                padding: '2px 8px',
-                borderRadius: '10px',
+                padding: '4px 10px',
+                borderRadius: '12px',
               }}>
                 {cartTickets.length}
               </span>
             )}
-          </h1>
+          </div>
         </div>
 
         {cartTickets.length > 0 && (
           <button
             onClick={() => setShowClearConfirm(true)}
             style={{
-              background: '#fee2e2',
+              background: 'rgba(255,255,255,0.2)',
+              backdropFilter: 'blur(10px)',
               border: 'none',
-              borderRadius: '8px',
-              padding: '8px 12px',
+              borderRadius: '12px',
+              padding: '10px 16px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '6px',
-              color: '#ef4444',
+              gap: '8px',
+              color: 'white',
               fontSize: '14px',
               fontWeight: 600,
+              zIndex: 1,
             }}
           >
             <Trash2 size={16} />
-            Clear
+            Clear All
           </button>
         )}
       </div>
@@ -243,8 +369,8 @@ export function CartPage() {
       {/* Cart Content */}
       <div style={{
         flex: 1,
-        padding: '16px',
-        paddingBottom: '180px', // Space for footer and bottom nav
+        padding: '20px',
+        paddingBottom: cartTickets.length > 0 ? '200px' : '100px',
         overflow: 'auto',
       }}>
         {cartTickets.length === 0 ? (
@@ -258,21 +384,22 @@ export function CartPage() {
             textAlign: 'center',
           }}>
             <div style={{
-              width: '80px',
-              height: '80px',
-              background: '#f1f5f9',
-              borderRadius: '50%',
+              width: '100px',
+              height: '100px',
+              background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+              borderRadius: '32px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: '16px',
+              marginBottom: '24px',
+              boxShadow: '0 16px 48px rgba(250, 112, 154, 0.3)',
             }}>
-              <ShoppingCart size={40} color="#94a3b8" />
+              <Ticket size={48} color="white" />
             </div>
             <h2 style={{
-              fontSize: '18px',
+              fontSize: '22px',
               fontWeight: 700,
-              color: BRAND.charcoal,
+              color: '#1e293b',
               marginBottom: '8px',
             }}>
               Your cart is empty
@@ -280,23 +407,29 @@ export function CartPage() {
             <p style={{
               fontSize: '14px',
               color: '#64748b',
-              marginBottom: '24px',
+              marginBottom: '32px',
+              maxWidth: '280px',
             }}>
-              Add lottery tickets to your cart to purchase them
+              Add lottery tickets to your cart by selecting numbers in any game
             </p>
             <button
               onClick={() => navigate('/pos')}
               style={{
-                padding: '12px 24px',
-                background: BRAND.green,
+                padding: '16px 32px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '24px',
-                fontSize: '14px',
-                fontWeight: 600,
+                borderRadius: '16px',
+                fontSize: '16px',
+                fontWeight: 700,
                 cursor: 'pointer',
+                boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
               }}
             >
+              <Sparkles size={20} />
               Browse Games
             </button>
           </div>
@@ -305,7 +438,7 @@ export function CartPage() {
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '12px',
+            gap: '14px',
             maxWidth: '500px',
             margin: '0 auto',
           }}>
@@ -314,7 +447,10 @@ export function CartPage() {
                 key={ticket.id}
                 ticket={ticket}
                 game={getGame(ticket.gameId)}
+                gameIndex={getGameIndex(ticket.gameId)}
                 onRemove={() => removeFromCart(ticket.id)}
+                isHovered={hoveredTicket === ticket.id}
+                onHover={(hovered) => setHoveredTicket(hovered ? ticket.id : null)}
               />
             ))}
           </div>
@@ -325,12 +461,12 @@ export function CartPage() {
       {cartTickets.length > 0 && (
         <div style={{
           position: 'fixed',
-          bottom: '70px', // Above bottom nav
+          bottom: '70px',
           left: 0,
           right: 0,
-          background: 'white',
-          padding: '16px',
-          boxShadow: '0 -4px 16px rgba(0,0,0,0.1)',
+          background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+          padding: '20px',
+          boxShadow: '0 -8px 32px rgba(0,0,0,0.15)',
           zIndex: 50,
         }}>
           <div style={{
@@ -341,42 +477,57 @@ export function CartPage() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '12px',
+              marginBottom: '16px',
             }}>
               <span style={{
                 fontSize: '14px',
-                color: '#64748b',
+                color: '#94a3b8',
               }}>
                 {cartTickets.length} ticket{cartTickets.length > 1 ? 's' : ''}
               </span>
-              <span style={{
-                fontSize: '20px',
-                fontWeight: 700,
-                color: BRAND.charcoal,
+              <div style={{
+                display: 'flex',
+                alignItems: 'baseline',
+                gap: '8px',
               }}>
-                Total: <span style={{ color: BRAND.green }}>{cartTotal.toFixed(2)} BRL</span>
-              </span>
+                <span style={{
+                  fontSize: '14px',
+                  color: '#94a3b8',
+                }}>
+                  Total:
+                </span>
+                <span style={{
+                  fontSize: '28px',
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  {cartTotal.toFixed(2)} BRL
+                </span>
+              </div>
             </div>
             <button
               onClick={handlePurchaseAll}
               style={{
                 width: '100%',
-                padding: '14px',
-                background: BRAND.green,
+                padding: '18px',
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                 color: 'white',
                 border: 'none',
-                borderRadius: '12px',
-                fontSize: '16px',
+                borderRadius: '16px',
+                fontSize: '18px',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '8px',
+                gap: '12px',
+                boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4)',
               }}
             >
-              <Check size={20} />
-              Purchase All
+              <Check size={22} />
+              Purchase All Tickets
             </button>
           </div>
         </div>
@@ -387,7 +538,8 @@ export function CartPage() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.5)',
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -396,28 +548,30 @@ export function CartPage() {
         }}>
           <div style={{
             background: 'white',
-            borderRadius: '16px',
-            padding: '24px',
-            maxWidth: '320px',
+            borderRadius: '24px',
+            padding: '32px',
+            maxWidth: '340px',
             width: '100%',
             textAlign: 'center',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.2)',
           }}>
             <div style={{
-              width: '56px',
-              height: '56px',
-              background: '#fee2e2',
+              width: '72px',
+              height: '72px',
+              background: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 16px',
+              margin: '0 auto 20px',
+              boxShadow: '0 8px 24px rgba(251, 191, 36, 0.3)',
             }}>
-              <Trash2 size={28} color="#ef4444" />
+              <AlertTriangle size={36} color="#f59e0b" />
             </div>
             <h3 style={{
-              fontSize: '18px',
+              fontSize: '20px',
               fontWeight: 700,
-              color: BRAND.charcoal,
+              color: '#1e293b',
               marginBottom: '8px',
             }}>
               Clear Cart?
@@ -425,7 +579,7 @@ export function CartPage() {
             <p style={{
               fontSize: '14px',
               color: '#64748b',
-              marginBottom: '24px',
+              marginBottom: '28px',
             }}>
               This will remove all {cartTickets.length} ticket{cartTickets.length > 1 ? 's' : ''} from your cart.
             </p>
@@ -437,12 +591,12 @@ export function CartPage() {
                 onClick={() => setShowClearConfirm(false)}
                 style={{
                   flex: 1,
-                  padding: '12px',
+                  padding: '14px',
                   background: '#f1f5f9',
-                  color: BRAND.charcoal,
+                  color: '#475569',
                   border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '14px',
+                  borderRadius: '14px',
+                  fontSize: '15px',
                   fontWeight: 600,
                   cursor: 'pointer',
                 }}
@@ -453,14 +607,15 @@ export function CartPage() {
                 onClick={handleClearCart}
                 style={{
                   flex: 1,
-                  padding: '12px',
-                  background: '#ef4444',
+                  padding: '14px',
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '12px',
-                  fontSize: '14px',
+                  borderRadius: '14px',
+                  fontSize: '15px',
                   fontWeight: 600,
                   cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.4)',
                 }}
               >
                 Clear All
@@ -475,35 +630,64 @@ export function CartPage() {
         <div style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(0,0,0,0.5)',
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000,
+          padding: '20px',
         }}>
           <div style={{
             background: 'white',
-            borderRadius: '16px',
-            padding: '32px',
+            borderRadius: '24px',
+            padding: '40px',
             textAlign: 'center',
+            maxWidth: '340px',
+            width: '100%',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.2)',
           }}>
             <div style={{
-              width: '64px',
-              height: '64px',
-              background: BRAND.green,
+              width: '88px',
+              height: '88px',
+              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 16px',
+              margin: '0 auto 24px',
+              boxShadow: '0 12px 32px rgba(16, 185, 129, 0.4)',
             }}>
-              <span style={{ color: 'white', fontSize: '32px' }}>✓</span>
+              <CheckCircle2 size={48} color="white" />
             </div>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: BRAND.charcoal }}>
+            <h3 style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: '#1e293b',
+              marginBottom: '12px',
+            }}>
               Purchase Complete!
             </h3>
-            <p style={{ fontSize: '14px', color: '#64748b', marginTop: '8px' }}>
-              {purchasedAmount.toFixed(2)} BRL deducted from balance
+            <p style={{
+              fontSize: '16px',
+              color: '#64748b',
+            }}>
+              <span style={{
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                {purchasedAmount.toFixed(2)} BRL
+              </span>
+              {' '}deducted from balance
+            </p>
+            <p style={{
+              fontSize: '14px',
+              color: '#94a3b8',
+              marginTop: '8px',
+            }}>
+              Good luck! 🍀
             </p>
           </div>
         </div>
