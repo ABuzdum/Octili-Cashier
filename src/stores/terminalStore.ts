@@ -54,8 +54,8 @@ export const OFFLINE_REASONS: Record<OfflineReason, {
     label: 'Lunch Break',
     description: 'On lunch break',
     icon: '🍽️',
-    color: '#10b981',
-    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+    color: '#24BD68',
+    gradient: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
   },
   technical: {
     label: 'Technical Issue',

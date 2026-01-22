@@ -243,7 +243,7 @@ export const STATUS_DISPLAY_CONFIG: Record<PhysicalTicketStatus, StatusDisplayCo
   finished_won: {
     status: 'finished_won',
     label: 'Winner!',
-    color: '#10b981',
+    color: '#24BD68',
     backgroundColor: '#ecfdf5',
     icon: '🏆',
     canPayout: true,

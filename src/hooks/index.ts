@@ -18,3 +18,9 @@ export {
   type DisplayMessagePayload,
   type UseBroadcastSyncReturn,
 } from './useBroadcastSync'
+
+export {
+  useSwipeNavigation,
+  getPageSequence,
+  getPageRoute,
+} from './useSwipeNavigation'

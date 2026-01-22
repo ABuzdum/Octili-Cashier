@@ -40,7 +40,7 @@ function NumButton({
   const getBackground = () => {
     switch (variant) {
       case 'confirm':
-        return 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+        return 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
       case 'delete':
         return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
       case 'zero':
@@ -278,7 +278,7 @@ export function QRPage() {
               <div style={{
                 width: '56px',
                 height: '56px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
@@ -361,7 +361,7 @@ export function QRPage() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNavigation activeTab="qr" />
+        <BottomNavigation activeTab="sellticket" />
       </div>
     )
   }
@@ -369,7 +369,7 @@ export function QRPage() {
   // Replenishment or Payout Mode
   const isReplenishment = mode === 'replenishment'
   const modeGradient = isReplenishment
-    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+    ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
     : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
   const modeShadow = isReplenishment
     ? 'rgba(16, 185, 129, 0.4)'
@@ -719,7 +719,7 @@ export function QRPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="qr" />
+      <BottomNavigation activeTab="sellticket" />
     </div>
   )
 }

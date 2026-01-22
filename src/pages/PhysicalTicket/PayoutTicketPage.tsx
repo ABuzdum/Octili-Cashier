@@ -35,6 +35,7 @@ import {
 import { usePhysicalTicketStore } from '@/stores/physicalTicketStore'
 import { useAuthStore } from '@/stores/authStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { useSwipeNavigation } from '@/hooks'
 import { STATUS_DISPLAY_CONFIG, type PayoutMode } from '@/types/physical-ticket.types'
 import type { PhysicalTicket, PayoutCalculation } from '@/types/physical-ticket.types'
 
@@ -705,6 +706,9 @@ export function PayoutTicketPage() {
   const processPayoutTicket = usePhysicalTicketStore((state) => state.processPayoutTicket)
   const loadMockData = usePhysicalTicketStore((state) => state.loadMockData)
 
+  // Swipe navigation handlers
+  const swipeHandlers = useSwipeNavigation({ currentPage: 'qrticket-payout' })
+
   // Load mock data for testing on component mount
   useEffect(() => {
     loadMockData()
@@ -768,11 +772,13 @@ export function PayoutTicketPage() {
 
   return (
     <div
+      {...swipeHandlers}
       style={{
         minHeight: '100vh',
         background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
         display: 'flex',
         flexDirection: 'column',
+        touchAction: 'pan-y',
       }}
     >
       {/* Header */}

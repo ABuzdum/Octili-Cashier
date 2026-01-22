@@ -14,7 +14,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Ticket, Trophy, ShoppingBag, Wallet, ShoppingCart, CreditCard, FileText, Settings, Tv, User, Receipt, DollarSign, Monitor, QrCode } from 'lucide-react'
+import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, CirclePlus, Banknote } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
 export type NavTab = 'draw' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay'
@@ -56,12 +56,13 @@ const leftNavItems: NavItem[] = [
 
 /**
  * Right navigation items: QR Ticket Sell & Payout
+ * Icons: CirclePlus for creating new tickets, Banknote for paying out
  */
 const rightNavItems: NavItem[] = [
   {
     id: 'qrticket-sell',
     label: 'Sell',
-    icon: QrCode,
+    icon: CirclePlus,
     path: '/physical-ticket/new',
     color: '#24BD68',
     activeColor: '#00A77E',
@@ -69,7 +70,7 @@ const rightNavItems: NavItem[] = [
   {
     id: 'qrticket-payout',
     label: 'Payout',
-    icon: DollarSign,
+    icon: Banknote,
     path: '/physical-ticket/payout',
     color: '#f59e0b',
     activeColor: '#d97706',

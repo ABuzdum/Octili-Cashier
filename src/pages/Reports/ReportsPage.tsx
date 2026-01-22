@@ -274,7 +274,7 @@ export function ReportsPage() {
         }}>
           {/* Total Sales */}
           <div style={{
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
             borderRadius: '20px',
             padding: '20px',
             color: 'white',
@@ -393,7 +393,7 @@ export function ReportsPage() {
             <p style={{
               fontSize: '24px',
               fontWeight: 800,
-              color: report.netBalance >= 0 ? '#10b981' : '#ef4444',
+              color: report.netBalance >= 0 ? '#24BD68' : '#ef4444',
             }}>
               {report.netBalance >= 0 ? '+' : ''}{report.netBalance.toFixed(2)}
             </p>
@@ -536,7 +536,7 @@ export function ReportsPage() {
                       </p>
                       <p style={{
                         fontSize: '11px',
-                        color: netProfit >= 0 ? '#10b981' : '#ef4444',
+                        color: netProfit >= 0 ? '#24BD68' : '#ef4444',
                         fontWeight: 600,
                       }}>
                         {netProfit >= 0 ? '+' : ''}{netProfit.toFixed(2)} net
@@ -629,7 +629,7 @@ export function ReportsPage() {
       }}>
         <div>
           <p style={{ fontSize: '12px', color: '#94a3b8' }}>Current Terminal Balance</p>
-          <p style={{ fontSize: '24px', fontWeight: 800, color: '#10b981' }}>
+          <p style={{ fontSize: '24px', fontWeight: 800, color: '#24BD68' }}>
             {balance.toFixed(2)} BRL
           </p>
         </div>

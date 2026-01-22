@@ -46,7 +46,7 @@ import type { TVBox, TVBoxStatus, OverlayType, OverlayPosition } from '@/types/t
  * Status badge colors
  */
 const STATUS_CONFIG: Record<TVBoxStatus, { color: string; bg: string; label: string }> = {
-  online: { color: '#10b981', bg: '#ecfdf5', label: 'Online' },
+  online: { color: '#24BD68', bg: '#ecfdf5', label: 'Online' },
   offline: { color: '#ef4444', bg: '#fef2f2', label: 'Offline' },
   standby: { color: '#f59e0b', bg: '#fffbeb', label: 'Standby' },
 }

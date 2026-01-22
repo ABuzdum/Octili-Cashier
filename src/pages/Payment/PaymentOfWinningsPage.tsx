@@ -120,7 +120,7 @@ export function PaymentOfWinningsPage() {
 
     const backgrounds = {
       default: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-      confirm: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      confirm: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
       delete: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     }
 
@@ -164,7 +164,7 @@ export function PaymentOfWinningsPage() {
     }}>
       {/* Header */}
       <div style={{
-        background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
+        background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 50%, #047857 100%)',
         padding: '16px 20px',
         display: 'flex',
         alignItems: 'center',
@@ -427,7 +427,7 @@ export function PaymentOfWinningsPage() {
                 <div style={{
                   width: '80px',
                   height: '80px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   borderRadius: '24px',
                   display: 'flex',
                   alignItems: 'center',
@@ -463,7 +463,7 @@ export function PaymentOfWinningsPage() {
                   <p style={{
                     textAlign: 'center',
                     fontSize: '14px',
-                    color: '#059669',
+                    color: '#00A77E',
                     fontWeight: 500,
                     marginBottom: '4px',
                   }}>
@@ -486,7 +486,7 @@ export function PaymentOfWinningsPage() {
                       padding: '16px',
                       borderRadius: '14px',
                       border: 'none',
-                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                       color: 'white',
                       fontWeight: 700,
                       fontSize: '16px',
@@ -629,7 +629,7 @@ export function PaymentOfWinningsPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="scan" />
+      <BottomNavigation activeTab="draw" />
 
       {/* Global styles for animations */}
       <style>{`

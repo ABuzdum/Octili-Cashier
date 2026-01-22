@@ -239,7 +239,7 @@ export function TerminalOfflineOverlay() {
           style={{
             width: '100%',
             padding: '20px 32px',
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
             border: 'none',
             borderRadius: '16px',
             color: 'white',
@@ -299,7 +299,7 @@ export function TerminalOfflineOverlay() {
               <div style={{
                 width: '64px',
                 height: '64px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 borderRadius: '18px',
                 display: 'flex',
                 alignItems: 'center',
@@ -334,7 +334,7 @@ export function TerminalOfflineOverlay() {
                   style={{
                     width: '48px',
                     height: '56px',
-                    background: pin[i] ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'rgba(255,255,255,0.1)',
+                    background: pin[i] ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)' : 'rgba(255,255,255,0.1)',
                     borderRadius: '12px',
                     display: 'flex',
                     alignItems: 'center',
@@ -436,7 +436,7 @@ export function TerminalOfflineOverlay() {
                   padding: '16px',
                   borderRadius: '14px',
                   border: 'none',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   color: 'white',
                   fontSize: '16px',
                   fontWeight: 700,

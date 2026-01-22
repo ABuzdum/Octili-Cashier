@@ -17,6 +17,7 @@ import { useLotteryGames } from '@/stores/gameStore'
 import { mockDrawResults } from '@/data/games-mock-data'
 import { AppHeader } from '@/components/layout/AppHeader'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
+import { useSwipeNavigation } from '@/hooks'
 
 // Game gradients matching POSPage
 const GAME_GRADIENTS = [
@@ -38,6 +39,9 @@ export function ResultsPage() {
   const [selectedGame, setSelectedGame] = useState<string | null>(null)
   const [hoveredGame, setHoveredGame] = useState<string | null>(null)
 
+  // Swipe navigation handlers
+  const swipeHandlers = useSwipeNavigation({ currentPage: 'results' })
+
   // Get results for selected game
   const gameResults = selectedGame
     ? mockDrawResults.filter((r) => r.gameId === selectedGame)
@@ -54,12 +58,15 @@ export function ResultsPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
+    <div
+      {...swipeHandlers}
+      style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
+        display: 'flex',
+        flexDirection: 'column',
+        touchAction: 'pan-y',
+      }}>
       {/* AppHeader with balance and menu */}
       <AppHeader
         showBack
