@@ -284,16 +284,17 @@ export function AppHeader({
           leftContent
         ) : (
           <>
-            {/* Octili "O" Logo */}
+            {/* Octili Logo */}
             <div style={getLogoStyle()}>
-              <span style={{
-                fontSize: '26px',
-                fontWeight: 900,
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-                color: visualStyle === 'bold' ? theme.colors[600] : (visualStyle === 'neumorphic' && !isDarkMode ? 'white' : 'white'),
-                textShadow: visualStyle === 'glass' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
-                letterSpacing: '-2px',
-              }}>O</span>
+              <img
+                src="/octili-icon.svg"
+                alt="Octili"
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  objectFit: 'contain',
+                }}
+              />
             </div>
             <div>
               <h1 style={{
