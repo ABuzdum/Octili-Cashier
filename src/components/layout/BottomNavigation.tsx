@@ -33,12 +33,12 @@ interface NavItem {
 }
 
 /**
- * Left navigation items: Games & Results
+ * Left navigation items: Draw Games & Draw Results
  */
 const leftNavItems: NavItem[] = [
   {
     id: 'games',
-    label: 'Games',
+    label: 'Draw Games',
     icon: Ticket,
     path: '/games',
     color: '#8b5cf6',
@@ -46,7 +46,7 @@ const leftNavItems: NavItem[] = [
   },
   {
     id: 'results',
-    label: 'Results',
+    label: 'Draw Results',
     icon: Trophy,
     path: '/results',
     color: '#f59e0b',
@@ -276,32 +276,14 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
-      {/* QR Tickets Section - Label above buttons */}
+      {/* QR Tickets Section */}
       <div style={{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        gap: '4px',
+        gap: '6px',
         flexShrink: 0,
       }}>
-        <span style={{
-          fontSize: '9px',
-          fontWeight: 700,
-          fontFamily: 'Montserrat, sans-serif',
-          color: '#24BD68',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          whiteSpace: 'nowrap',
-        }}>
-          QR Tickets
-        </span>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}>
-          {rightNavItems.map((item) => renderNavButton(item))}
-        </div>
+        {rightNavItems.map((item) => renderNavButton(item))}
       </div>
 
       {/* Vertical Divider */}
@@ -314,32 +296,14 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         flexShrink: 0,
       }} />
 
-      {/* Draw Games Section - Label above buttons */}
+      {/* Draw Games Section */}
       <div style={{
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        gap: '4px',
+        gap: '6px',
         flexShrink: 0,
       }}>
-        <span style={{
-          fontSize: '9px',
-          fontWeight: 700,
-          fontFamily: 'Montserrat, sans-serif',
-          color: '#8b5cf6',
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-          whiteSpace: 'nowrap',
-        }}>
-          Draw Games
-        </span>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}>
-          {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'games' }))}
-        </div>
+        {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'games' }))}
       </div>
 
       {/* Red Vertical Divider - Legacy Section */}
