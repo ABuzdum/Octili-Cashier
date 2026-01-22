@@ -14,7 +14,8 @@
       "Bash(npm install:*)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "Read(//c/Users/abuzd/OneDrive/Git/**)"
+      "Read(//c/Users/abuzd/OneDrive/Git/**)",
+      "Bash(there should be also another question. Do you want another ticket? If you say)"
     ]
   }
 }

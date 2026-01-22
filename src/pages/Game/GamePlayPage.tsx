@@ -1351,40 +1351,123 @@ export function GamePlayPage() {
         </div>
       )}
 
-      {/* Success Toast */}
-      {showSuccess && (
+      {/* Another Ticket? Modal */}
+      {showAnotherTicketModal && (
         <div style={{
           position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'white',
-          borderRadius: '24px',
-          padding: '32px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           zIndex: 1001,
-          textAlign: 'center',
+          padding: '20px',
         }}>
           <div style={{
-            width: '72px',
-            height: '72px',
-            background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 16px',
-            boxShadow: '0 8px 24px rgba(36, 189, 104, 0.4)',
+            background: 'white',
+            borderRadius: '24px',
+            padding: '32px 24px',
+            width: '100%',
+            maxWidth: '360px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            textAlign: 'center',
           }}>
-            <Check size={36} color="white" strokeWidth={3} />
+            {/* Success checkmark */}
+            <div style={{
+              width: '72px',
+              height: '72px',
+              background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px',
+              boxShadow: '0 8px 24px rgba(36, 189, 104, 0.4)',
+            }}>
+              <Check size={36} color="white" strokeWidth={3} />
+            </div>
+
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: 700,
+              color: '#1e293b',
+              marginBottom: '8px',
+            }}>
+              Added to Cart!
+            </h3>
+            <p style={{
+              fontSize: '14px',
+              color: '#64748b',
+              marginBottom: '24px',
+            }}>
+              {cartTickets.length} ticket{cartTickets.length > 1 ? 's' : ''} in cart
+            </p>
+
+            <h4 style={{
+              fontSize: '18px',
+              fontWeight: 600,
+              color: '#1e293b',
+              marginBottom: '20px',
+            }}>
+              Do you want another ticket?
+            </h4>
+
+            {/* Action buttons */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              {/* Yes - Another ticket */}
+              <button
+                onClick={() => handleAnotherTicket(true)}
+                style={{
+                  flex: 1,
+                  padding: '18px 16px',
+                  minHeight: '60px',
+                  borderRadius: '16px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
+                  color: 'white',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  boxShadow: '0 4px 16px rgba(36, 189, 104, 0.4)',
+                }}
+              >
+                <Ticket size={24} />
+                <span>Yes, Add More</span>
+              </button>
+
+              {/* No - Go to cart */}
+              <button
+                onClick={() => handleAnotherTicket(false)}
+                style={{
+                  flex: 1,
+                  padding: '18px 16px',
+                  minHeight: '60px',
+                  borderRadius: '16px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                  color: 'white',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  boxShadow: '0 4px 16px rgba(99, 102, 241, 0.4)',
+                }}
+              >
+                <ShoppingCart size={24} />
+                <span>No, Checkout</span>
+              </button>
+            </div>
           </div>
-          <h3 style={{
-            fontSize: '20px',
-            fontWeight: 700,
-            color: '#1e293b',
-          }}>
-            Purchase Complete!
-          </h3>
         </div>
       )}
     </div>
