@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="512" height="512" viewBox="0 0 512 512" xml:space="preserve">
+<desc>Created with Fabric.js 6.5.3</desc>
+<defs>
+</defs>
+
+<g transform="matrix(11.2085 0 0 11.2085 256 256)">
+<g style="">
+		<g transform="matrix(1 0 0 1 0 0)">
+<g style="">
+		<g transform="matrix(0.5556 0 0 0.5556 0 0)">
+<g style="">
+		<g transform="matrix(1 0 0 1 0 0)">
+<linearGradient id="SVGID_1358" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1 0 0 1 71.5933 71.5935)" x1="0" y1="0" x2="32.11860000000001" y2="0">
+<stop offset="0%" style="stop-color:#282e3a;"/>
+<stop offset="2.380952380952381%" style="stop-color:#29313e;"/>
+<stop offset="4.761904761904762%" style="stop-color:#293343;"/>
+<stop offset="7.142857142857142%" style="stop-color:#2a3647;"/>
+<stop offset="9.523809523809524%" style="stop-color:#2a394b;"/>
+<stop offset="11.904761904761903%" style="stop-color:#2a3c4f;"/>
+<stop offset="14.285714285714285%" style="stop-color:#293f53;"/>
+<stop offset="16.666666666666664%" style="stop-color:#294257;"/>
+<stop offset="19.047619047619047%" style="stop-color:#28455b;"/>
+<stop offset="21.428571428571427%" style="stop-color:#27485f;"/>
+<stop offset="23.809523809523807%" style="stop-color:#254b63;"/>
+<stop offset="26.190476190476193%" style="stop-color:#234f66;"/>
+<stop offset="28.57142857142857%" style="stop-color:#20526a;"/>
+<stop offset="30.952380952380953%" style="stop-color:#1d556d;"/>
+<stop offset="33.33333333333333%" style="stop-color:#195970;"/>
+<stop offset="35.714285714285715%" style="stop-color:#135c73;"/>
+<stop offset="38.095238095238095%" style="stop-color:#0b6076;"/>
+<stop offset="40.476190476190474%" style="stop-color:#006479;"/>
+<stop offset="42.857142857142854%" style="stop-color:#00677b;"/>
+<stop offset="45.23809523809524%" style="stop-color:#006b7d;"/>
+<stop offset="47.61904761904761%" style="stop-color:#006f7f;"/>
+<stop offset="50%" style="stop-color:#007281;"/>
+<stop offset="52.38095238095239%" style="stop-color:#007683;"/>
+<stop offset="54.761904761904766%" style="stop-color:#007a84;"/>
+<stop offset="57.14285714285714%" style="stop-color:#007e85;"/>
+<stop offset="59.523809523809526%" style="stop-color:#008286;"/>
+<stop offset="61.904761904761905%" style="stop-color:#008687;"/>
+<stop offset="64.28571428571429%" style="stop-color:#008987;"/>
+<stop offset="66.66666666666666%" style="stop-color:#008d87;"/>
+<stop offset="69.04761904761905%" style="stop-color:#009187;"/>
+<stop offset="71.42857142857143%" style="stop-color:#009586;"/>
+<stop offset="73.80952380952381%" style="stop-color:#009885;"/>
+<stop offset="76.19047619047619%" style="stop-color:#009c84;"/>
+<stop offset="78.57142857142857%" style="stop-color:#00a083;"/>
+<stop offset="80.95238095238095%" style="stop-color:#00a381;"/>
+<stop offset="83.33333333333334%" style="stop-color:#00a77f;"/>
+<stop offset="85.71428571428571%" style="stop-color:#00aa7d;"/>
+<stop offset="88.09523809523809%" style="stop-color:#00ad7a;"/>
+<stop offset="90.47619047619048%" style="stop-color:#00b177;"/>
+<stop offset="92.85714285714286%" style="stop-color:#00b474;"/>
+<stop offset="95.23809523809523%" style="stop-color:#00b770;"/>
+<stop offset="97.61904761904762%" style="stop-color:#08ba6c;"/>
+<stop offset="100%" style="stop-color:#24bd68;"/>
+</linearGradient>
+<path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: url(#SVGID_1358); fill-rule: nonzero; opacity: 1;" transform=" translate(-100, -100)" d="M 88.9399 126.1746 C 85.5552 124.7415 82.5171 122.6965 79.9102 120.0901 C 77.3037 117.4832 75.2588 114.4446 73.8257 111.0603 C 72.3423 107.5535 71.5933 103.8308 71.5933 100.0002 C 71.5933 96.1697 72.3423 92.4465 73.8257 88.9402 C 75.2588 85.5559 77.3037 82.5168 79.9102 79.9104 C 82.5171 77.3039 85.5552 75.259 88.9399 73.8259 C 92.4468 72.3425 96.1694 71.5935 99.9995 71.5935 C 103.8306 71.5935 107.5532 72.3425 111.0601 73.8259 C 114.4448 75.259 117.4829 77.304 120.0894 79.9104 C 122.6968 82.5168 124.7417 85.5559 126.1743 88.9402 C 127.6577 92.4465 128.4067 96.1697 128.4067 100.0002 C 128.4067 103.8308 127.6577 107.5535 126.1743 111.0603 C 124.7417 114.4446 122.6968 117.4831 120.0894 120.0901 C 117.4829 122.6965 114.4448 124.7415 111.0601 126.1746 C 107.5532 127.658 103.8306 128.4065 99.9995 128.4065 C 96.1694 128.4065 92.4468 127.658 88.9399 126.1746 Z M 87.9028 87.9104 C 84.6694 91.1433 82.8911 95.4348 82.8911 100.0076 C 82.8911 104.5798 84.6694 108.8713 87.9028 112.1043 C 91.1362 115.3377 95.4272 117.116 99.9995 117.116 C 104.5727 117.116 108.8638 115.3377 112.0972 112.1043 C 115.3296 108.8713 117.1089 104.5798 117.1089 100.0076 C 117.1089 95.4348 115.3296 91.1433 112.0972 87.9104 C 108.8638 84.6775 104.5649 82.8987 99.9995 82.8987 C 95.4351 82.8987 91.1362 84.6775 87.9028 87.9104 Z" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

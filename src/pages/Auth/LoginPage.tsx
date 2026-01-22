@@ -3,18 +3,17 @@
  * LOGIN PAGE - OCTILI CASHIER POS TERMINAL
  * ============================================================================
  *
- * Purpose: Beautiful animated login page matching Octili Admin Panel style
+ * Purpose: Beautiful animated login page - exact copy of Octili Admin Panel
  * with Octili brand colors (green/teal palette)
  *
  * Features:
  * - Animated liquid glass background effect
  * - Glass morphism card design
  * - Username and password input with icons
- * - Support phone number display
- * - Demo credentials section
+ * - Demo credentials with copy/paste functionality
  *
  * @author Octili Development Team
- * @version 2.1.0
+ * @version 3.0.0
  * @lastUpdated 2026-01-22
  */
 
@@ -29,23 +28,23 @@ import {
   AlertCircle,
   Loader2,
   ArrowRight,
-  Phone,
-  Sparkles
+  Sparkles,
+  Copy,
+  ClipboardPaste
 } from 'lucide-react'
 
-/** Octili Brand Colors - matching Admin Panel */
+/** Octili Brand Colors - matching Admin Panel exactly */
 const BRAND_COLORS = {
-  green: '#24BD68',       // Primary green - buttons, accents
-  teal: '#00A77E',        // Teal - hover states
-  deepTeal: '#006E7E',    // Deep teal - gradients
-  darkBlue: '#28455B',    // Dark blue - headers, labels
-  charcoal: '#282E3A',    // Charcoal - text
+  green: '#24BD68',
+  teal: '#00A77E',
+  deepTeal: '#006E7E',
+  darkBlue: '#28455B',
+  charcoal: '#282E3A',
 }
 
 /** Demo credentials for testing */
 const DEMO_USERNAME = 'cashier'
 const DEMO_PASSWORD = 'password'
-const SUPPORT_PHONE = '+38 068 777 22 89'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -55,7 +54,7 @@ export function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 })
 
   /**
@@ -72,7 +71,7 @@ export function LoginPage() {
     let animationId: number
     let time = 0
 
-    // Set canvas size to match window
+    // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth
       canvas.height = window.innerHeight
@@ -80,10 +79,7 @@ export function LoginPage() {
     resizeCanvas()
     window.addEventListener('resize', resizeCanvas)
 
-    /**
-     * Blob class for liquid effect
-     * Each blob floats around and is influenced by mouse position
-     */
+    // Blob class for liquid effect
     class Blob {
       x: number
       y: number
@@ -104,11 +100,11 @@ export function LoginPage() {
       }
 
       update(width: number, height: number, mouseX: number, mouseY: number) {
-        // Gentle floating movement
+        // Gentle movement
         this.x += this.xSpeed + Math.sin(time * 0.001) * 0.3
         this.y += this.ySpeed + Math.cos(time * 0.001) * 0.3
 
-        // Mouse influence - blobs are gently attracted to cursor
+        // Mouse influence
         const dx = mouseX - this.x
         const dy = mouseY - this.y
         const dist = Math.sqrt(dx * dx + dy * dy)
@@ -117,7 +113,7 @@ export function LoginPage() {
           this.y += dy * 0.002
         }
 
-        // Wrap around screen edges
+        // Boundary bounce
         if (this.x < -this.radius) this.x = width + this.radius
         if (this.x > width + this.radius) this.x = -this.radius
         if (this.y < -this.radius) this.y = height + this.radius
@@ -140,7 +136,7 @@ export function LoginPage() {
       }
     }
 
-    // Create blobs with Octili brand colors
+    // Create blobs with brand colors
     const blobs = [
       new Blob(canvas.width * 0.3, canvas.height * 0.3, 350, 'rgb(36, 189, 104)', 0.4),   // Octili Green
       new Blob(canvas.width * 0.7, canvas.height * 0.6, 300, 'rgb(0, 167, 126)', 0.35),   // Teal
@@ -150,7 +146,7 @@ export function LoginPage() {
       new Blob(canvas.width * 0.4, canvas.height * 0.5, 200, 'rgb(0, 167, 126)', 0.25),   // Teal
     ]
 
-    // Track mouse position for blob attraction
+    // Mouse tracking
     let mouseX = canvas.width / 2
     let mouseY = canvas.height / 2
 
@@ -169,11 +165,13 @@ export function LoginPage() {
       time++
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+      // Draw blobs
       blobs.forEach(blob => {
         blob.update(canvas.width, canvas.height, mouseX, mouseY)
         blob.draw(ctx)
       })
 
+      // Apply blur effect via CSS filter
       animationId = requestAnimationFrame(animate)
     }
 
@@ -186,13 +184,38 @@ export function LoginPage() {
     }
   }, [])
 
+  /** Copy credentials to clipboard */
+  const copyCredentials = async () => {
+    try {
+      await navigator.clipboard.writeText(`${DEMO_USERNAME}\n${DEMO_PASSWORD}`)
+    } catch {
+      // Silently fail
+    }
+  }
+
+  /** Paste username */
+  const pasteUsername = () => {
+    setUsername(DEMO_USERNAME)
+  }
+
+  /** Paste password */
+  const pastePassword = () => {
+    setPassword(DEMO_PASSWORD)
+  }
+
+  /** Fill both fields */
+  const fillBoth = () => {
+    setUsername(DEMO_USERNAME)
+    setPassword(DEMO_PASSWORD)
+  }
+
   /**
    * Handle form submission
    * Validates inputs and attempts login
    */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setError('')
+    setError(null)
 
     if (!username || !password) {
       setError('Please enter username and password')
@@ -208,12 +231,6 @@ export function LoginPage() {
     }
   }
 
-  /** Fill demo credentials into form */
-  const fillDemoCredentials = () => {
-    setUsername(DEMO_USERNAME)
-    setPassword(DEMO_PASSWORD)
-  }
-
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-emerald-50/30">
       {/* Animated Canvas Background */}
@@ -223,7 +240,7 @@ export function LoginPage() {
         style={{ filter: 'blur(80px)' }}
       />
 
-      {/* Moving gradient overlay that follows mouse */}
+      {/* Subtle moving gradient overlay */}
       <div
         className="absolute inset-0 transition-all duration-[2000ms] ease-out"
         style={{
@@ -243,50 +260,46 @@ export function LoginPage() {
         }}
       />
 
+      {/* Noise texture for glass effect */}
+      <div
+        className="absolute inset-0 opacity-[0.015] pointer-events-none"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+        }}
+      />
+
       {/* Main content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 py-12">
         {/* Logo Section */}
         <div className="text-center mb-10 animate-fade-in">
           {/* Logo container with brand glow */}
           <div className="relative inline-block mb-6">
-            {/* Glow behind logo */}
+            {/* Subtle glow behind logo using brand colors */}
             <div
-              className="absolute inset-0 blur-3xl scale-150 opacity-50 animate-pulse-glow"
+              className="absolute inset-0 blur-3xl scale-150 opacity-50"
               style={{
                 background: `linear-gradient(135deg, ${BRAND_COLORS.green}40, ${BRAND_COLORS.teal}30, ${BRAND_COLORS.deepTeal}20)`,
               }}
             />
 
-            {/* Octili Logo */}
+            {/* Logo */}
             <img
               src="/octili-primary-logo.svg"
               alt="Octili"
               className="relative h-24 sm:h-32 md:h-40 w-auto mx-auto drop-shadow-lg"
               onError={(e) => {
-                // Fallback to text if logo doesn't load
                 e.currentTarget.style.display = 'none'
-                const fallback = e.currentTarget.nextElementSibling as HTMLElement
-                if (fallback) fallback.style.display = 'flex'
               }}
             />
-            {/* Fallback logo */}
-            <div
-              className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto rounded-full items-center justify-center shadow-2xl hidden"
-              style={{
-                background: `linear-gradient(135deg, ${BRAND_COLORS.green}, ${BRAND_COLORS.teal})`,
-              }}
-            >
-              <span className="text-4xl sm:text-5xl font-black text-white">O</span>
-            </div>
           </div>
 
-          {/* Title with brand typography */}
+          {/* Tagline with brand typography */}
           <div className="space-y-2">
             <h1
               className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight"
               style={{ color: BRAND_COLORS.charcoal }}
             >
-              Octili Cashier
+              Cashier
             </h1>
             <p
               className="text-base sm:text-lg font-medium tracking-wide"
@@ -300,7 +313,7 @@ export function LoginPage() {
         {/* Glass Card */}
         <div className="w-full max-w-lg animate-slide-up" style={{ animationDelay: '0.15s' }}>
           <div className="relative group">
-            {/* Card outer glow on hover */}
+            {/* Card outer glow on hover - brand colors */}
             <div
               className="absolute -inset-1 rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
               style={{
@@ -313,7 +326,7 @@ export function LoginPage() {
               {/* Inner glass shine */}
               <div className="absolute inset-0 rounded-[2rem] bg-gradient-to-br from-white/70 via-white/30 to-transparent pointer-events-none" />
 
-              {/* Animated border glow */}
+              {/* Animated border glow - brand gradient */}
               <div
                 className="absolute inset-0 rounded-[2rem] opacity-40 pointer-events-none transition-opacity duration-500"
                 style={{
@@ -321,7 +334,7 @@ export function LoginPage() {
                 }}
               />
 
-              {/* Secure Login badge */}
+              {/* Welcome badge with brand colors */}
               <div className="relative flex items-center justify-center gap-2 mb-8">
                 <div
                   className="flex items-center gap-2 px-5 py-2.5 rounded-full backdrop-blur-sm"
@@ -356,7 +369,7 @@ export function LoginPage() {
                     className="block text-sm font-semibold"
                     style={{ color: BRAND_COLORS.darkBlue }}
                   >
-                    Login
+                    Username
                   </label>
                   <div className="relative group/input">
                     <div
@@ -375,7 +388,7 @@ export function LoginPage() {
                         autoComplete="username"
                         className="w-full h-14 pl-12 pr-4 rounded-xl bg-white/50 border-2 border-slate-200/80 backdrop-blur-sm placeholder-slate-400 text-base font-medium focus:outline-none focus:bg-white/70 focus:border-[#24BD68] transition-all duration-300"
                         style={{ color: BRAND_COLORS.charcoal }}
-                        placeholder="Enter your login"
+                        placeholder="cashier"
                       />
                     </div>
                   </div>
@@ -418,7 +431,7 @@ export function LoginPage() {
                   </div>
                 </div>
 
-                {/* Sign In Button */}
+                {/* Large Submit Button - Brand Gradient */}
                 <button
                   type="submit"
                   disabled={isLoading}
@@ -427,9 +440,9 @@ export function LoginPage() {
                     boxShadow: `0 8px 32px ${BRAND_COLORS.green}40`,
                   }}
                 >
-                  {/* Button gradient background - Octili Brand Colors */}
+                  {/* Button gradient background - Brand Colors */}
                   <div
-                    className="absolute inset-0 transition-all duration-500"
+                    className="absolute inset-0 bg-[length:200%_100%] group-hover/btn:bg-[position:100%_0] transition-all duration-500"
                     style={{
                       background: `linear-gradient(135deg, ${BRAND_COLORS.darkBlue} 0%, ${BRAND_COLORS.deepTeal} 25%, ${BRAND_COLORS.teal} 50%, ${BRAND_COLORS.green} 75%, ${BRAND_COLORS.teal} 100%)`,
                       backgroundSize: '200% 100%',
@@ -438,6 +451,9 @@ export function LoginPage() {
 
                   {/* Button shine effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+
+                  {/* Subtle inner glow */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
 
                   {/* Button content */}
                   <span className="relative flex items-center justify-center gap-3">
@@ -448,7 +464,7 @@ export function LoginPage() {
                       </>
                     ) : (
                       <>
-                        <span>Sign in</span>
+                        <span>Sign in to POS</span>
                         <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -456,23 +472,8 @@ export function LoginPage() {
                 </button>
               </form>
 
-              {/* Support Phone */}
-              <div className="relative mt-6 text-center">
-                <p className="text-sm text-slate-500 flex items-center justify-center gap-2">
-                  <Phone className="w-4 h-4" />
-                  Support
-                </p>
-                <a
-                  href={`tel:${SUPPORT_PHONE.replace(/\s/g, '')}`}
-                  className="text-lg font-semibold hover:opacity-80 transition-opacity"
-                  style={{ color: BRAND_COLORS.green }}
-                >
-                  {SUPPORT_PHONE}
-                </a>
-              </div>
-
               {/* Demo Credentials */}
-              <div className="relative mt-6 pt-6 border-t border-slate-200/50">
+              <div className="relative mt-8 pt-6 border-t border-slate-200/50">
                 <p
                   className="text-xs text-center mb-4 uppercase tracking-widest font-semibold"
                   style={{ color: BRAND_COLORS.darkBlue, opacity: 0.6 }}
@@ -480,44 +481,77 @@ export function LoginPage() {
                   Demo Credentials
                 </p>
                 <div
-                  className="p-4 rounded-xl space-y-2 backdrop-blur-sm"
+                  className="p-4 rounded-xl space-y-2.5 backdrop-blur-sm"
                   style={{
                     background: `linear-gradient(135deg, ${BRAND_COLORS.green}08, ${BRAND_COLORS.teal}05)`,
                     border: `1px solid ${BRAND_COLORS.green}20`,
                   }}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium" style={{ color: BRAND_COLORS.darkBlue }}>Login</span>
-                    <code
-                      className="text-sm font-mono font-semibold px-3 py-1 rounded-lg"
-                      style={{
-                        color: BRAND_COLORS.green,
-                        background: `${BRAND_COLORS.green}15`,
-                      }}
-                    >
-                      {DEMO_USERNAME}
-                    </code>
+                    <span className="text-sm font-medium" style={{ color: BRAND_COLORS.darkBlue }}>Username</span>
+                    <div className="flex items-center gap-2">
+                      <code
+                        className="text-sm font-mono font-semibold px-3 py-1 rounded-lg"
+                        style={{
+                          color: BRAND_COLORS.green,
+                          background: `${BRAND_COLORS.green}15`,
+                        }}
+                      >
+                        {DEMO_USERNAME}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={pasteUsername}
+                        className="p-1.5 rounded-lg hover:bg-white/50 transition-colors"
+                        title="Paste to username field"
+                      >
+                        <ClipboardPaste className="w-4 h-4" style={{ color: BRAND_COLORS.teal }} />
+                      </button>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium" style={{ color: BRAND_COLORS.darkBlue }}>Password</span>
-                    <code
-                      className="text-sm font-mono font-semibold px-3 py-1 rounded-lg"
-                      style={{
-                        color: BRAND_COLORS.green,
-                        background: `${BRAND_COLORS.green}15`,
-                      }}
-                    >
-                      {DEMO_PASSWORD}
-                    </code>
+                    <div className="flex items-center gap-2">
+                      <code
+                        className="text-sm font-mono font-semibold px-3 py-1 rounded-lg"
+                        style={{
+                          color: BRAND_COLORS.green,
+                          background: `${BRAND_COLORS.green}15`,
+                        }}
+                      >
+                        {DEMO_PASSWORD}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={pastePassword}
+                        className="p-1.5 rounded-lg hover:bg-white/50 transition-colors"
+                        title="Paste to password field"
+                      >
+                        <ClipboardPaste className="w-4 h-4" style={{ color: BRAND_COLORS.teal }} />
+                      </button>
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={fillDemoCredentials}
-                    className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105 active:scale-95"
-                    style={{ background: BRAND_COLORS.green }}
-                  >
-                    Fill Demo Credentials
-                  </button>
+                  {/* Quick action buttons */}
+                  <div className="flex items-center gap-2 pt-2 mt-2 border-t border-slate-200/30">
+                    <button
+                      type="button"
+                      onClick={copyCredentials}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-white/50"
+                      style={{ color: BRAND_COLORS.darkBlue }}
+                    >
+                      <Copy className="w-4 h-4" />
+                      Copy All
+                    </button>
+                    <button
+                      type="button"
+                      onClick={fillBoth}
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-white transition-all hover:scale-105"
+                      style={{ background: BRAND_COLORS.green }}
+                    >
+                      <ClipboardPaste className="w-4 h-4" />
+                      Fill Both
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
