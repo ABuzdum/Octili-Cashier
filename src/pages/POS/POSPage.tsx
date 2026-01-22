@@ -18,7 +18,7 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Banknote, Clock, Sparkles } from 'lucide-react'
+import { Banknote, Clock, Sparkles, Menu } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import type { LotteryGame } from '@/types/game.types'
@@ -364,25 +364,48 @@ export function POSPage() {
           </div>
         </div>
 
-        {/* Balance */}
-        <div style={{
-          background: 'rgba(255,255,255,0.1)',
-          backdropFilter: 'blur(10px)',
-          padding: '10px 16px',
-          borderRadius: '12px',
-          border: '1px solid rgba(255,255,255,0.1)',
-        }}>
-          <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>
-            Balance
-          </p>
-          <p style={{
-            fontSize: '16px',
-            fontWeight: 700,
-            color: '#10b981',
-            fontFamily: 'ui-monospace, monospace',
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Balance */}
+          <div style={{
+            background: 'rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(10px)',
+            padding: '10px 16px',
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.1)',
           }}>
-            {balance.toFixed(2)} <span style={{ fontSize: '12px', opacity: 0.8 }}>BRL</span>
-          </p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>
+              Balance
+            </p>
+            <p style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              color: '#10b981',
+              fontFamily: 'ui-monospace, monospace',
+            }}>
+              {balance.toFixed(2)} <span style={{ fontSize: '12px', opacity: 0.8 }}>BRL</span>
+            </p>
+          </div>
+
+          {/* Menu Button - Operator Functions */}
+          <button
+            onClick={() => navigate('/menu')}
+            style={{
+              width: '44px',
+              height: '44px',
+              background: 'rgba(255,255,255,0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+            }}
+            title="Operator Menu"
+          >
+            <Menu size={22} color="white" />
+          </button>
         </div>
       </div>
 
