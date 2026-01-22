@@ -19,7 +19,7 @@
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ShoppingCart } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BalanceOverview } from '@/components/shared/BalanceOverview'
@@ -52,8 +52,9 @@ export function AppHeader({
   leftContent,
 }: AppHeaderProps) {
   const navigate = useNavigate()
-  const { pocketBalances, getTotalBalance } = useGameStore()
+  const { pocketBalances, getTotalBalance, cartTickets } = useGameStore()
   const balance = getTotalBalance()
+  const cartCount = cartTickets.length
   const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
 
   /** State for showing balance details modal */
@@ -374,8 +375,88 @@ export function AppHeader({
           </p>
         </button>
 
+        {/* Cart Button - Only visible when cart has items - URGENT yellow/orange/red glow */}
+        {cartCount > 0 && (
+          <button
+            onClick={() => navigate('/cart')}
+            className="cart-urgent-glow"
+            style={{
+              position: 'relative',
+              width: '52px',
+              height: '52px',
+              minWidth: '52px',
+              minHeight: '52px',
+              background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 30%, #ea580c 70%, #dc2626 100%)',
+              backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
+              border: '3px solid rgba(255,255,255,0.5)',
+              borderRadius: visualStyle === 'bold' ? '14px' : '16px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: '0 0 30px rgba(245, 158, 11, 0.8), 0 0 60px rgba(234, 88, 12, 0.5), 0 6px 20px rgba(220, 38, 38, 0.4)',
+              animation: 'cartUrgentPulse 1.5s ease-in-out infinite',
+            }}
+            title={`Cart (${cartCount} items) - Click to finalize!`}
+          >
+            <ShoppingCart size={24} color="white" strokeWidth={2.5} style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
+            {/* Badge showing count */}
+            <div style={{
+              position: 'absolute',
+              top: '-8px',
+              right: '-8px',
+              minWidth: '24px',
+              height: '24px',
+              padding: '0 6px',
+              background: 'linear-gradient(135deg, #fef08a 0%, #fbbf24 100%)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '13px',
+              fontWeight: 900,
+              color: '#78350f',
+              boxShadow: '0 0 12px rgba(251, 191, 36, 0.8), 0 2px 8px rgba(245, 158, 11, 0.6)',
+              border: '2px solid white',
+              animation: 'badgeBounce 1s ease-in-out infinite',
+            }}>
+              {cartCount > 9 ? '9+' : cartCount}
+            </div>
+          </button>
+        )}
       </div>
     </header>
+
+    {/* Cart Urgent Glow Animation Styles */}
+    <style>{`
+      @keyframes cartUrgentPulse {
+        0%, 100% {
+          box-shadow: 0 0 30px rgba(245, 158, 11, 0.8), 0 0 60px rgba(234, 88, 12, 0.5), 0 6px 20px rgba(220, 38, 38, 0.4);
+          transform: scale(1);
+        }
+        25% {
+          box-shadow: 0 0 40px rgba(251, 191, 36, 1), 0 0 80px rgba(245, 158, 11, 0.7), 0 8px 30px rgba(234, 88, 12, 0.6);
+          transform: scale(1.08);
+        }
+        50% {
+          box-shadow: 0 0 50px rgba(220, 38, 38, 0.9), 0 0 100px rgba(234, 88, 12, 0.6), 0 10px 40px rgba(245, 158, 11, 0.5);
+          transform: scale(1.1);
+        }
+        75% {
+          box-shadow: 0 0 40px rgba(245, 158, 11, 1), 0 0 80px rgba(251, 191, 36, 0.7), 0 8px 30px rgba(220, 38, 38, 0.5);
+          transform: scale(1.08);
+        }
+      }
+      @keyframes badgeBounce {
+        0%, 100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.15);
+        }
+      }
+    `}</style>
 
     {/* Balance Details Modal */}
     {showBalanceModal && (

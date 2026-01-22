@@ -431,46 +431,6 @@ export function GamePlayPage() {
             </span>
           </div>
 
-          {/* Cart Button - 48px minimum touch target */}
-          <button
-            onClick={() => navigate('/cart')}
-            style={{
-              background: '#f1f5f9',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '48px',
-              height: '48px',
-              minWidth: '48px',
-              minHeight: '48px',
-              borderRadius: '12px',
-              position: 'relative',
-            }}
-          >
-            <ShoppingCart size={22} color="#64748b" />
-            {cartTickets.length > 0 && (
-              <span style={{
-                position: 'absolute',
-                top: '-4px',
-                right: '-4px',
-                background: '#ef4444',
-                color: 'white',
-                fontSize: '9px',
-                fontWeight: 700,
-                width: '18px',
-                height: '18px',
-                borderRadius: '50%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 2px 6px rgba(239, 68, 68, 0.4)',
-              }}>
-                {cartTickets.length}
-              </span>
-            )}
-          </button>
         </div>
       </div>
 
