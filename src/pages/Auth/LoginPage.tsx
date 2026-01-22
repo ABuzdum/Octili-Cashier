@@ -238,6 +238,19 @@ export function LoginPage() {
         transition: 'all 2s ease-out',
       }} />
 
+      {/* Subtle grid pattern */}
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.02,
+        backgroundImage: `radial-gradient(circle at 1px 1px, ${BRAND.charcoal} 1px, transparent 0)`,
+        backgroundSize: '32px 32px',
+      }} />
+
+      {/* Noise texture for glass effect */}
+      <div style={{
+        position: 'absolute', inset: 0, opacity: 0.015, pointerEvents: 'none',
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+      }} />
+
       {/* Main Content */}
       <div style={{
         position: 'relative', zIndex: 10,
@@ -260,8 +273,25 @@ export function LoginPage() {
         </div>
 
         {/* Glass Card */}
-        <div style={{ width: '100%', maxWidth: '512px' }} className="animate-slide-up">
+        <div style={{ width: '100%', maxWidth: '512px', position: 'relative' }} className="animate-slide-up group">
+          {/* Card outer glow on hover */}
+          <div style={{
+            position: 'absolute', inset: '-4px', borderRadius: '2.25rem',
+            filter: 'blur(20px)', opacity: 0,
+            background: `linear-gradient(135deg, ${BRAND.green}20, ${BRAND.teal}15, ${BRAND.deepTeal}10)`,
+            transition: 'opacity 0.7s',
+          }} className="group-hover:opacity-100" />
           <div style={cardStyle}>
+            {/* Inner glass shine */}
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '2rem', pointerEvents: 'none',
+              background: 'linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.3), transparent)',
+            }} />
+            {/* Animated border glow */}
+            <div style={{
+              position: 'absolute', inset: 0, borderRadius: '2rem', opacity: 0.4, pointerEvents: 'none',
+              background: `conic-gradient(from ${mousePosition.x * 3.6}deg at 50% 50%, transparent 0deg, ${BRAND.green}30 60deg, ${BRAND.teal}20 120deg, transparent 180deg)`,
+            }} />
             {/* Secure Login Badge */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
               <div style={{
