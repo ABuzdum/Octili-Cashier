@@ -6,7 +6,7 @@
  * Purpose: Beautiful bottom navigation bar for cashier terminals
  * Design: Octili brand with Montserrat font, clean white background
  *
- * Layout: Draw (large) | Results | (divider) | QR Ticket: Sell | Payout
+ * Layout: QR Tickets | Draw Games (large) | Draw Results | (divider) | Payout
  *
  * @author Octili Development Team
  * @version 7.0.0
@@ -33,9 +33,21 @@ interface NavItem {
 }
 
 /**
- * Left navigation items: Draw Games & Draw Results
+ * QR Tickets button - first in navigation
  */
-const leftNavItems: NavItem[] = [
+const qrTicketsItem: NavItem = {
+  id: 'qrticket-sell',
+  label: 'QR Tickets',
+  icon: QrCode,
+  path: '/physical-ticket/new',
+  color: '#24BD68',
+  activeColor: '#00A77E',
+}
+
+/**
+ * Draw Games & Draw Results - middle section
+ */
+const drawNavItems: NavItem[] = [
   {
     id: 'games',
     label: 'Draw Games',
@@ -55,27 +67,16 @@ const leftNavItems: NavItem[] = [
 ]
 
 /**
- * Right navigation items: QR Tickets & Unified Payout
- * Icons: QrCode for QR tickets, Banknote for unified payout (QR + Draw)
+ * Payout button - unified payout for both QR and Draw tickets
  */
-const rightNavItems: NavItem[] = [
-  {
-    id: 'qrticket-sell',
-    label: 'QR Tickets',
-    icon: QrCode,
-    path: '/physical-ticket/new',
-    color: '#24BD68',
-    activeColor: '#00A77E',
-  },
-  {
-    id: 'payout',
-    label: 'Payout',
-    icon: Banknote,
-    path: '/payout',
-    color: '#f59e0b',
-    activeColor: '#d97706',
-  },
-]
+const payoutItem: NavItem = {
+  id: 'payout',
+  label: 'Payout',
+  icon: Banknote,
+  path: '/payout',
+  color: '#f59e0b',
+  activeColor: '#d97706',
+}
 
 /**
  * Legacy navigation items - pages not currently in main navigation
@@ -276,17 +277,20 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
-      {/* QR Tickets Section */}
+      {/* QR Tickets - Single button */}
+      {renderNavButton(qrTicketsItem)}
+
+      {/* Draw Games & Draw Results Section */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
         gap: '6px',
         flexShrink: 0,
       }}>
-        {rightNavItems.map((item) => renderNavButton(item))}
+        {drawNavItems.map((item) => renderNavButton(item, { large: item.id === 'games' }))}
       </div>
 
-      {/* Vertical Divider */}
+      {/* Vertical Divider before Payout */}
       <div style={{
         width: '2px',
         height: '56px',
@@ -296,15 +300,8 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         flexShrink: 0,
       }} />
 
-      {/* Draw Games Section */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '6px',
-        flexShrink: 0,
-      }}>
-        {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'games' }))}
-      </div>
+      {/* Payout - Single button */}
+      {renderNavButton(payoutItem)}
 
       {/* Red Vertical Divider - Legacy Section */}
       <div style={{
