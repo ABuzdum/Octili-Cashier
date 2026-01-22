@@ -3,17 +3,10 @@
  * LOGIN PAGE - OCTILI CASHIER POS TERMINAL
  * ============================================================================
  *
- * Purpose: Beautiful animated login page - exact copy of Octili Admin Panel
- * with Octili brand colors (green/teal palette)
- *
- * Features:
- * - Animated liquid glass background effect
- * - Glass morphism card design
- * - Username and password input with icons
- * - Demo credentials with copy/paste functionality
+ * Purpose: Login page - exact copy of Octili Admin Panel design
  *
  * @author Octili Development Team
- * @version 3.0.0
+ * @version 4.0.0
  * @lastUpdated 2026-01-22
  */
 
@@ -33,7 +26,7 @@ import {
   ClipboardPaste
 } from 'lucide-react'
 
-/** Octili Brand Colors - matching Admin Panel exactly */
+// Brand Colors from Brand Guidelines
 const BRAND_COLORS = {
   green: '#24BD68',
   teal: '#00A77E',
@@ -41,10 +34,6 @@ const BRAND_COLORS = {
   darkBlue: '#28455B',
   charcoal: '#282E3A',
 }
-
-/** Demo credentials for testing */
-const DEMO_USERNAME = 'cashier'
-const DEMO_PASSWORD = 'password'
 
 export function LoginPage() {
   const navigate = useNavigate()
@@ -57,10 +46,11 @@ export function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 })
 
-  /**
-   * Animated liquid glass background effect
-   * Creates floating blobs with Octili brand colors that follow mouse movement
-   */
+  // Demo credentials
+  const DEMO_USERNAME = 'cashier'
+  const DEMO_PASSWORD = 'password'
+
+  // Animated liquid glass background effect
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -100,11 +90,9 @@ export function LoginPage() {
       }
 
       update(width: number, height: number, mouseX: number, mouseY: number) {
-        // Gentle movement
         this.x += this.xSpeed + Math.sin(time * 0.001) * 0.3
         this.y += this.ySpeed + Math.cos(time * 0.001) * 0.3
 
-        // Mouse influence
         const dx = mouseX - this.x
         const dy = mouseY - this.y
         const dist = Math.sqrt(dx * dx + dy * dy)
@@ -113,7 +101,6 @@ export function LoginPage() {
           this.y += dy * 0.002
         }
 
-        // Boundary bounce
         if (this.x < -this.radius) this.x = width + this.radius
         if (this.x > width + this.radius) this.x = -this.radius
         if (this.y < -this.radius) this.y = height + this.radius
@@ -136,17 +123,15 @@ export function LoginPage() {
       }
     }
 
-    // Create blobs with brand colors
     const blobs = [
-      new Blob(canvas.width * 0.3, canvas.height * 0.3, 350, 'rgb(36, 189, 104)', 0.4),   // Octili Green
-      new Blob(canvas.width * 0.7, canvas.height * 0.6, 300, 'rgb(0, 167, 126)', 0.35),   // Teal
-      new Blob(canvas.width * 0.5, canvas.height * 0.8, 280, 'rgb(0, 110, 126)', 0.3),    // Deep Teal
-      new Blob(canvas.width * 0.2, canvas.height * 0.7, 250, 'rgb(40, 69, 91)', 0.25),    // Dark Blue
-      new Blob(canvas.width * 0.8, canvas.height * 0.2, 320, 'rgb(36, 189, 104)', 0.3),   // Octili Green
-      new Blob(canvas.width * 0.4, canvas.height * 0.5, 200, 'rgb(0, 167, 126)', 0.25),   // Teal
+      new Blob(canvas.width * 0.3, canvas.height * 0.3, 350, 'rgb(36, 189, 104)', 0.4),
+      new Blob(canvas.width * 0.7, canvas.height * 0.6, 300, 'rgb(0, 167, 126)', 0.35),
+      new Blob(canvas.width * 0.5, canvas.height * 0.8, 280, 'rgb(0, 110, 126)', 0.3),
+      new Blob(canvas.width * 0.2, canvas.height * 0.7, 250, 'rgb(40, 69, 91)', 0.25),
+      new Blob(canvas.width * 0.8, canvas.height * 0.2, 320, 'rgb(36, 189, 104)', 0.3),
+      new Blob(canvas.width * 0.4, canvas.height * 0.5, 200, 'rgb(0, 167, 126)', 0.25),
     ]
 
-    // Mouse tracking
     let mouseX = canvas.width / 2
     let mouseY = canvas.height / 2
 
@@ -160,18 +145,13 @@ export function LoginPage() {
     }
     window.addEventListener('mousemove', handleMouseMove)
 
-    // Animation loop
     const animate = () => {
       time++
       ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Draw blobs
       blobs.forEach(blob => {
         blob.update(canvas.width, canvas.height, mouseX, mouseY)
         blob.draw(ctx)
       })
-
-      // Apply blur effect via CSS filter
       animationId = requestAnimationFrame(animate)
     }
 
@@ -184,7 +164,6 @@ export function LoginPage() {
     }
   }, [])
 
-  /** Copy credentials to clipboard */
   const copyCredentials = async () => {
     try {
       await navigator.clipboard.writeText(`${DEMO_USERNAME}\n${DEMO_PASSWORD}`)
@@ -193,26 +172,13 @@ export function LoginPage() {
     }
   }
 
-  /** Paste username */
-  const pasteUsername = () => {
-    setUsername(DEMO_USERNAME)
-  }
-
-  /** Paste password */
-  const pastePassword = () => {
-    setPassword(DEMO_PASSWORD)
-  }
-
-  /** Fill both fields */
+  const pasteUsername = () => setUsername(DEMO_USERNAME)
+  const pastePassword = () => setPassword(DEMO_PASSWORD)
   const fillBoth = () => {
     setUsername(DEMO_USERNAME)
     setPassword(DEMO_PASSWORD)
   }
 
-  /**
-   * Handle form submission
-   * Validates inputs and attempts login
-   */
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
@@ -223,7 +189,6 @@ export function LoginPage() {
     }
 
     const success = await login(username, password)
-
     if (success) {
       navigate('/pos')
     } else {
@@ -377,9 +342,7 @@ export function LoginPage() {
                       style={{ background: `linear-gradient(135deg, ${BRAND_COLORS.green}30, ${BRAND_COLORS.teal}20)` }}
                     />
                     <div className="relative">
-                      <User
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"
-                      />
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                       <input
                         type="text"
                         id="username"
@@ -431,6 +394,36 @@ export function LoginPage() {
                   </div>
                 </div>
 
+                {/* Remember Me & Forgot Password */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-3 cursor-pointer group/check">
+                    <div className="relative">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                      />
+                      <div className="w-5 h-5 rounded-md border-2 border-slate-300 bg-white/50 peer-checked:border-[#24BD68] peer-checked:bg-[#24BD68] transition-all duration-200 flex items-center justify-center">
+                        <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    </div>
+                    <span
+                      className="text-sm group-hover/check:opacity-80 transition-colors font-medium"
+                      style={{ color: BRAND_COLORS.darkBlue }}
+                    >
+                      Remember me
+                    </span>
+                  </label>
+                  <button
+                    type="button"
+                    className="text-sm font-semibold transition-colors hover:opacity-80"
+                    style={{ color: BRAND_COLORS.green }}
+                  >
+                    Forgot password?
+                  </button>
+                </div>
+
                 {/* Large Submit Button - Brand Gradient */}
                 <button
                   type="submit"
@@ -464,7 +457,7 @@ export function LoginPage() {
                       </>
                     ) : (
                       <>
-                        <span>Sign in to POS</span>
+                        <span>Sign in to Dashboard</span>
                         <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
                       </>
                     )}
@@ -472,7 +465,7 @@ export function LoginPage() {
                 </button>
               </form>
 
-              {/* Demo Credentials */}
+              {/* Demo Credentials - INSIDE the card */}
               <div className="relative mt-8 pt-6 border-t border-slate-200/50">
                 <p
                   className="text-xs text-center mb-4 uppercase tracking-widest font-semibold"
