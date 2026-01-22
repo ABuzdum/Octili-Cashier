@@ -18,7 +18,7 @@
 
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Banknote, Clock, Sparkles, Menu, Ticket, CreditCard } from 'lucide-react'
+import { Clock, Sparkles, Menu, QrCode, Ticket } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
@@ -206,9 +206,21 @@ function GameCard({ game, index, onClick }: { game: LotteryGame; index: number; 
 }
 
 /**
- * Beautiful Payment of Winnings card
+ * Main action button component - QR Ticket or Draw Ticket
  */
-function PaymentOfWinningsCard({ onClick }: { onClick: () => void }) {
+function MainActionButton({
+  icon: Icon,
+  label,
+  gradient,
+  shadowColor,
+  onClick
+}: {
+  icon: typeof QrCode
+  label: string
+  gradient: string
+  shadowColor: string
+  onClick: () => void
+}) {
   const [isHovered, setIsHovered] = useState(false)
 
   return (
@@ -217,37 +229,36 @@ function PaymentOfWinningsCard({ onClick }: { onClick: () => void }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        background: 'linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%)',
-        borderRadius: '20px',
+        flex: 1,
+        background: gradient,
+        borderRadius: '24px',
         overflow: 'hidden',
         boxShadow: isHovered
-          ? '0 20px 40px rgba(16, 185, 129, 0.4), 0 0 0 2px rgba(16, 185, 129, 0.3)'
-          : '0 8px 24px rgba(16, 185, 129, 0.25)',
+          ? `0 20px 40px ${shadowColor}60, 0 0 0 3px ${shadowColor}40`
+          : `0 8px 24px ${shadowColor}40`,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         border: 'none',
         cursor: 'pointer',
-        width: '100%',
-        height: '100%',
-        minHeight: '200px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '24px',
+        padding: '32px 24px',
         gap: '16px',
         position: 'relative',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
+        transform: isHovered ? 'translateY(-6px) scale(1.02)' : 'translateY(0) scale(1)',
+        minHeight: '160px',
       }}
     >
       {/* Decorative elements */}
       <div style={{
         position: 'absolute',
-        width: '150px',
-        height: '150px',
+        width: '180px',
+        height: '180px',
         background: 'rgba(255,255,255,0.1)',
         borderRadius: '50%',
-        top: '-40px',
-        right: '-40px',
+        top: '-60px',
+        right: '-60px',
       }} />
       <div style={{
         position: 'absolute',
@@ -255,246 +266,51 @@ function PaymentOfWinningsCard({ onClick }: { onClick: () => void }) {
         height: '100px',
         background: 'rgba(255,255,255,0.05)',
         borderRadius: '50%',
-        bottom: '-30px',
-        left: '-30px',
+        bottom: '-40px',
+        left: '-20px',
       }} />
 
       {/* Icon */}
       <div style={{
-        width: '72px',
-        height: '72px',
+        width: '80px',
+        height: '80px',
         background: 'rgba(255,255,255,0.2)',
         backdropFilter: 'blur(10px)',
-        borderRadius: '20px',
+        borderRadius: '24px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         transform: isHovered ? 'scale(1.1) rotate(-5deg)' : 'scale(1) rotate(0deg)',
         transition: 'transform 0.3s ease',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+        zIndex: 1,
       }}>
-        <Banknote size={36} color="white" strokeWidth={2} />
+        <Icon size={40} color="white" strokeWidth={2} />
       </div>
 
       {/* Text */}
-      <div style={{
+      <span style={{
         color: 'white',
-        fontSize: '18px',
-        fontWeight: 700,
+        fontSize: '22px',
+        fontWeight: 800,
         textAlign: 'center',
-        lineHeight: 1.3,
-        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        textShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        zIndex: 1,
+        letterSpacing: '-0.5px',
       }}>
-        Payment of<br />Winnings
-      </div>
+        {label}
+      </span>
 
       {/* Sparkle on hover */}
       {isHovered && (
         <Sparkles
-          size={20}
+          size={24}
           color="rgba(255,255,255,0.9)"
           style={{
             position: 'absolute',
-            top: '16px',
-            right: '16px',
-          }}
-        />
-      )}
-    </button>
-  )
-}
-
-/**
- * New Ticket card - Issue physical lottery tickets
- */
-function NewTicketCard({ onClick }: { onClick: () => void }) {
-  const [isHovered, setIsHovered] = useState(false)
-
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        boxShadow: isHovered
-          ? '0 20px 40px rgba(59, 130, 246, 0.4), 0 0 0 2px rgba(59, 130, 246, 0.3)'
-          : '0 8px 24px rgba(59, 130, 246, 0.25)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        border: 'none',
-        cursor: 'pointer',
-        width: '100%',
-        height: '100%',
-        minHeight: '200px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        gap: '16px',
-        position: 'relative',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
-      }}
-    >
-      {/* Decorative elements */}
-      <div style={{
-        position: 'absolute',
-        width: '150px',
-        height: '150px',
-        background: 'rgba(255,255,255,0.1)',
-        borderRadius: '50%',
-        top: '-40px',
-        right: '-40px',
-      }} />
-      <div style={{
-        position: 'absolute',
-        width: '100px',
-        height: '100px',
-        background: 'rgba(255,255,255,0.05)',
-        borderRadius: '50%',
-        bottom: '-30px',
-        left: '-30px',
-      }} />
-
-      {/* Icon */}
-      <div style={{
-        width: '72px',
-        height: '72px',
-        background: 'rgba(255,255,255,0.2)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transform: isHovered ? 'scale(1.1) rotate(-5deg)' : 'scale(1) rotate(0deg)',
-        transition: 'transform 0.3s ease',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-      }}>
-        <Ticket size={36} color="white" strokeWidth={2} />
-      </div>
-
-      {/* Text */}
-      <div style={{
-        color: 'white',
-        fontSize: '18px',
-        fontWeight: 700,
-        textAlign: 'center',
-        lineHeight: 1.3,
-        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      }}>
-        New<br />Ticket
-      </div>
-
-      {/* Sparkle on hover */}
-      {isHovered && (
-        <Sparkles
-          size={20}
-          color="rgba(255,255,255,0.9)"
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-          }}
-        />
-      )}
-    </button>
-  )
-}
-
-/**
- * Pay Out Ticket card - Redeem physical lottery tickets
- */
-function PayOutTicketCard({ onClick }: { onClick: () => void }) {
-  const [isHovered, setIsHovered] = useState(false)
-
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        background: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 50%, #0e7490 100%)',
-        borderRadius: '20px',
-        overflow: 'hidden',
-        boxShadow: isHovered
-          ? '0 20px 40px rgba(6, 182, 212, 0.4), 0 0 0 2px rgba(6, 182, 212, 0.3)'
-          : '0 8px 24px rgba(6, 182, 212, 0.25)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        border: 'none',
-        cursor: 'pointer',
-        width: '100%',
-        height: '100%',
-        minHeight: '200px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        gap: '16px',
-        position: 'relative',
-        transform: isHovered ? 'translateY(-8px) scale(1.02)' : 'translateY(0) scale(1)',
-      }}
-    >
-      {/* Decorative elements */}
-      <div style={{
-        position: 'absolute',
-        width: '150px',
-        height: '150px',
-        background: 'rgba(255,255,255,0.1)',
-        borderRadius: '50%',
-        top: '-40px',
-        right: '-40px',
-      }} />
-      <div style={{
-        position: 'absolute',
-        width: '100px',
-        height: '100px',
-        background: 'rgba(255,255,255,0.05)',
-        borderRadius: '50%',
-        bottom: '-30px',
-        left: '-30px',
-      }} />
-
-      {/* Icon */}
-      <div style={{
-        width: '72px',
-        height: '72px',
-        background: 'rgba(255,255,255,0.2)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        transform: isHovered ? 'scale(1.1) rotate(-5deg)' : 'scale(1) rotate(0deg)',
-        transition: 'transform 0.3s ease',
-        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-      }}>
-        <CreditCard size={36} color="white" strokeWidth={2} />
-      </div>
-
-      {/* Text */}
-      <div style={{
-        color: 'white',
-        fontSize: '18px',
-        fontWeight: 700,
-        textAlign: 'center',
-        lineHeight: 1.3,
-        textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      }}>
-        Pay Out<br />Ticket
-      </div>
-
-      {/* Sparkle on hover */}
-      {isHovered && (
-        <Sparkles
-          size={20}
-          color="rgba(255,255,255,0.9)"
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
+            top: '20px',
+            right: '20px',
+            zIndex: 1,
           }}
         />
       )}
@@ -516,16 +332,8 @@ export function POSPage() {
     navigate(`/game/${game.id}`)
   }
 
-  const handlePaymentOfWinnings = () => {
-    navigate('/payment')
-  }
-
-  const handleNewTicket = () => {
-    navigate('/physical-ticket/new')
-  }
-
-  const handlePayOutTicket = () => {
-    navigate('/physical-ticket/payout')
+  const handleQRTicket = () => {
+    navigate('/qr-ticket')
   }
 
   // Generate header styles based on visual style
@@ -824,7 +632,7 @@ export function POSPage() {
         </div>
       </div>
 
-      {/* Games Grid */}
+      {/* Main Content */}
       <div style={{
         flex: 1,
         padding: '20px',
@@ -832,45 +640,96 @@ export function POSPage() {
         overflow: 'auto',
       }}>
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-          gap: '20px',
           maxWidth: '900px',
           margin: '0 auto',
         }}>
-          {/* First game */}
-          {games.length > 0 && (
-            <GameCard
-              key={games[0].id}
-              game={games[0]}
-              index={0}
-              onClick={() => handleGameClick(games[0])}
+          {/* Two Main Action Buttons */}
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            marginBottom: '32px',
+          }}>
+            <MainActionButton
+              icon={QrCode}
+              label="QR Ticket"
+              gradient="linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%)"
+              shadowColor="#3b82f6"
+              onClick={handleQRTicket}
             />
-          )}
-
-          {/* Payment of Winnings Card */}
-          <PaymentOfWinningsCard onClick={handlePaymentOfWinnings} />
-
-          {/* New Ticket Card */}
-          <NewTicketCard onClick={handleNewTicket} />
-
-          {/* Pay Out Ticket Card */}
-          <PayOutTicketCard onClick={handlePayOutTicket} />
-
-          {/* Rest of the games */}
-          {games.slice(1).map((game, idx) => (
-            <GameCard
-              key={game.id}
-              game={game}
-              index={idx + 1}
-              onClick={() => handleGameClick(game)}
+            <MainActionButton
+              icon={Ticket}
+              label="Draw Ticket"
+              gradient="linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%)"
+              shadowColor="#8b5cf6"
+              onClick={() => {
+                // Scroll to games section
+                const gamesSection = document.getElementById('games-section')
+                if (gamesSection) {
+                  gamesSection.scrollIntoView({ behavior: 'smooth' })
+                }
+              }}
             />
-          ))}
+          </div>
+
+          {/* Draw Ticket Section Header */}
+          <div
+            id="games-section"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '20px',
+            }}
+          >
+            <div style={{
+              width: '44px',
+              height: '44px',
+              background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
+              borderRadius: '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(139, 92, 246, 0.3)',
+            }}>
+              <Ticket size={22} color="white" />
+            </div>
+            <div>
+              <h2 style={{
+                fontSize: '18px',
+                fontWeight: 700,
+                color: isDarkMode ? '#f8fafc' : '#1e293b',
+              }}>
+                Draw Ticket
+              </h2>
+              <p style={{
+                fontSize: '12px',
+                color: isDarkMode ? '#94a3b8' : '#64748b',
+              }}>
+                Select a lottery game to play
+              </p>
+            </div>
+          </div>
+
+          {/* Games Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+            gap: '20px',
+          }}>
+            {games.map((game, idx) => (
+              <GameCard
+                key={game.id}
+                game={game}
+                index={idx}
+                onClick={() => handleGameClick(game)}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="games" />
+      <BottomNavigation activeTab="tickets" />
 
       {/* Global styles for animations */}
       <style>{`

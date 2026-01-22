@@ -6,10 +6,10 @@
  * Purpose: Clean bottom navigation bar for cashier terminals
  * Uses international, easy-to-understand naming for any cashier
  *
- * Tabs: Games | Results | Scan | QR Ticket
+ * Tabs: Tickets | Results | Scan | QR Ticket
  *
  * Naming designed for clarity:
- * - Games = Select lottery games + cart (combined)
+ * - Tickets = Main hub with QR Ticket and Draw Ticket options + games
  * - Results = View draw results
  * - Scan = Scan lottery tickets and instant cards for payout
  * - QR Ticket = Physical QR ticket operations
@@ -23,7 +23,7 @@ import { useNavigate } from 'react-router-dom'
 import { Grid, Trophy, ScanLine, QrCode } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
-export type NavTab = 'games' | 'results' | 'scan' | 'qrticket'
+export type NavTab = 'tickets' | 'results' | 'scan' | 'qrticket'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -43,8 +43,8 @@ interface NavItem {
  */
 const navItems: NavItem[] = [
   {
-    id: 'games',
-    label: 'Games',
+    id: 'tickets',
+    label: 'Tickets',
     icon: Grid,
     path: '/pos',
     gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -136,8 +136,8 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
                 }}
               />
 
-              {/* Cart badge on Games tab */}
-              {item.id === 'games' && cartCount > 0 && (
+              {/* Cart badge on Tickets tab */}
+              {item.id === 'tickets' && cartCount > 0 && (
                 <div style={{
                   position: 'absolute',
                   top: '-8px',

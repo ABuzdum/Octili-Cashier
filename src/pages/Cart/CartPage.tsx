@@ -694,7 +694,7 @@ export function CartPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="games" />
+      <BottomNavigation activeTab="tickets" />
     </div>
   )
 }
