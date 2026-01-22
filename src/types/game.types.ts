@@ -10,6 +10,26 @@
  */
 
 /**
+ * Payment methods available at checkout
+ * - cash: Physical cash payment
+ * - card: Card payment (credit/debit)
+ * - pix: Brazilian instant payment system
+ * - other: Other payment methods
+ */
+export type PaymentMethod = 'cash' | 'card' | 'pix' | 'other'
+
+/**
+ * Multi-pocket balance structure
+ * Each pocket tracks a separate balance by payment method
+ */
+export interface PocketBalance {
+  cash: number
+  card: number
+  pix: number
+  other: number
+}
+
+/**
  * Game types available in the POS terminal
  * - multiplier: Games where player selects multipliers (X2, X5, X10, etc.)
  * - keno: Games where player selects numbers (1-20, etc.)
@@ -111,13 +131,18 @@ export interface TicketValidation {
 
 /**
  * Cash management transaction
+ * Tracks all money movements including sales, payouts, and cash operations
  */
 export interface CashTransaction {
   id: string
-  type: 'collection' | 'replenishment'
+  type: 'collection' | 'replenishment' | 'sale' | 'payout'
+  /** Which pocket this transaction affects */
+  pocket: PaymentMethod
   amount: number
   timestamp: string
   operatorId: string
+  /** Reference to ticket ID for sales/payouts */
+  ticketId?: string
 }
 
 /**

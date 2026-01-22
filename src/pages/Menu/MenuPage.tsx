@@ -68,6 +68,8 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
 import { useGameStore } from '@/stores/gameStore'
+import { PaymentMethodSelector } from '@/components/shared/PaymentMethodSelector'
+import type { PaymentMethod } from '@/types/game.types'
 import {
   useThemeStore,
   COLOR_THEMES,
@@ -108,7 +110,7 @@ const SUPPORT_CATEGORIES = [
   { id: 'game', label: 'Game Not Working', icon: Gamepad2, color: '#667eea' },
   { id: 'printer', label: 'Printer Issue', icon: Printer, color: '#f59e0b' },
   { id: 'network', label: 'Network Problem', icon: WifiOff, color: '#ef4444' },
-  { id: 'payment', label: 'Payment Issue', icon: CreditCard, color: '#10b981' },
+  { id: 'payment', label: 'Payment Issue', icon: CreditCard, color: '#24BD68' },
   { id: 'customer', label: 'Customer Complaint', icon: MessageSquare, color: '#8b5cf6' },
   { id: 'other', label: 'Other Issue', icon: AlertCircle, color: '#64748b' },
 ]
@@ -145,7 +147,14 @@ const DIAGNOSTICS = [
 export function MenuPage() {
   const navigate = useNavigate()
   const { logout } = useAuthStore()
-  const { balance, cashCollection, cashReplenishment, ticketHistory } = useGameStore()
+  const {
+    pocketBalances,
+    getTotalBalance,
+    collectFromPocket,
+    replenishPocket,
+    ticketHistory,
+  } = useGameStore()
+  const balance = getTotalBalance()
   const {
     colorTheme,
     visualStyle,
@@ -167,6 +176,9 @@ export function MenuPage() {
   const [ticketSubmitted, setTicketSubmitted] = useState(false)
   const [callConfirmed, setCallConfirmed] = useState(false)
 
+  // Collection pocket selection state (null = 'all')
+  const [selectedCollectionPocket, setSelectedCollectionPocket] = useState<PaymentMethod | 'all'>('all')
+
   // Hostess request form state
   const [hostessDate, setHostessDate] = useState('')
   const [hostessTime, setHostessTime] = useState('')
@@ -179,29 +191,49 @@ export function MenuPage() {
     navigate('/login')
   }
 
-  // Handle cash collection
+  /**
+   * Calculate max amount that can be collected from selected pocket
+   */
+  const getMaxCollectionAmount = (): number => {
+    if (selectedCollectionPocket === 'all') {
+      return balance
+    }
+    return pocketBalances[selectedCollectionPocket]
+  }
+
+  /**
+   * Handle cash collection from selected pocket
+   */
   const handleCashCollection = () => {
     const numAmount = parseFloat(amount)
-    if (numAmount > 0 && numAmount <= balance) {
-      cashCollection(numAmount)
+    const maxAmount = getMaxCollectionAmount()
+    if (numAmount > 0 && numAmount <= maxAmount) {
+      collectFromPocket(selectedCollectionPocket, numAmount)
       setAmount('')
       setActiveModal('none')
+      setSelectedCollectionPocket('all') // Reset to 'all' for next time
     }
   }
 
-  // Handle cash replenishment
+  /**
+   * Handle cash replenishment to specific pocket (default: cash)
+   */
   const handleCashReplenishment = () => {
     const numAmount = parseFloat(amount)
     if (numAmount > 0) {
-      cashReplenishment(numAmount)
+      // Always replenish to cash pocket by default
+      replenishPocket('cash', numAmount)
       setAmount('')
       setActiveModal('none')
     }
   }
 
-  // Fill all money for collection
+  /**
+   * Fill all money from selected pocket for collection
+   */
   const handleAllMoney = () => {
-    setAmount(balance.toFixed(2))
+    const maxAmount = getMaxCollectionAmount()
+    setAmount(maxAmount.toFixed(2))
   }
 
   // Submit support ticket
@@ -236,7 +268,7 @@ export function MenuPage() {
     const [isPressed, setIsPressed] = useState(false)
     const backgrounds = {
       default: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-      confirm: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+      confirm: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
       delete: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
     }
     return (
@@ -423,13 +455,13 @@ export function MenuPage() {
           <div style={{
             width: '8px',
             height: '8px',
-            background: SHIFT_DATA.clockedIn ? '#10b981' : '#ef4444',
+            background: SHIFT_DATA.clockedIn ? '#24BD68' : '#ef4444',
             borderRadius: '50%',
           }} />
           <span style={{
             fontSize: '12px',
             fontWeight: 600,
-            color: SHIFT_DATA.clockedIn ? '#10b981' : '#ef4444',
+            color: SHIFT_DATA.clockedIn ? '#24BD68' : '#ef4444',
           }}>
             {SHIFT_DATA.clockedIn ? 'On Duty' : 'Off Duty'}
           </span>
@@ -558,7 +590,7 @@ export function MenuPage() {
               <p style={{
                 fontSize: '18px',
                 fontWeight: 700,
-                color: '#10b981',
+                color: '#24BD68',
               }}>
                 {balance.toFixed(2)} BRL
               </p>
@@ -692,7 +724,7 @@ export function MenuPage() {
           <MenuItem
             icon={Clock}
             label="Shift Info"
-            gradient="linear-gradient(135deg, #10b981 0%, #059669 100%)"
+            gradient="linear-gradient(135deg, #24BD68 0%, #00A77E 100%)"
             onClick={() => setActiveModal('shift-info')}
             badge={SHIFT_DATA.hoursWorked}
           />
@@ -814,7 +846,7 @@ export function MenuPage() {
                 <div style={{
                   width: '80px',
                   height: '80px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -991,7 +1023,7 @@ export function MenuPage() {
                     width: '100%',
                     padding: '16px',
                     background: supportCategory && supportDescription
-                      ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                      ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
                       : '#e2e8f0',
                     color: supportCategory && supportDescription ? 'white' : '#94a3b8',
                     border: 'none',
@@ -1040,7 +1072,7 @@ export function MenuPage() {
                 <div style={{
                   width: '80px',
                   height: '80px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -1283,7 +1315,7 @@ export function MenuPage() {
                 <div style={{
                   width: '80px',
                   height: '80px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
@@ -1347,7 +1379,7 @@ export function MenuPage() {
                       padding: '14px',
                       background: activeModal === 'call-security'
                         ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                        : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                        : 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                       color: 'white',
                       border: 'none',
                       borderRadius: '12px',
@@ -1440,13 +1472,13 @@ export function MenuPage() {
                   <div style={{
                     width: '10px',
                     height: '10px',
-                    background: PRINTER_STATUS.connected ? '#10b981' : '#ef4444',
+                    background: PRINTER_STATUS.connected ? '#24BD68' : '#ef4444',
                     borderRadius: '50%',
                   }} />
                   <span style={{
                     fontSize: '14px',
                     fontWeight: 600,
-                    color: PRINTER_STATUS.connected ? '#10b981' : '#ef4444',
+                    color: PRINTER_STATUS.connected ? '#24BD68' : '#ef4444',
                   }}>
                     {PRINTER_STATUS.connected ? 'Connected' : 'Disconnected'}
                   </span>
@@ -1463,7 +1495,7 @@ export function MenuPage() {
                   <span style={{
                     fontSize: '14px',
                     fontWeight: 600,
-                    color: PRINTER_STATUS.paperLevel < 30 ? '#ef4444' : '#10b981',
+                    color: PRINTER_STATUS.paperLevel < 30 ? '#ef4444' : '#24BD68',
                   }}>
                     {PRINTER_STATUS.paperLevel}%
                   </span>
@@ -1479,7 +1511,7 @@ export function MenuPage() {
                     height: '100%',
                     background: PRINTER_STATUS.paperLevel < 30
                       ? 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
-                      : 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      : 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                     borderRadius: '4px',
                   }} />
                 </div>
@@ -1609,7 +1641,7 @@ export function MenuPage() {
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                     {item.status === 'ok' ? (
-                      <Wifi size={18} color="#10b981" />
+                      <Wifi size={18} color="#24BD68" />
                     ) : (
                       <AlertCircle size={18} color="#f59e0b" />
                     )}
@@ -1629,7 +1661,7 @@ export function MenuPage() {
                       <span style={{
                         fontSize: '11px',
                         fontWeight: 700,
-                        color: item.status === 'ok' ? '#10b981' : '#f59e0b',
+                        color: item.status === 'ok' ? '#24BD68' : '#f59e0b',
                         textTransform: 'uppercase',
                       }}>
                         {item.status}
@@ -1690,7 +1722,7 @@ export function MenuPage() {
                 <div style={{
                   width: '44px',
                   height: '44px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -1733,7 +1765,7 @@ export function MenuPage() {
                 borderRadius: '14px',
                 textAlign: 'center',
               }}>
-                <p style={{ fontSize: '12px', color: '#059669', marginBottom: '4px' }}>Start Time</p>
+                <p style={{ fontSize: '12px', color: '#00A77E', marginBottom: '4px' }}>Start Time</p>
                 <p style={{ fontSize: '20px', fontWeight: 700, color: '#047857' }}>{SHIFT_DATA.startTime}</p>
               </div>
               <div style={{
@@ -1777,7 +1809,7 @@ export function MenuPage() {
                 <span style={{
                   fontSize: '18px',
                   fontWeight: 700,
-                  color: '#10b981',
+                  color: '#24BD68',
                 }}>
                   {SHIFT_DATA.commission.toFixed(2)} BRL
                 </span>
@@ -1790,7 +1822,7 @@ export function MenuPage() {
                 width: '100%',
                 padding: '14px',
                 background: SHIFT_DATA.onBreak
-                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+                  ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
                   : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                 color: 'white',
                 border: 'none',
@@ -1810,8 +1842,207 @@ export function MenuPage() {
         </div>
       )}
 
-      {/* Cash Collection/Replenishment/Top-up Modal */}
-      {(activeModal === 'collection' || activeModal === 'replenishment' || activeModal === 'topup-request') && (
+      {/* Cash Collection Modal with Pocket Selection */}
+      {activeModal === 'collection' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(8px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '440px',
+            maxHeight: '90vh',
+            overflow: 'auto',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginBottom: '20px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)',
+                  borderRadius: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <Wallet size={26} color="white" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b', margin: 0 }}>
+                    Cash Collection
+                  </h3>
+                  <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
+                    Select pocket to collect from
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveModal('none')
+                  setAmount('')
+                  setSelectedCollectionPocket('all')
+                }}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#64748b',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Pocket Selection */}
+            <div style={{ marginBottom: '20px' }}>
+              <PaymentMethodSelector
+                selected={selectedCollectionPocket === 'all' ? null : selectedCollectionPocket}
+                onSelect={(method) => setSelectedCollectionPocket(method)}
+                showBalances
+                pocketBalances={pocketBalances}
+                showAllOption
+                onSelectAll={() => setSelectedCollectionPocket('all')}
+                isAllSelected={selectedCollectionPocket === 'all'}
+              />
+            </div>
+
+            {/* Amount Input */}
+            <div style={{
+              background: '#f8fafc',
+              borderRadius: '14px',
+              padding: '14px',
+              marginBottom: '16px',
+            }}>
+              <input
+                type="text"
+                value={amount}
+                readOnly
+                placeholder="0.00"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  fontSize: '26px',
+                  fontWeight: 700,
+                  border: 'none',
+                  background: 'transparent',
+                  textAlign: 'center',
+                  color: '#1e293b',
+                  outline: 'none',
+                }}
+              />
+              <p style={{
+                textAlign: 'center',
+                fontSize: '12px',
+                color: '#64748b',
+              }}>
+                Max: {getMaxCollectionAmount().toFixed(2)} BRL
+                {selectedCollectionPocket !== 'all' && (
+                  <span> from {selectedCollectionPocket.charAt(0).toUpperCase() + selectedCollectionPocket.slice(1)}</span>
+                )}
+              </p>
+            </div>
+
+            {/* Number Pad */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '8px',
+              marginBottom: '16px',
+            }}>
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                <NumButton
+                  key={num}
+                  value={String(num)}
+                  onClick={() => setAmount(amount + num)}
+                />
+              ))}
+              <NumButton
+                value="✓"
+                onClick={handleCashCollection}
+                variant="confirm"
+              />
+              <NumButton
+                value="0"
+                onClick={() => setAmount(amount + '0')}
+              />
+              <NumButton
+                value="⌫"
+                onClick={() => setAmount(amount.slice(0, -1))}
+                variant="delete"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                onClick={handleAllMoney}
+                style={{
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                }}
+              >
+                <Sparkles size={18} />
+                Collect All ({getMaxCollectionAmount().toFixed(2)} BRL)
+              </button>
+              <button
+                onClick={() => {
+                  setActiveModal('none')
+                  setAmount('')
+                  setSelectedCollectionPocket('all')
+                }}
+                style={{
+                  padding: '14px',
+                  borderRadius: '12px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#64748b',
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cash Replenishment/Top-up Modal */}
+      {(activeModal === 'replenishment' || activeModal === 'topup-request') && (
         <div style={{
           position: 'fixed',
           inset: 0,
@@ -1838,9 +2069,7 @@ export function MenuPage() {
               <div style={{
                 width: '56px',
                 height: '56px',
-                background: activeModal === 'collection'
-                  ? 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)'
-                  : activeModal === 'replenishment'
+                background: activeModal === 'replenishment'
                   ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
                   : 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)',
                 borderRadius: '16px',
@@ -1849,7 +2078,6 @@ export function MenuPage() {
                 justifyContent: 'center',
                 margin: '0 auto 12px',
               }}>
-                {activeModal === 'collection' && <Wallet size={26} color="white" />}
                 {activeModal === 'replenishment' && <PiggyBank size={26} color="white" />}
                 {activeModal === 'topup-request' && <CircleDollarSign size={26} color="white" />}
               </div>
@@ -1858,7 +2086,6 @@ export function MenuPage() {
                 fontWeight: 700,
                 color: '#1e293b',
               }}>
-                {activeModal === 'collection' && 'Cash Collection'}
                 {activeModal === 'replenishment' && 'Cash Replenishment'}
                 {activeModal === 'topup-request' && 'Request Balance Top-up'}
               </h3>
@@ -1893,7 +2120,7 @@ export function MenuPage() {
                 fontSize: '12px',
                 color: '#64748b',
               }}>
-                {activeModal === 'collection' ? `Max: ${balance.toFixed(2)} BRL` : 'Enter amount in BRL'}
+                Enter amount in BRL
               </p>
             </div>
 
@@ -1914,8 +2141,7 @@ export function MenuPage() {
               <NumButton
                 value="✓"
                 onClick={() => {
-                  if (activeModal === 'collection') handleCashCollection()
-                  else if (activeModal === 'replenishment') handleCashReplenishment()
+                  if (activeModal === 'replenishment') handleCashReplenishment()
                   else {
                     // Handle top-up request
                     setAmount('')
@@ -1935,49 +2161,26 @@ export function MenuPage() {
               />
             </div>
 
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {activeModal === 'collection' && (
-                <button
-                  onClick={handleAllMoney}
-                  style={{
-                    padding: '14px',
-                    borderRadius: '12px',
-                    border: 'none',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-                    color: 'white',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px',
-                  }}
-                >
-                  <Sparkles size={18} />
-                  Collect All ({balance.toFixed(2)} BRL)
-                </button>
-              )}
-              <button
-                onClick={() => {
-                  setActiveModal('none')
-                  setAmount('')
-                }}
-                style={{
-                  padding: '14px',
-                  borderRadius: '12px',
-                  border: 'none',
-                  background: '#f1f5f9',
-                  color: '#64748b',
-                  fontWeight: 600,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
+            {/* Cancel Button */}
+            <button
+              onClick={() => {
+                setActiveModal('none')
+                setAmount('')
+              }}
+              style={{
+                width: '100%',
+                padding: '14px',
+                borderRadius: '12px',
+                border: 'none',
+                background: '#f1f5f9',
+                color: '#64748b',
+                fontWeight: 600,
+                fontSize: '14px',
+                cursor: 'pointer',
+              }}
+            >
+              Cancel
+            </button>
           </div>
         </div>
       )}
@@ -2096,7 +2299,7 @@ export function MenuPage() {
                             ? 'rgba(239, 68, 68, 0.1)'
                             : 'rgba(245, 158, 11, 0.1)',
                           color: ticket.status === 'won'
-                            ? '#10b981'
+                            ? '#24BD68'
                             : ticket.status === 'lost'
                             ? '#ef4444'
                             : '#f59e0b',
@@ -2110,7 +2313,7 @@ export function MenuPage() {
                       <p style={{
                         fontSize: '14px',
                         fontWeight: 700,
-                        color: '#10b981',
+                        color: '#24BD68',
                       }}>
                         +{ticket.bet.totalCost.toFixed(2)} BRL
                       </p>
@@ -2240,7 +2443,7 @@ export function MenuPage() {
                 cursor: 'pointer',
                 textAlign: 'left',
               }}>
-                <Volume2 size={20} color="#10b981" />
+                <Volume2 size={20} color="#24BD68" />
                 <div style={{ flex: 1 }}>
                   <p style={{ fontWeight: 600, color: '#1e293b', fontSize: '14px' }}>Sound</p>
                   <p style={{ color: '#64748b', fontSize: '12px' }}>Enabled</p>

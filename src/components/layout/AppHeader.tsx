@@ -17,10 +17,12 @@
  * @version 1.0.0
  */
 
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Menu, ArrowLeft } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
+import { BalanceOverview } from '@/components/shared/BalanceOverview'
 
 interface AppHeaderProps {
   /** Show back button on the left */
@@ -50,8 +52,12 @@ export function AppHeader({
   leftContent,
 }: AppHeaderProps) {
   const navigate = useNavigate()
-  const { balance } = useGameStore()
+  const { pocketBalances, getTotalBalance } = useGameStore()
+  const balance = getTotalBalance()
   const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
+
+  /** State for showing balance details modal */
+  const [showBalanceModal, setShowBalanceModal] = useState(false)
 
   // Get current theme colors
   const theme = COLOR_THEMES[colorTheme]
@@ -65,9 +71,9 @@ export function AppHeader({
     }
   }
 
-  // Handle balance click - navigate to account page
+  // Handle balance click - show balance details modal
   const handleBalanceClick = () => {
-    navigate('/account')
+    setShowBalanceModal(true)
   }
 
   // Handle menu click
@@ -225,6 +231,7 @@ export function AppHeader({
   }
 
   return (
+    <>
     <header style={getHeaderStyle()}>
       {/* Decorative gradient orbs for glass/bento styles */}
       {(visualStyle === 'glass' || visualStyle === 'bento') && (
@@ -396,5 +403,15 @@ export function AppHeader({
         </button>
       </div>
     </header>
+
+    {/* Balance Details Modal */}
+    {showBalanceModal && (
+      <BalanceOverview
+        pocketBalances={pocketBalances}
+        isModal
+        onClose={() => setShowBalanceModal(false)}
+      />
+    )}
+    </>
   )
 }

@@ -27,11 +27,14 @@ import {
   CheckCircle2,
   Ticket,
   Sparkles,
+  X,
+  Wallet,
 } from 'lucide-react'
 import { useGameStore, useLotteryGames } from '@/stores/gameStore'
 import { AppHeader } from '@/components/layout/AppHeader'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
-import type { CartTicket, LotteryGame } from '@/types/game.types'
+import { PaymentMethodSelector, PAYMENT_METHOD_CONFIG } from '@/components/shared/PaymentMethodSelector'
+import type { CartTicket, LotteryGame, PaymentMethod } from '@/types/game.types'
 
 // Game gradients matching POSPage
 const GAME_GRADIENTS = [
@@ -226,6 +229,9 @@ export function CartPage() {
   const [showPurchaseSuccess, setShowPurchaseSuccess] = useState(false)
   const [purchasedAmount, setPurchasedAmount] = useState(0)
   const [hoveredTicket, setHoveredTicket] = useState<string | null>(null)
+  /** Payment method selection state */
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('cash')
 
   const cartTotal = getCartTotal()
 
@@ -239,11 +245,22 @@ export function CartPage() {
     return games.findIndex(g => g.id === gameId)
   }
 
-  // Handle purchase all
+  /**
+   * Handle purchase button click - shows payment method selection modal
+   */
   const handlePurchaseAll = () => {
     if (cartTickets.length === 0) return
+    setShowPaymentModal(true)
+  }
+
+  /**
+   * Confirm purchase with selected payment method
+   * This is called after the operator selects how the customer is paying
+   */
+  const handleConfirmPurchase = () => {
     setPurchasedAmount(cartTotal)
-    purchaseCart()
+    purchaseCart(selectedPaymentMethod)
+    setShowPaymentModal(false)
     setShowPurchaseSuccess(true)
     setTimeout(() => {
       setShowPurchaseSuccess(false)
@@ -582,6 +599,197 @@ export function CartPage() {
         </div>
       )}
 
+      {/* Payment Method Selection Modal */}
+      {showPaymentModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+          }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setShowPaymentModal(false)
+            }
+          }}
+        >
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '24px',
+              padding: '24px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 24px 64px rgba(0,0,0,0.2)',
+            }}
+          >
+            {/* Header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginBottom: '20px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
+                    borderRadius: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 12px rgba(36, 189, 104, 0.3)',
+                  }}
+                >
+                  <Wallet size={24} color="white" />
+                </div>
+                <div>
+                  <h3
+                    style={{
+                      fontSize: '18px',
+                      fontWeight: 700,
+                      color: '#1e293b',
+                      margin: 0,
+                    }}
+                  >
+                    Payment Method
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '13px',
+                      color: '#64748b',
+                      margin: 0,
+                    }}
+                  >
+                    How is the customer paying?
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowPaymentModal(false)}
+                style={{
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#64748b',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Total Amount Display */}
+            <div
+              style={{
+                background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                borderRadius: '16px',
+                padding: '20px',
+                marginBottom: '20px',
+                textAlign: 'center',
+                position: 'relative',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Decorative circle */}
+              <div
+                style={{
+                  position: 'absolute',
+                  width: '80px',
+                  height: '80px',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '50%',
+                  top: '-20px',
+                  right: '-20px',
+                }}
+              />
+              <p
+                style={{
+                  fontSize: '13px',
+                  color: 'rgba(255,255,255,0.7)',
+                  marginBottom: '4px',
+                }}
+              >
+                Total to Pay
+              </p>
+              <p
+                style={{
+                  fontSize: '32px',
+                  fontWeight: 800,
+                  color: 'white',
+                  fontFamily: 'ui-monospace, monospace',
+                  letterSpacing: '-1px',
+                }}
+              >
+                {cartTotal.toFixed(2)}{' '}
+                <span style={{ fontSize: '16px', fontWeight: 500, opacity: 0.7 }}>BRL</span>
+              </p>
+              <p
+                style={{
+                  fontSize: '12px',
+                  color: 'rgba(255,255,255,0.5)',
+                  marginTop: '4px',
+                }}
+              >
+                {cartTickets.length} ticket{cartTickets.length > 1 ? 's' : ''}
+              </p>
+            </div>
+
+            {/* Payment Method Selector */}
+            <PaymentMethodSelector
+              selected={selectedPaymentMethod}
+              onSelect={setSelectedPaymentMethod}
+            />
+
+            {/* Confirm Button */}
+            <button
+              onClick={handleConfirmPurchase}
+              style={{
+                width: '100%',
+                marginTop: '20px',
+                padding: '18px',
+                minHeight: '60px',
+                background: selectedPaymentMethod
+                  ? PAYMENT_METHOD_CONFIG[selectedPaymentMethod].gradient
+                  : 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '16px',
+                fontSize: '17px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                boxShadow: selectedPaymentMethod
+                  ? `0 8px 24px ${PAYMENT_METHOD_CONFIG[selectedPaymentMethod].color}40`
+                  : '0 8px 24px rgba(36, 189, 104, 0.4)',
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <Check size={24} />
+              Confirm {PAYMENT_METHOD_CONFIG[selectedPaymentMethod].label} Payment
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Purchase Success Modal */}
       {showPurchaseSuccess && (
         <div style={{
@@ -631,20 +839,20 @@ export function CartPage() {
             }}>
               <span style={{
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
+                background: PAYMENT_METHOD_CONFIG[selectedPaymentMethod].gradient,
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
                 {purchasedAmount.toFixed(2)} BRL
               </span>
-              {' '}deducted from balance
+              {' '}added to {PAYMENT_METHOD_CONFIG[selectedPaymentMethod].label}
             </p>
             <p style={{
               fontSize: '14px',
               color: '#94a3b8',
               marginTop: '8px',
             }}>
-              Good luck! 🍀
+              Good luck!
             </p>
           </div>
         </div>

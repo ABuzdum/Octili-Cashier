@@ -5,26 +5,55 @@
  *
  * Purpose: Zustand store for managing lottery games, cart, and transactions
  *
+ * Features:
+ * - Multi-pocket balance system (Cash, Card, PIX, Other)
+ * - Payment method tracking for all transactions
+ * - Cart management for lottery tickets
+ * - Cash collection and replenishment by pocket
+ *
  * @author Octili Development Team
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { CartTicket, GameBet, PurchasedTicket, CashTransaction } from '@/types/game.types'
+import type {
+  CartTicket,
+  GameBet,
+  PurchasedTicket,
+  CashTransaction,
+  PaymentMethod,
+  PocketBalance,
+} from '@/types/game.types'
 import { lotteryGames, operatorInfo } from '@/data/games-mock-data'
+
+/**
+ * Initial pocket balances - for new installations
+ */
+const INITIAL_POCKET_BALANCES: PocketBalance = {
+  cash: 2000.00,
+  card: 1500.00,
+  pix: 500.00,
+  other: 272.15,
+}
 
 interface GameState {
   /** Cart tickets pending purchase */
   cartTickets: CartTicket[]
   /** Purchased ticket history */
   ticketHistory: PurchasedTicket[]
-  /** Cash transactions (collections and replenishments) */
+  /** Cash transactions (collections, replenishments, sales, payouts) */
   cashTransactions: CashTransaction[]
-  /** Current operator balance */
-  balance: number
+  /** Multi-pocket balance system */
+  pocketBalances: PocketBalance
   /** Operator ID */
   operatorId: string
+  /** Legacy balance field for backward compatibility (computed) */
+  balance: number
+
+  // Balance getters
+  getTotalBalance: () => number
+  getPocketBalance: (pocket: PaymentMethod) => number
 
   // Cart actions
   addToCart: (bet: GameBet) => void
@@ -32,17 +61,19 @@ interface GameState {
   clearCart: () => void
   getCartTotal: () => number
 
-  // Purchase actions
-  purchaseCart: () => PurchasedTicket[]
-  purchaseSingle: (bet: GameBet) => PurchasedTicket
+  // Purchase actions with payment method
+  purchaseCart: (paymentMethod?: PaymentMethod) => PurchasedTicket[]
+  purchaseSingle: (bet: GameBet, paymentMethod?: PaymentMethod) => PurchasedTicket
 
-  // Cash management
-  cashCollection: (amount: number) => void
-  cashReplenishment: (amount: number) => void
+  // Cash management by pocket
+  cashCollection: (amount: number, pocket?: PaymentMethod | 'all') => void
+  cashReplenishment: (amount: number, pocket?: PaymentMethod) => void
+  collectFromPocket: (pocket: PaymentMethod | 'all', amount: number) => void
+  replenishPocket: (pocket: PaymentMethod, amount: number) => void
 
   // Ticket validation
   validateTicket: (ticketNumber: string) => { status: 'valid' | 'invalid' | 'paid'; winAmount?: number; gameName?: string }
-  payoutTicket: (ticketNumber: string) => boolean
+  payoutTicket: (ticketNumber: string, payoutPocket?: PaymentMethod) => boolean
 }
 
 /**
@@ -62,14 +93,34 @@ function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2)
 }
 
+/**
+ * Calculate total balance from all pockets
+ */
+function calculateTotalBalance(pockets: PocketBalance): number {
+  return pockets.cash + pockets.card + pockets.pix + pockets.other
+}
+
 export const useGameStore = create<GameState>()(
   persist(
     (set, get) => ({
       cartTickets: [],
       ticketHistory: [],
       cashTransactions: [],
-      balance: operatorInfo.balance,
+      pocketBalances: INITIAL_POCKET_BALANCES,
       operatorId: operatorInfo.id,
+
+      // Computed balance for backward compatibility
+      get balance() {
+        return calculateTotalBalance(get().pocketBalances)
+      },
+
+      getTotalBalance: () => {
+        return calculateTotalBalance(get().pocketBalances)
+      },
+
+      getPocketBalance: (pocket: PaymentMethod) => {
+        return get().pocketBalances[pocket]
+      },
 
       addToCart: (bet: GameBet) => {
         const ticket: CartTicket = {
@@ -96,8 +147,8 @@ export const useGameStore = create<GameState>()(
         return get().cartTickets.reduce((sum, t) => sum + t.bet.totalCost, 0)
       },
 
-      purchaseCart: () => {
-        const { cartTickets, balance } = get()
+      purchaseCart: (paymentMethod: PaymentMethod = 'cash') => {
+        const { cartTickets, pocketBalances, operatorId } = get()
         const total = cartTickets.reduce((sum, t) => sum + t.bet.totalCost, 0)
 
         const purchasedTickets: PurchasedTicket[] = cartTickets.map((t) => ({
@@ -108,16 +159,33 @@ export const useGameStore = create<GameState>()(
           status: 'pending' as const,
         }))
 
+        // Create transaction record
+        const transaction: CashTransaction = {
+          id: generateId(),
+          type: 'sale',
+          pocket: paymentMethod,
+          amount: total,
+          timestamp: new Date().toISOString(),
+          operatorId,
+        }
+
+        // Update the specific pocket balance
+        const newPocketBalances = { ...pocketBalances }
+        newPocketBalances[paymentMethod] += total
+
         set((state) => ({
           cartTickets: [],
           ticketHistory: [...purchasedTickets, ...state.ticketHistory],
-          balance: state.balance + total,
+          pocketBalances: newPocketBalances,
+          cashTransactions: [transaction, ...state.cashTransactions],
         }))
 
         return purchasedTickets
       },
 
-      purchaseSingle: (bet: GameBet) => {
+      purchaseSingle: (bet: GameBet, paymentMethod: PaymentMethod = 'cash') => {
+        const { pocketBalances, operatorId } = get()
+
         const ticket: PurchasedTicket = {
           id: generateId(),
           ticketNumber: generateTicketNumber(),
@@ -126,40 +194,115 @@ export const useGameStore = create<GameState>()(
           status: 'pending',
         }
 
+        // Create transaction record
+        const transaction: CashTransaction = {
+          id: generateId(),
+          type: 'sale',
+          pocket: paymentMethod,
+          amount: bet.totalCost,
+          timestamp: new Date().toISOString(),
+          operatorId,
+          ticketId: ticket.id,
+        }
+
+        // Update the specific pocket balance
+        const newPocketBalances = { ...pocketBalances }
+        newPocketBalances[paymentMethod] += bet.totalCost
+
         set((state) => ({
           ticketHistory: [ticket, ...state.ticketHistory],
-          balance: state.balance + bet.totalCost,
+          pocketBalances: newPocketBalances,
+          cashTransactions: [transaction, ...state.cashTransactions],
         }))
 
         return ticket
       },
 
-      cashCollection: (amount: number) => {
-        const transaction: CashTransaction = {
-          id: generateId(),
-          type: 'collection',
-          amount,
-          timestamp: new Date().toISOString(),
-          operatorId: get().operatorId,
-        }
-
-        set((state) => ({
-          balance: state.balance - amount,
-          cashTransactions: [transaction, ...state.cashTransactions],
-        }))
+      cashCollection: (amount: number, pocket: PaymentMethod | 'all' = 'cash') => {
+        get().collectFromPocket(pocket, amount)
       },
 
-      cashReplenishment: (amount: number) => {
+      collectFromPocket: (pocket: PaymentMethod | 'all', amount: number) => {
+        const { pocketBalances, operatorId } = get()
+
+        if (pocket === 'all') {
+          // Collect proportionally from all pockets
+          const total = calculateTotalBalance(pocketBalances)
+          if (amount > total) return
+
+          const ratio = amount / total
+          const newPocketBalances: PocketBalance = {
+            cash: pocketBalances.cash - (pocketBalances.cash * ratio),
+            card: pocketBalances.card - (pocketBalances.card * ratio),
+            pix: pocketBalances.pix - (pocketBalances.pix * ratio),
+            other: pocketBalances.other - (pocketBalances.other * ratio),
+          }
+
+          // Create one transaction per pocket that had funds
+          const transactions: CashTransaction[] = []
+          const pockets: PaymentMethod[] = ['cash', 'card', 'pix', 'other']
+          pockets.forEach((p) => {
+            const pocketAmount = pocketBalances[p] * ratio
+            if (pocketAmount > 0) {
+              transactions.push({
+                id: generateId(),
+                type: 'collection',
+                pocket: p,
+                amount: pocketAmount,
+                timestamp: new Date().toISOString(),
+                operatorId,
+              })
+            }
+          })
+
+          set((state) => ({
+            pocketBalances: newPocketBalances,
+            cashTransactions: [...transactions, ...state.cashTransactions],
+          }))
+        } else {
+          // Collect from specific pocket
+          if (amount > pocketBalances[pocket]) return
+
+          const transaction: CashTransaction = {
+            id: generateId(),
+            type: 'collection',
+            pocket,
+            amount,
+            timestamp: new Date().toISOString(),
+            operatorId,
+          }
+
+          const newPocketBalances = { ...pocketBalances }
+          newPocketBalances[pocket] -= amount
+
+          set((state) => ({
+            pocketBalances: newPocketBalances,
+            cashTransactions: [transaction, ...state.cashTransactions],
+          }))
+        }
+      },
+
+      cashReplenishment: (amount: number, pocket: PaymentMethod = 'cash') => {
+        get().replenishPocket(pocket, amount)
+      },
+
+      replenishPocket: (pocket: PaymentMethod, amount: number) => {
+        const { pocketBalances, operatorId } = get()
+
         const transaction: CashTransaction = {
           id: generateId(),
           type: 'replenishment',
+          pocket,
           amount,
           timestamp: new Date().toISOString(),
-          operatorId: get().operatorId,
+          operatorId,
         }
 
+        const newPocketBalances = { ...pocketBalances }
+        newPocketBalances[pocket] += amount
+
         set((state) => ({
-          balance: state.balance + amount,
+          pocketBalances: newPocketBalances,
           cashTransactions: [transaction, ...state.cashTransactions],
         }))
       },
@@ -185,12 +328,30 @@ export const useGameStore = create<GameState>()(
         return { status: 'invalid' as const, gameName: ticket.bet.gameName }
       },
 
-      payoutTicket: (ticketNumber: string) => {
+      payoutTicket: (ticketNumber: string, payoutPocket: PaymentMethod = 'cash') => {
         const validation = get().validateTicket(ticketNumber)
+        const { pocketBalances, operatorId } = get()
 
         if (validation.status !== 'valid' || !validation.winAmount) {
           return false
         }
+
+        // Check if pocket has enough funds
+        if (pocketBalances[payoutPocket] < validation.winAmount) {
+          return false
+        }
+
+        const transaction: CashTransaction = {
+          id: generateId(),
+          type: 'payout',
+          pocket: payoutPocket,
+          amount: validation.winAmount,
+          timestamp: new Date().toISOString(),
+          operatorId,
+        }
+
+        const newPocketBalances = { ...pocketBalances }
+        newPocketBalances[payoutPocket] -= validation.winAmount
 
         set((state) => ({
           ticketHistory: state.ticketHistory.map((t) =>
@@ -198,7 +359,8 @@ export const useGameStore = create<GameState>()(
               ? { ...t, status: 'paid' as const, winAmount: validation.winAmount }
               : t
           ),
-          balance: state.balance - validation.winAmount!,
+          pocketBalances: newPocketBalances,
+          cashTransactions: [transaction, ...state.cashTransactions],
         }))
 
         return true
@@ -206,6 +368,27 @@ export const useGameStore = create<GameState>()(
     }),
     {
       name: 'octili-game-store',
+      // Migration for old data format
+      migrate: (persistedState: any, version: number) => {
+        // If old format with single balance, migrate to pocketBalances
+        if (persistedState && typeof persistedState.balance === 'number' && !persistedState.pocketBalances) {
+          persistedState.pocketBalances = {
+            cash: persistedState.balance,
+            card: 0,
+            pix: 0,
+            other: 0,
+          }
+        }
+        // Add pocket field to old transactions
+        if (persistedState?.cashTransactions) {
+          persistedState.cashTransactions = persistedState.cashTransactions.map((t: any) => ({
+            ...t,
+            pocket: t.pocket || 'cash',
+          }))
+        }
+        return persistedState
+      },
+      version: 2,
     }
   )
 )
