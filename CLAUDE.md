@@ -4,6 +4,195 @@
 
 ---
 
+## QUICK REFERENCE - SESSION START CHECKLIST
+
+> **READ THIS SECTION FIRST! Contains everything you need to start working immediately.**
+
+### Current Project State (Last Updated: 2026-01-22)
+
+| Item | Value |
+|------|-------|
+| **Branch** | `master` (or `rc/private-review` for features) |
+| **Target Device** | SAMVI V2 Pro POS Terminal (720px width) |
+| **Mock Credentials** | username: `cashier`, password: `password`, PIN: `1234` |
+| **Currency** | BRL (Brazilian Real) |
+| **Min Touch Target** | 48px (POS requirement) |
+
+### All Routes (App.tsx)
+
+| Route | Page | Purpose |
+|-------|------|---------|
+| `/login` | LoginPage | Username/password auth |
+| `/pin` | PinPage | Quick PIN entry |
+| `/pos` | POSPage | **Main screen** - Games grid, bottom nav |
+| `/game/:gameId` | GamePlayPage | Betting - multipliers/numbers selection |
+| `/cart` | CartPage | Pending tickets before purchase |
+| `/payment` | PaymentOfWinningsPage | Scan/validate winning tickets |
+| `/results` | ResultsPage | Draw results by game |
+| `/menu` | MenuPage | Reports, Cash, Settings, Hostess, etc. |
+| `/reports` | ReportsPage | Daily/date range reports |
+| `/qr-ticket` | QRTicketPage | Hub: Physical Ticket, QR Ticket, Account |
+| `/physical-ticket/new` | NewTicketPage | Issue deposit-based physical tickets |
+| `/physical-ticket/payout` | PayoutTicketPage | Payout physical tickets |
+| `/account` | AccountPage | Player account management |
+| `/tvbox-control` | TVBoxControlPage | Manage venue TV displays |
+| `/second-display` | SecondDisplayPage | Player-facing screen (no auth) |
+| `/settings` | SettingsPage | Cashier terminal settings |
+| `/transactions` | TransactionsPage | Transaction history |
+| `/checkout` | CheckoutPage | Payment processing |
+
+### All Zustand Stores (src/stores/)
+
+| Store | File | Key State | Key Actions |
+|-------|------|-----------|-------------|
+| **useAuthStore** | authStore.ts | `user`, `isAuthenticated` | `login()`, `logout()`, `loginWithPin()` |
+| **useGameStore** | gameStore.ts | `cartTickets`, `ticketHistory`, `pocketBalances` | `addToCart()`, `purchaseCart()`, `payoutTicket()`, `cashCollection()` |
+| **useCartStore** | cartStore.ts | `items`, `total`, `itemCount` | `addItem()`, `removeItem()`, `clearCart()` |
+| **useDisplaySyncStore** | displaySyncStore.ts | `displayMode`, `activeGame`, `currentPath` | `setDisplayMode()`, `setActiveGame()`, `updateSelections()` |
+| **useThemeStore** | themeStore.ts | `colorTheme`, `visualStyle`, `isDarkMode` | `setColorTheme()`, `setVisualStyle()`, `toggleDarkMode()` |
+| **useTerminalStore** | terminalStore.ts | `isOnline`, `offlineReason`, `offlineSince` | `goOffline()`, `goOnline()` |
+| **physicalTicketStore** | physicalTicketStore.ts | Physical ticket state | Issue/payout physical tickets |
+
+### Multi-Pocket Balance System (gameStore)
+
+```typescript
+// Pockets: cash | card | pix | other
+pocketBalances: { cash: 2000, card: 1500, pix: 500, other: 272.15 }
+
+// Key methods:
+getTotalBalance() → number
+getPocketBalance(pocket) → number
+purchaseCart(paymentMethod) → tickets
+cashCollection(amount, pocket | 'all')
+cashReplenishment(amount, pocket)
+payoutTicket(ticketNumber, payoutPocket)
+```
+
+### All Types (src/types/)
+
+| File | Key Types |
+|------|-----------|
+| `auth.types.ts` | `User`, `AuthState` |
+| `game.types.ts` | `LotteryGame`, `GameBet`, `CartTicket`, `PurchasedTicket`, `PaymentMethod`, `PocketBalance`, `CashTransaction` |
+| `cart.types.ts` | `CartItem` |
+| `product.types.ts` | `Product` |
+| `physical-ticket.types.ts` | `PhysicalTicket`, `PhysicalTicketStatus` |
+| `tvbox.types.ts` | `TVBox`, `TVBoxContent` |
+| `transaction.types.ts` | `Transaction` |
+
+### Payment Methods (game.types.ts)
+
+```typescript
+type PaymentMethod = 'cash' | 'card' | 'pix' | 'other'
+```
+
+### Game Types for Betting
+
+| Type | Cost Calculation | Example |
+|------|------------------|---------|
+| `multiplier` | `selections × betAmount × draws` | Balloons: X2, X5, X10 selected = 3 × betAmount |
+| `keno` | `betAmount × draws` (selections free) | Loto Blitz: pick 10 numbers, pay once |
+| `roulette` | `selections × betAmount × draws` | Roulette: each item = 1 bet |
+
+### Display Modes (displaySyncStore)
+
+```typescript
+type DisplayMode = 'idle' | 'games' | 'gameplay' | 'cart' | 'payment' | 'complete' | 'payout'
+```
+
+### Terminal Offline Reasons (terminalStore)
+
+```typescript
+type OfflineReason = 'break' | 'lunch' | 'technical' | 'maintenance' | 'training' | 'end_of_shift' | 'vacation' | 'other'
+```
+
+### Theme System (themeStore)
+
+```typescript
+// 6 Color Themes
+type ColorTheme = 'octili' | 'ocean' | 'sunset' | 'violet' | 'rose' | 'slate'
+
+// 5 Visual Styles
+type VisualStyle = 'bento' | 'glass' | 'neumorphic' | 'minimal' | 'bold'
+
+// Helper functions:
+applyThemeToDocument(colorTheme, visualStyle, isDarkMode)
+getThemedCardStyle(visualStyle, isDarkMode, isHovered)
+getThemedButtonStyle(colorTheme, visualStyle, variant)
+getSurfaceColors(isDarkMode)
+```
+
+### Key Components Location
+
+| Component | Path | Purpose |
+|-----------|------|---------|
+| AppHeader | `components/layout/AppHeader.tsx` | Header with balance & menu |
+| BottomNavigation | `components/layout/BottomNavigation.tsx` | 5-tab bottom nav |
+| TerminalOfflineOverlay | `components/shared/TerminalOfflineOverlay.tsx` | Offline mode overlay |
+| BalanceOverview | `components/shared/BalanceOverview.tsx` | Multi-pocket balance display |
+| Button | `components/ui/Button.tsx` | Standard button |
+| Input | `components/ui/Input.tsx` | Standard input |
+
+### Mock Data Files (src/data/)
+
+| File | Contents |
+|------|----------|
+| `games-mock-data.ts` | `lotteryGames[]`, `operatorInfo`, game configs |
+| `mock-data.ts` | General mock data |
+| `physical-ticket-mock-data.ts` | Physical ticket mock data |
+| `tvbox-mock-data.ts` | TV Box mock data |
+
+### Hooks (src/hooks/)
+
+| Hook | Purpose |
+|------|---------|
+| `useBroadcastSync` | Sync state between main & second display via BroadcastChannel |
+
+### Recent Features (Latest Commits)
+
+1. **Multi-pocket balance system** - Cash/Card/PIX/Other pockets with separate tracking
+2. **Urgent call button** - Quick calls section in menu
+3. **48px touch targets** - All buttons increased for POS
+4. **AppHeader** - Consistent header with balance across pages
+5. **SAMVI V2 Pro optimization** - 720px width responsive
+6. **Physical ticket system** - Deposit-based lottery tickets
+7. **TV Box Control** - Manage venue TV displays
+8. **Terminal offline system** - "Not working" with reason selection
+9. **Second Display** - Player-facing screen sync via BroadcastChannel
+10. **Theme system** - 6 colors × 5 visual styles × light/dark
+
+### Utility Functions (src/lib/utils.ts)
+
+```typescript
+cn(...classes) → string  // Tailwind class merge
+generateId() → string    // Unique ID generator
+formatCurrency(amount) → string  // BRL formatting
+```
+
+### Quick Patterns
+
+**Adding a new page:**
+```tsx
+// 1. Create src/pages/NewModule/NewPage.tsx
+// 2. Create src/pages/NewModule/index.ts with export
+// 3. In App.tsx: const NewPage = lazy(() => import('@/pages/NewModule/NewPage').then(m => ({ default: m.NewPage })))
+// 4. Add route: <Route path="/new-path" element={<ProtectedRoute><NewPage /></ProtectedRoute>} />
+```
+
+**Adding to bottom nav:**
+```tsx
+// Edit: src/components/layout/BottomNavigation.tsx
+// Current tabs: Games | Results | Scan | QR Ticket | (optional 5th)
+```
+
+**Using theme in component:**
+```tsx
+const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
+const cardStyle = getThemedCardStyle(visualStyle, isDarkMode)
+```
+
+---
+
 ## Quick Start - READ THIS FIRST
 
 > **This section eliminates exploration time. Use it before every task.**
