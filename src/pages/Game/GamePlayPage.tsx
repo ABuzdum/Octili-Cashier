@@ -20,6 +20,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, Trash2, Clock, Ticket, Sparkles, Check, X, Calendar, Repeat, ChevronDown } from 'lucide-react'
 import { useGame, useGameStore } from '@/stores/gameStore'
+import { AppHeader } from '@/components/layout/AppHeader'
 import type { GameBet } from '@/types/game.types'
 
 /**
@@ -258,7 +259,57 @@ export function GamePlayPage() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header - Game Info + Draw Info (Light Theme) */}
+      {/* AppHeader with back button and custom title */}
+      <AppHeader
+        showBack
+        backPath="/pos"
+        title={game.name}
+        subtitle={game.type === 'keno' ? 'Keno' : game.type === 'roulette' ? 'Roulette' : 'Multiplier'}
+        leftContent={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            {/* Game Icon */}
+            <div style={{
+              width: '44px',
+              height: '44px',
+              background: GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length],
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '24px',
+              flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            }}>
+              {game.icon}
+            </div>
+
+            {/* Game Name */}
+            <div style={{ minWidth: 0 }}>
+              <h1 style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 700,
+                margin: 0,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                textShadow: '0 2px 8px rgba(0,0,0,0.15)',
+              }}>
+                {game.name}
+              </h1>
+              <p style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '11px',
+                margin: 0,
+              }}>
+                {game.type === 'keno' ? 'Keno' : game.type === 'roulette' ? 'Roulette' : 'Multiplier'}
+              </p>
+            </div>
+          </div>
+        }
+      />
+
+      {/* Game Info Bar: Draw + Timer */}
       <div style={{
         background: '#ffffff',
         padding: '12px 16px',
@@ -269,82 +320,16 @@ export function GamePlayPage() {
         borderBottom: '1px solid #f1f5f9',
         boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
       }}>
-        {/* Left: Back + Game Icon + Name */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
-          <button
-            onClick={() => navigate('/pos')}
-            style={{
-              background: '#f1f5f9',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              color: '#64748b',
-              flexShrink: 0,
-            }}
-          >
-            <ArrowLeft size={18} />
-          </button>
-
-          {/* Game Icon */}
-          <div style={{
-            width: '44px',
-            height: '44px',
-            background: GAME_GRADIENTS[gameIndex % GAME_GRADIENTS.length],
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '24px',
-            flexShrink: 0,
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          }}>
-            {game.icon}
-          </div>
-
-          {/* Game Name */}
-          <div style={{ minWidth: 0 }}>
-            <h1 style={{
-              color: '#1e293b',
-              fontSize: '16px',
-              fontWeight: 700,
-              margin: 0,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}>
-              {game.name}
-            </h1>
-            <p style={{
-              color: '#94a3b8',
-              fontSize: '11px',
-              margin: 0,
-            }}>
-              {game.type === 'keno' ? 'Keno' : game.type === 'roulette' ? 'Roulette' : 'Multiplier'}
-            </p>
-          </div>
-        </div>
-
-        {/* Center: Current Draw Info */}
+        {/* Current Draw Info */}
         <div style={{
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          padding: '8px 16px',
-          background: '#f8fafc',
-          borderRadius: '12px',
-          border: '1px solid #e2e8f0',
-          minWidth: '140px',
+          gap: '16px',
         }}>
           <div style={{
             display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            marginBottom: '4px',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
           }}>
             <span style={{
               fontSize: '10px',
@@ -355,23 +340,44 @@ export function GamePlayPage() {
             }}>
               Current Draw
             </span>
+            <span style={{
+              fontSize: '18px',
+              fontWeight: 700,
+              color: '#1e293b',
+            }}>
+              #{game.currentDraw}
+            </span>
           </div>
-          <span style={{
-            fontSize: '15px',
-            fontWeight: 700,
-            color: '#1e293b',
+          <div style={{
+            width: '1px',
+            height: '32px',
+            background: '#e2e8f0',
+          }} />
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
           }}>
-            #{game.currentDraw}
-          </span>
-          <span style={{
-            fontSize: '10px',
-            color: '#64748b',
-          }}>
-            {upcomingDraws[0]?.date || 'Today'} {upcomingDraws[0]?.time || '--:--'}
-          </span>
+            <span style={{
+              fontSize: '10px',
+              color: '#94a3b8',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+            }}>
+              Closes at
+            </span>
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#64748b',
+            }}>
+              {upcomingDraws[0]?.date || 'Today'} {upcomingDraws[0]?.time || '--:--'}
+            </span>
+          </div>
         </div>
 
-        {/* Right: Timer + Cart */}
+        {/* Timer + Cart */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* Timer */}
           <div style={{
@@ -413,13 +419,13 @@ export function GamePlayPage() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
               position: 'relative',
             }}
           >
-            <ShoppingCart size={18} color="#64748b" />
+            <ShoppingCart size={20} color="#64748b" />
             {cartTickets.length > 0 && (
               <span style={{
                 position: 'absolute',
@@ -429,8 +435,8 @@ export function GamePlayPage() {
                 color: 'white',
                 fontSize: '9px',
                 fontWeight: 700,
-                width: '16px',
-                height: '16px',
+                width: '18px',
+                height: '18px',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',

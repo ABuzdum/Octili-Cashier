@@ -19,6 +19,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Ticket, QrCode, Wallet, ArrowRight, Sparkles } from 'lucide-react'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 
 /**
@@ -199,64 +200,11 @@ export function QRTicketPage() {
         flexDirection: 'column',
       }}
     >
-      {/* Header */}
-      <div
-        style={{
-          background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-          padding: '24px 20px',
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {/* Decorative circles */}
-        <div
-          style={{
-            position: 'absolute',
-            width: '200px',
-            height: '200px',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            top: '-100px',
-            right: '-50px',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            width: '120px',
-            height: '120px',
-            background: 'rgba(255,255,255,0.05)',
-            borderRadius: '50%',
-            bottom: '-60px',
-            left: '10%',
-          }}
-        />
-
-        <div style={{ position: 'relative', zIndex: 1 }}>
-          <h1
-            style={{
-              color: 'white',
-              fontSize: '24px',
-              fontWeight: 700,
-              marginBottom: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-            }}
-          >
-            <QrCode size={28} />
-            QR Ticket
-          </h1>
-          <p
-            style={{
-              color: 'rgba(255,255,255,0.8)',
-              fontSize: '14px',
-            }}
-          >
-            Ticket and account operations
-          </p>
-        </div>
-      </div>
+      {/* AppHeader with balance and menu */}
+      <AppHeader
+        title="QR Ticket"
+        subtitle="Ticket and account operations"
+      />
 
       {/* Content */}
       <div
@@ -289,7 +237,7 @@ export function QRTicketPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="qrticket" />
+      <BottomNavigation activeTab="sellticket" />
     </div>
   )
 }

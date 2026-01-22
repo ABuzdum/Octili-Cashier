@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Printer, ChevronRight, Target, Trophy, Calendar } from 'lucide-react'
 import { useLotteryGames } from '@/stores/gameStore'
 import { mockDrawResults } from '@/data/games-mock-data'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 
 // Game gradients matching POSPage
@@ -59,67 +60,13 @@ export function ResultsPage() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        padding: '16px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute',
-          width: '150px',
-          height: '150px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '50%',
-          top: '-60px',
-          right: '-40px',
-        }} />
-
-        <button
-          onClick={() => selectedGame ? setSelectedGame(null) : navigate('/pos')}
-          style={{
-            background: 'rgba(255,255,255,0.2)',
-            backdropFilter: 'blur(10px)',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '40px',
-            height: '40px',
-            borderRadius: '12px',
-            color: 'white',
-            zIndex: 1,
-          }}
-        >
-          <ArrowLeft size={20} />
-        </button>
-
-        <div style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '12px',
-          zIndex: 1,
-        }}>
-          <Target size={28} color="white" />
-          <h1 style={{
-            color: 'white',
-            fontSize: '20px',
-            fontWeight: 700,
-            textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}>
-            {selectedGame ? games.find(g => g.id === selectedGame)?.name : 'Draw Results'}
-          </h1>
-        </div>
-
-        <div style={{ width: '40px' }} />
-      </div>
+      {/* AppHeader with balance and menu */}
+      <AppHeader
+        showBack
+        backPath={selectedGame ? undefined : '/pos'}
+        title={selectedGame ? games.find(g => g.id === selectedGame)?.name || 'Results' : 'Draw Results'}
+        subtitle="Latest game results"
+      />
 
       {/* Main Content */}
       <div style={{
@@ -193,7 +140,7 @@ export function ResultsPage() {
                           alignItems: 'center',
                           gap: '6px',
                           padding: '10px 16px',
-                          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                          background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                           border: 'none',
                           borderRadius: '12px',
                           color: 'white',
@@ -374,7 +321,7 @@ export function ResultsPage() {
                   width: '100%',
                   padding: '18px',
                   marginTop: '20px',
-                  background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                  background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                   border: 'none',
                   borderRadius: '16px',
                   color: 'white',

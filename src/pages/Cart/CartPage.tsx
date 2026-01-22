@@ -29,6 +29,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { useGameStore, useLotteryGames } from '@/stores/gameStore'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import type { CartTicket, LotteryGame } from '@/types/game.types'
 
@@ -262,109 +263,59 @@ export function CartPage() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        padding: '16px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        {/* Decorative circles */}
-        <div style={{
-          position: 'absolute',
-          width: '150px',
-          height: '150px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '50%',
-          top: '-60px',
-          right: '-40px',
-        }} />
-        <div style={{
-          position: 'absolute',
-          width: '80px',
-          height: '80px',
-          background: 'rgba(255,255,255,0.1)',
-          borderRadius: '50%',
-          bottom: '-30px',
-          left: '10%',
-        }} />
+      {/* AppHeader with balance and menu */}
+      <AppHeader
+        showBack
+        backPath="/pos"
+        title="My Cart"
+        subtitle={`${cartTickets.length} ticket${cartTickets.length !== 1 ? 's' : ''}`}
+      />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', zIndex: 1 }}>
-          <button
-            onClick={() => navigate('/pos')}
-            style={{
-              background: 'rgba(255,255,255,0.2)',
-              backdropFilter: 'blur(10px)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '12px',
-              color: 'white',
-            }}
-          >
-            <ArrowLeft size={20} />
-          </button>
+      {/* Cart Actions Bar */}
+      {cartTickets.length > 0 && (
+        <div style={{
+          background: '#ffffff',
+          padding: '12px 20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: '1px solid #f1f5f9',
+        }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
           }}>
-            <ShoppingCart size={24} color="white" />
-            <h1 style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              color: 'white',
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            <ShoppingCart size={20} color="#64748b" />
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 600,
+              color: '#1e293b',
             }}>
-              My Cart
-            </h1>
-            {cartTickets.length > 0 && (
-              <span style={{
-                background: 'rgba(255,255,255,0.3)',
-                backdropFilter: 'blur(10px)',
-                color: 'white',
-                fontSize: '13px',
-                fontWeight: 700,
-                padding: '4px 10px',
-                borderRadius: '12px',
-              }}>
-                {cartTickets.length}
-              </span>
-            )}
+              {cartTickets.length} ticket{cartTickets.length !== 1 ? 's' : ''} in cart
+            </span>
           </div>
-        </div>
-
-        {cartTickets.length > 0 && (
           <button
             onClick={() => setShowClearConfirm(true)}
             style={{
-              background: 'rgba(255,255,255,0.2)',
-              backdropFilter: 'blur(10px)',
+              background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)',
               border: 'none',
-              borderRadius: '12px',
-              padding: '10px 16px',
+              borderRadius: '10px',
+              padding: '8px 14px',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              color: 'white',
-              fontSize: '14px',
+              gap: '6px',
+              color: '#dc2626',
+              fontSize: '13px',
               fontWeight: 600,
-              zIndex: 1,
             }}
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
             Clear All
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Cart Content */}
       <div style={{
@@ -512,7 +463,7 @@ export function CartPage() {
               style={{
                 width: '100%',
                 padding: '18px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '16px',
@@ -650,7 +601,7 @@ export function CartPage() {
             <div style={{
               width: '88px',
               height: '88px',
-              background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+              background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
               borderRadius: '50%',
               display: 'flex',
               alignItems: 'center',
@@ -674,7 +625,7 @@ export function CartPage() {
             }}>
               <span style={{
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>

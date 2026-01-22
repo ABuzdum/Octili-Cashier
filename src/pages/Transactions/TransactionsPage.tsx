@@ -19,6 +19,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Search, Receipt, CreditCard, Banknote } from 'lucide-react'
 import { recentTransactions } from '@/data/mock-data'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { AppHeader } from '@/components/layout/AppHeader'
 
 export function TransactionsPage() {
   const navigate = useNavigate()
@@ -32,13 +33,13 @@ export function TransactionsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4">
-        <button onClick={() => navigate('/pos')} className="p-2 hover:bg-gray-100 rounded-lg">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-xl font-semibold">Transactions</h1>
-      </header>
+      {/* AppHeader with balance and menu */}
+      <AppHeader
+        showBack
+        backPath="/pos"
+        title="Transactions"
+        subtitle="Transaction history"
+      />
 
       <div className="max-w-2xl mx-auto p-4">
         {/* Search */}

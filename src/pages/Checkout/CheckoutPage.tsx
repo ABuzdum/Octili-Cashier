@@ -20,6 +20,7 @@ import { ArrowLeft, CreditCard, Banknote, Check } from 'lucide-react'
 import { useCartStore } from '@/stores/cartStore'
 import { formatCurrency } from '@/lib/utils'
 import { Button } from '@/components/ui'
+import { AppHeader } from '@/components/layout/AppHeader'
 
 type PaymentMethod = 'cash' | 'card' | null
 type CheckoutStep = 'method' | 'cash' | 'card' | 'complete'
@@ -83,22 +84,25 @@ export function CheckoutPage() {
     return null
   }
 
+  // Get dynamic title based on step
+  const getStepTitle = () => {
+    switch (step) {
+      case 'method': return 'Payment Method'
+      case 'cash': return 'Cash Payment'
+      case 'card': return 'Card Payment'
+      case 'complete': return 'Complete'
+      default: return 'Checkout'
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4">
-        {step !== 'complete' && (
-          <button onClick={handleBack} className="p-2 hover:bg-gray-100 rounded-lg">
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-        )}
-        <h1 className="text-xl font-semibold">
-          {step === 'method' && 'Select Payment Method'}
-          {step === 'cash' && 'Cash Payment'}
-          {step === 'card' && 'Card Payment'}
-          {step === 'complete' && 'Payment Complete'}
-        </h1>
-      </header>
+      {/* AppHeader with balance and menu */}
+      <AppHeader
+        showBack={step !== 'complete'}
+        title={getStepTitle()}
+        subtitle={`Total: ${formatCurrency(total)}`}
+      />
 
       <div className="max-w-lg mx-auto p-4">
         {/* Total Display */}

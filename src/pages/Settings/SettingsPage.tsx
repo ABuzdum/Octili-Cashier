@@ -17,6 +17,7 @@
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, User, Printer, Bell, Moon, Globe, Info } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
+import { AppHeader } from '@/components/layout/AppHeader'
 
 export function SettingsPage() {
   const navigate = useNavigate()
@@ -53,13 +54,13 @@ export function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-4">
-        <button onClick={() => navigate('/pos')} className="p-2 hover:bg-gray-100 rounded-lg">
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-xl font-semibold">Settings</h1>
-      </header>
+      {/* AppHeader with balance and menu */}
+      <AppHeader
+        showBack
+        backPath="/pos"
+        title="Settings"
+        subtitle="App configuration"
+      />
 
       <div className="max-w-2xl mx-auto p-4 space-y-6">
         {/* User Card */}

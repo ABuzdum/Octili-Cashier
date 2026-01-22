@@ -27,6 +27,7 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
 } from 'lucide-react'
+import { AppHeader } from '@/components/layout/AppHeader'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 
 type AccountMode = 'menu' | 'deposit' | 'withdraw'
@@ -48,7 +49,7 @@ function NumButton({
   const getBackground = () => {
     switch (variant) {
       case 'confirm':
-        return 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+        return 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
       case 'delete':
         return 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
       case 'zero':
@@ -141,76 +142,13 @@ export function AccountPage() {
         display: 'flex',
         flexDirection: 'column',
       }}>
-        {/* Header */}
-        <div style={{
-          background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-          padding: '16px 20px',
-          display: 'flex',
-          alignItems: 'center',
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          {/* Decorative circles */}
-          <div style={{
-            position: 'absolute',
-            width: '150px',
-            height: '150px',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            top: '-60px',
-            right: '-40px',
-          }} />
-          <div style={{
-            position: 'absolute',
-            width: '80px',
-            height: '80px',
-            background: 'rgba(255,255,255,0.1)',
-            borderRadius: '50%',
-            bottom: '-30px',
-            left: '20%',
-          }} />
-
-          <button
-            onClick={() => navigate('/pos')}
-            style={{
-              background: 'rgba(255,255,255,0.2)',
-              backdropFilter: 'blur(10px)',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '40px',
-              height: '40px',
-              borderRadius: '12px',
-              color: 'white',
-              zIndex: 1,
-            }}
-          >
-            <ArrowLeft size={20} />
-          </button>
-
-          <div style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            zIndex: 1,
-          }}>
-            <Wallet size={28} color="white" />
-            <h1 style={{
-              color: 'white',
-              fontSize: '20px',
-              fontWeight: 700,
-              textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            }}>
-              Player Account
-            </h1>
-          </div>
-
-          <div style={{ width: '40px' }} />
-        </div>
+        {/* AppHeader with balance and menu */}
+        <AppHeader
+          showBack
+          backPath="/pos"
+          title="Player Account"
+          subtitle="Deposit & Withdraw"
+        />
 
         {/* Main Content */}
         <div style={{
@@ -286,7 +224,7 @@ export function AccountPage() {
               <div style={{
                 width: '56px',
                 height: '56px',
-                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 borderRadius: '16px',
                 display: 'flex',
                 alignItems: 'center',
@@ -369,7 +307,7 @@ export function AccountPage() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNavigation activeTab="qrticket" />
+        <BottomNavigation activeTab="sellticket" />
       </div>
     )
   }
@@ -377,7 +315,7 @@ export function AccountPage() {
   // Deposit or Withdraw Mode
   const isDeposit = mode === 'deposit'
   const modeGradient = isDeposit
-    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+    ? 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)'
     : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'
   const modeShadow = isDeposit
     ? 'rgba(16, 185, 129, 0.4)'
@@ -727,7 +665,7 @@ export function AccountPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="qrticket" />
+      <BottomNavigation activeTab="sellticket" />
     </div>
   )
 }
