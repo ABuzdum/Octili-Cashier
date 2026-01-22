@@ -78,13 +78,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Public route wrapper - redirects to POS if already authenticated
+ * Public route wrapper - redirects to QR Tickets (main page) if already authenticated
  */
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
 
   if (isAuthenticated) {
-    return <Navigate to="/games" replace />
+    return <Navigate to="/physical-ticket/new" replace />
   }
 
   return <>{children}</>

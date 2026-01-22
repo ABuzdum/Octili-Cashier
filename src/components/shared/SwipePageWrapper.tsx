@@ -29,12 +29,13 @@ import type { NavTab } from '@/components/layout/BottomNavigation'
 
 /**
  * Page sequence for swipe navigation
- * games -> results -> qrticket-sell -> payout (unified)
+ * QR Tickets is the main/first page of the system
+ * qrticket-sell -> games -> results -> payout (unified)
  */
 const PAGE_SEQUENCE: NavTab[] = [
+  'qrticket-sell',
   'games',
   'results',
-  'qrticket-sell',
   'payout',
 ]
 

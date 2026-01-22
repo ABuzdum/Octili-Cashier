@@ -33,7 +33,7 @@ interface NavItem {
 }
 
 /**
- * QR Tickets button - first in navigation
+ * QR Tickets button - PRIMARY main page of the system
  */
 const qrTicketsItem: NavItem = {
   id: 'qrticket-sell',
@@ -277,8 +277,19 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
-      {/* QR Tickets - Single button */}
-      {renderNavButton(qrTicketsItem)}
+      {/* QR Tickets - PRIMARY main page (large button) */}
+      {renderNavButton(qrTicketsItem, { large: true })}
+
+      {/* Vertical Divider - separates QR Tickets from Draw Games */}
+      <div style={{
+        width: '2px',
+        height: '56px',
+        background: 'linear-gradient(180deg, transparent 0%, #24BD68 20%, #24BD68 80%, transparent 100%)',
+        margin: '0 12px',
+        borderRadius: '1px',
+        boxShadow: '0 0 6px rgba(36, 189, 104, 0.3)',
+        flexShrink: 0,
+      }} />
 
       {/* Draw Games & Draw Results Section */}
       <div style={{
@@ -287,7 +298,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         gap: '6px',
         flexShrink: 0,
       }}>
-        {drawNavItems.map((item) => renderNavButton(item, { large: item.id === 'games' }))}
+        {drawNavItems.map((item) => renderNavButton(item))}
       </div>
 
       {/* Vertical Divider before Payout */}
