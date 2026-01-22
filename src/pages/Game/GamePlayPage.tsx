@@ -96,14 +96,13 @@ export function GamePlayPage() {
   const { gameId } = useParams<{ gameId: string }>()
   const navigate = useNavigate()
   const game = useGame(gameId || '')
-  const { addToCart, purchaseSingle, cartTickets } = useGameStore()
+  const { purchaseSingle, cartTickets } = useGameStore()
 
   const [timer, setTimer] = useState(game?.timerSeconds || 60)
   const [selectedMarkets, setSelectedMarkets] = useState<string[]>([])
   const [betAmount, setBetAmount] = useState(game?.betAmounts[0] || 0.5)
   const [numberOfDraws, setNumberOfDraws] = useState(1)
   const [showConfirmModal, setShowConfirmModal] = useState(false)
-  const [confirmAction, setConfirmAction] = useState<'buy' | 'cart'>('buy')
   const [showSuccess, setShowSuccess] = useState(false)
 
   // Draw selection mode: 'multi' for next X draws, 'specific' for a specific draw
@@ -215,37 +214,22 @@ export function GamePlayPage() {
   // Check if bet is valid (has selections and valid draw)
   const isBetValid = selectedMarkets.length > 0 && (drawMode === 'multi' || selectedSpecificDraw !== null)
 
-  // Handle buy button
+  // Handle buy button - shows confirmation modal
   const handleBuy = () => {
     if (!isBetValid) return
-    setConfirmAction('buy')
     setShowConfirmModal(true)
   }
 
-  // Handle add to cart
-  const handleAddToCart = () => {
-    if (!isBetValid) return
-    setConfirmAction('cart')
-    setShowConfirmModal(true)
-  }
-
-  // Confirm purchase
+  // Confirm purchase - processes the bet
   const confirmPurchase = () => {
     const bet = createBet()
-    if (confirmAction === 'buy') {
-      purchaseSingle(bet)
-      setShowSuccess(true)
-      setTimeout(() => {
-        setShowSuccess(false)
-        navigate('/pos')
-      }, 1500)
-    } else {
-      addToCart(bet)
-      setSelectedMarkets([])
-      setShowSuccess(true)
-      setTimeout(() => setShowSuccess(false), 1500)
-    }
+    purchaseSingle(bet)
     setShowConfirmModal(false)
+    setShowSuccess(true)
+    setTimeout(() => {
+      setShowSuccess(false)
+      navigate('/pos')
+    }, 1500)
   }
 
   // Clear selections
@@ -1147,11 +1131,12 @@ export function GamePlayPage() {
         gap: '12px',
         boxShadow: '0 -8px 32px rgba(0,0,0,0.1)',
       }}>
+        {/* Buy Button - Primary action */}
         <button
           onClick={handleBuy}
           disabled={!isBetValid}
           style={{
-            flex: 2,
+            flex: 3,
             padding: '18px',
             minHeight: '56px',
             borderRadius: '16px',
@@ -1161,7 +1146,7 @@ export function GamePlayPage() {
               : 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
             color: !isBetValid ? '#94a3b8' : 'white',
             fontWeight: 700,
-            fontSize: '17px',
+            fontSize: '18px',
             cursor: !isBetValid ? 'not-allowed' : 'pointer',
             boxShadow: !isBetValid
               ? 'none'
@@ -1171,32 +1156,7 @@ export function GamePlayPage() {
         >
           Buy
         </button>
-        <button
-          onClick={handleAddToCart}
-          disabled={!isBetValid}
-          style={{
-            flex: 1,
-            padding: '18px',
-            minHeight: '56px',
-            minWidth: '56px',
-            borderRadius: '16px',
-            border: 'none',
-            background: !isBetValid
-              ? '#e2e8f0'
-              : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            color: !isBetValid ? '#94a3b8' : 'white',
-            cursor: !isBetValid ? 'not-allowed' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: !isBetValid
-              ? 'none'
-              : '0 4px 16px rgba(99, 102, 241, 0.4)',
-            transition: 'all 0.2s',
-          }}
-        >
-          <ShoppingCart size={24} />
-        </button>
+        {/* Clear Button - Reset selections */}
         <button
           onClick={handleClear}
           disabled={selectedMarkets.length === 0}
@@ -1253,23 +1213,15 @@ export function GamePlayPage() {
               <div style={{
                 width: '64px',
                 height: '64px',
-                background: confirmAction === 'buy'
-                  ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
-                  : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)',
                 borderRadius: '20px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 16px',
-                boxShadow: confirmAction === 'buy'
-                  ? '0 8px 24px rgba(245, 158, 11, 0.4)'
-                  : '0 8px 24px rgba(99, 102, 241, 0.4)',
+                boxShadow: '0 8px 24px rgba(36, 189, 104, 0.4)',
               }}>
-                {confirmAction === 'buy' ? (
-                  <Ticket size={28} color="white" />
-                ) : (
-                  <ShoppingCart size={28} color="white" />
-                )}
+                <Ticket size={28} color="white" />
               </div>
               <h3 style={{
                 fontSize: '20px',
@@ -1277,7 +1229,7 @@ export function GamePlayPage() {
                 color: '#1e293b',
                 marginBottom: '8px',
               }}>
-                {confirmAction === 'buy' ? 'Confirm Purchase' : 'Add to Cart'}
+                Confirm Purchase
               </h3>
               <p style={{
                 fontSize: '14px',
@@ -1422,7 +1374,7 @@ export function GamePlayPage() {
             fontWeight: 700,
             color: '#1e293b',
           }}>
-            {confirmAction === 'buy' ? 'Purchase Complete!' : 'Added to Cart!'}
+            Purchase Complete!
           </h3>
         </div>
       )}
