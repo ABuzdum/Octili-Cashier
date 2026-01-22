@@ -3,21 +3,28 @@
  * BOTTOM NAVIGATION - LOTTERY POS TERMINAL
  * ============================================================================
  *
- * Purpose: Beautiful bottom navigation bar for the POS/VLT terminal
- * Designed for player-facing displays with smooth animations
+ * Purpose: Clean bottom navigation bar for cashier terminals
+ * Uses international, easy-to-understand naming for any cashier
  *
- * Tabs: Games | Results | Menu | QR | Cart
+ * Tabs: Play | Results | Pay | Account | Cart
+ *
+ * Naming designed for clarity:
+ * - Play = Select and play lottery games
+ * - Results = View draw results
+ * - Pay = Pay out winnings to customers
+ * - Account = Player account (deposit/withdraw)
+ * - Cart = Pending tickets to purchase
  *
  * @author Octili Development Team
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LayoutGrid, Target, Menu, QrCode, ShoppingCart } from 'lucide-react'
+import { Gamepad2, Trophy, Banknote, Wallet, ShoppingCart } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
-export type NavTab = 'games' | 'results' | 'menu' | 'qr' | 'cart'
+export type NavTab = 'play' | 'results' | 'pay' | 'account' | 'cart'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -26,17 +33,51 @@ interface BottomNavigationProps {
 interface NavItem {
   id: NavTab
   label: string
-  icon: typeof LayoutGrid
+  icon: typeof Gamepad2
   path: string
   gradient: string
 }
 
+/**
+ * Navigation items with clear, international naming
+ * Each label is designed to be understood by any cashier worldwide
+ */
 const navItems: NavItem[] = [
-  { id: 'games', label: 'Games', icon: LayoutGrid, path: '/pos', gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
-  { id: 'results', label: 'Results', icon: Target, path: '/results', gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' },
-  { id: 'menu', label: 'Menu', icon: Menu, path: '/menu', gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
-  { id: 'qr', label: 'QR', icon: QrCode, path: '/qr', gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' },
-  { id: 'cart', label: 'Cart', icon: ShoppingCart, path: '/cart', gradient: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+  {
+    id: 'play',
+    label: 'Play',
+    icon: Gamepad2,
+    path: '/pos',
+    gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  },
+  {
+    id: 'results',
+    label: 'Results',
+    icon: Trophy,
+    path: '/results',
+    gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+  },
+  {
+    id: 'pay',
+    label: 'Pay',
+    icon: Banknote,
+    path: '/payment',
+    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+  },
+  {
+    id: 'account',
+    label: 'Account',
+    icon: Wallet,
+    path: '/account',
+    gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+  },
+  {
+    id: 'cart',
+    label: 'Cart',
+    icon: ShoppingCart,
+    path: '/cart',
+    gradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+  },
 ]
 
 export function BottomNavigation({ activeTab }: BottomNavigationProps) {
@@ -76,7 +117,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
               flexDirection: 'column',
               alignItems: 'center',
               gap: '4px',
-              padding: '10px 18px',
+              padding: '10px 16px',
               background: isActive ? item.gradient : isHovered ? 'rgba(255,255,255,0.1)' : 'transparent',
               border: 'none',
               borderRadius: '16px',

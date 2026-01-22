@@ -1,10 +1,10 @@
 /**
  * ============================================================================
- * PAYMENT OF WINNINGS PAGE
+ * PAY WINNINGS PAGE
  * ============================================================================
  *
- * Purpose: Beautiful ticket validation and payout screen
- * Designed for VLT terminals and player-facing displays
+ * Purpose: Validate lottery tickets and pay out prizes
+ * Clear naming for any cashier: "Pay" = Pay winnings to customers
  *
  * Features:
  * - Modern barcode/ticket number input
@@ -226,7 +226,7 @@ export function PaymentOfWinningsPage() {
             fontWeight: 700,
             textShadow: '0 2px 4px rgba(0,0,0,0.1)',
           }}>
-            Payment of Winnings
+            Pay Winnings
           </h1>
         </div>
 
@@ -629,7 +629,7 @@ export function PaymentOfWinningsPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="games" />
+      <BottomNavigation activeTab="pay" />
 
       {/* Global styles for animations */}
       <style>{`

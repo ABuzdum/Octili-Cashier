@@ -426,7 +426,7 @@ export function POSPage() {
       </div>
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="games" />
+      <BottomNavigation activeTab="play" />
 
       {/* Global styles for animations */}
       <style>{`
