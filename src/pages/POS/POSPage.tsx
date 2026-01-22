@@ -218,7 +218,7 @@ export function POSPage() {
 
   return (
     <SwipePageWrapper
-      currentPage="draw"
+      currentPage="games"
       background={isDarkMode
         ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
         : visualStyle === 'neumorphic'

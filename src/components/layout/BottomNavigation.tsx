@@ -55,8 +55,8 @@ const leftNavItems: NavItem[] = [
 ]
 
 /**
- * Right navigation items: QR Tickets & Payout
- * Icons: QrCode for QR tickets hub, Banknote for paying out
+ * Right navigation items: QR Tickets & Unified Payout
+ * Icons: QrCode for QR tickets, Banknote for unified payout (QR + Draw)
  */
 const rightNavItems: NavItem[] = [
   {
@@ -68,10 +68,10 @@ const rightNavItems: NavItem[] = [
     activeColor: '#00A77E',
   },
   {
-    id: 'qrticket-payout',
+    id: 'payout',
     label: 'Payout',
     icon: Banknote,
-    path: '/physical-ticket/payout',
+    path: '/payout',
     color: '#f59e0b',
     activeColor: '#d97706',
   },

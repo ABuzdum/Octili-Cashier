@@ -14,7 +14,7 @@
  *
  * Usage:
  * ```tsx
- * <SwipePageWrapper currentPage="draw">
+ * <SwipePageWrapper currentPage="games">
  *   <YourPageContent />
  * </SwipePageWrapper>
  * ```
@@ -29,22 +29,23 @@ import type { NavTab } from '@/components/layout/BottomNavigation'
 
 /**
  * Page sequence for swipe navigation
+ * games -> results -> qrticket-sell -> payout (unified)
  */
 const PAGE_SEQUENCE: NavTab[] = [
-  'draw',
+  'games',
   'results',
   'qrticket-sell',
-  'qrticket-payout',
+  'payout',
 ]
 
 /**
  * Route mapping for each page
  */
 const PAGE_ROUTES: Record<string, string> = {
-  'draw': '/pos',
+  'games': '/games',
   'results': '/results',
   'qrticket-sell': '/physical-ticket/new',
-  'qrticket-payout': '/physical-ticket/payout',
+  'payout': '/payout',
 }
 
 interface SwipePageWrapperProps {

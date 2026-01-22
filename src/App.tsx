@@ -41,6 +41,9 @@ const CartPage = lazy(() => import('@/pages/Cart/CartPage').then(m => ({ default
 const NewTicketPage = lazy(() => import('@/pages/PhysicalTicket/NewTicketPage').then(m => ({ default: m.NewTicketPage })))
 const PayoutTicketPage = lazy(() => import('@/pages/PhysicalTicket/PayoutTicketPage').then(m => ({ default: m.PayoutTicketPage })))
 
+// Unified Payout page - Handles both QR tickets and Draw tickets
+const PayoutPage = lazy(() => import('@/pages/Payout').then(m => ({ default: m.PayoutPage })))
+
 // QR Ticket hub page - Access physical tickets, QR tickets, and account
 const QRTicketPage = lazy(() => import('@/pages/QRTicket/QRTicketPage').then(m => ({ default: m.QRTicketPage })))
 
@@ -171,14 +174,19 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Unified Payout page - handles both QR and Draw tickets */}
           <Route
-            path="/payment"
+            path="/payout"
             element={
               <ProtectedRoute>
-                <PaymentOfWinningsPage />
+                <PayoutPage />
               </ProtectedRoute>
             }
           />
+
+          {/* Legacy route - redirect to unified payout */}
+          <Route path="/payment" element={<Navigate to="/payout" replace />} />
           <Route
             path="/results"
             element={
@@ -241,14 +249,9 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/physical-ticket/payout"
-            element={
-              <ProtectedRoute>
-                <PayoutTicketPage />
-              </ProtectedRoute>
-            }
-          />
+
+          {/* Legacy route - redirect to unified payout */}
+          <Route path="/physical-ticket/payout" element={<Navigate to="/payout" replace />} />
 
           {/* Second Display - Player-facing screen (no auth required) */}
           <Route path="/second-display" element={<SecondDisplayPage />} />
