@@ -134,7 +134,7 @@ function CartTicketItem({
               gap: '6px',
               marginBottom: '6px',
             }}>
-              {ticket.bet.selectedMarkets.slice(0, 5).map((market, idx) => (
+              {ticket.bet.selections.slice(0, 5).map((market, idx) => (
                 <span
                   key={idx}
                   style={{
@@ -149,7 +149,7 @@ function CartTicketItem({
                   {market}
                 </span>
               ))}
-              {ticket.bet.selectedMarkets.length > 5 && (
+              {ticket.bet.selections.length > 5 && (
                 <span style={{
                   padding: '4px 8px',
                   background: '#f1f5f9',
@@ -158,7 +158,7 @@ function CartTicketItem({
                   fontWeight: 600,
                   color: '#64748b',
                 }}>
-                  +{ticket.bet.selectedMarkets.length - 5}
+                  +{ticket.bet.selections.length - 5}
                 </span>
               )}
             </div>
@@ -184,7 +184,7 @@ function CartTicketItem({
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              {ticket.totalCost.toFixed(2)} BRL
+              {ticket.bet.totalCost.toFixed(2)} BRL
             </span>
             <button
               onClick={(e) => {
@@ -446,8 +446,8 @@ export function CartPage() {
               <CartTicketItem
                 key={ticket.id}
                 ticket={ticket}
-                game={getGame(ticket.gameId)}
-                gameIndex={getGameIndex(ticket.gameId)}
+                game={getGame(ticket.bet.gameId)}
+                gameIndex={getGameIndex(ticket.bet.gameId)}
                 onRemove={() => removeFromCart(ticket.id)}
                 isHovered={hoveredTicket === ticket.id}
                 onHover={(hovered) => setHoveredTicket(hovered ? ticket.id : null)}
@@ -694,7 +694,7 @@ export function CartPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="tickets" />
+      <BottomNavigation activeTab="cart" />
     </div>
   )
 }
