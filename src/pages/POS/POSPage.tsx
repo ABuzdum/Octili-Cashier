@@ -20,6 +20,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Banknote, Clock, Sparkles, Menu, Ticket, CreditCard } from 'lucide-react'
 import { useLotteryGames, useGameStore } from '@/stores/gameStore'
+import { useThemeStore, COLOR_THEMES, VISUAL_STYLES } from '@/stores/themeStore'
 import { BottomNavigation } from '@/components/layout/BottomNavigation'
 import type { LotteryGame } from '@/types/game.types'
 
@@ -505,6 +506,11 @@ export function POSPage() {
   const navigate = useNavigate()
   const games = useLotteryGames()
   const { balance } = useGameStore()
+  const { colorTheme, visualStyle, isDarkMode } = useThemeStore()
+
+  // Get current theme colors
+  const theme = COLOR_THEMES[colorTheme]
+  const style = VISUAL_STYLES[visualStyle]
 
   const handleGameClick = (game: LotteryGame) => {
     navigate(`/game/${game.id}`)
@@ -522,95 +528,298 @@ export function POSPage() {
     navigate('/physical-ticket/payout')
   }
 
+  // Generate header styles based on visual style
+  const getHeaderStyle = (): React.CSSProperties => {
+    const baseStyle: React.CSSProperties = {
+      padding: '16px 20px',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      position: 'relative',
+      overflow: 'hidden',
+    }
+
+    switch (visualStyle) {
+      case 'glass':
+        return {
+          ...baseStyle,
+          background: `linear-gradient(135deg, ${theme.colors[600]}ee 0%, ${theme.colors[700]}dd 100%)`,
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          borderBottom: '1px solid rgba(255,255,255,0.2)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
+        }
+      case 'neumorphic':
+        return {
+          ...baseStyle,
+          background: isDarkMode ? '#1a2332' : '#e8eef5',
+          boxShadow: isDarkMode
+            ? 'inset 0 2px 4px rgba(255,255,255,0.05), 0 8px 24px rgba(0,0,0,0.3)'
+            : 'inset 0 2px 4px rgba(255,255,255,0.8), 0 8px 24px rgba(0,0,0,0.08)',
+        }
+      case 'bold':
+        return {
+          ...baseStyle,
+          background: theme.gradient,
+          borderBottom: `3px solid ${theme.colors[800]}`,
+          boxShadow: `0 6px 0 ${theme.colors[700]}`,
+        }
+      case 'minimal':
+        return {
+          ...baseStyle,
+          background: isDarkMode ? '#0f172a' : '#ffffff',
+          borderBottom: isDarkMode ? '1px solid #1e293b' : '1px solid #f1f5f9',
+        }
+      default: // bento
+        return {
+          ...baseStyle,
+          background: theme.gradient,
+          boxShadow: `0 4px 24px ${theme.primary}40`,
+        }
+    }
+  }
+
+  // Generate logo style based on visual style
+  const getLogoStyle = (): React.CSSProperties => {
+    const baseStyle: React.CSSProperties = {
+      width: '48px',
+      height: '48px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }
+
+    switch (visualStyle) {
+      case 'glass':
+        return {
+          ...baseStyle,
+          background: 'rgba(255,255,255,0.15)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255,255,255,0.3)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        }
+      case 'neumorphic':
+        return {
+          ...baseStyle,
+          background: theme.gradient,
+          borderRadius: '16px',
+          boxShadow: isDarkMode
+            ? '4px 4px 12px #0d1117, -4px -4px 12px #273549'
+            : '4px 4px 12px #c8d0dc, -4px -4px 12px #ffffff',
+        }
+      case 'bold':
+        return {
+          ...baseStyle,
+          background: 'white',
+          borderRadius: '12px',
+          border: `3px solid ${theme.colors[800]}`,
+          boxShadow: `3px 3px 0 ${theme.colors[800]}`,
+        }
+      case 'minimal':
+        return {
+          ...baseStyle,
+          background: theme.gradient,
+          borderRadius: '14px',
+        }
+      default: // bento
+        return {
+          ...baseStyle,
+          background: 'rgba(255,255,255,0.2)',
+          borderRadius: '14px',
+          border: '2px solid rgba(255,255,255,0.25)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.1)',
+        }
+    }
+  }
+
+  // Get text colors based on visual style
+  const getHeaderTextColor = () => {
+    if (visualStyle === 'neumorphic' && !isDarkMode) return theme.colors[800]
+    if (visualStyle === 'minimal') return isDarkMode ? '#f8fafc' : theme.colors[700]
+    return 'white'
+  }
+
+  const getSubtextColor = () => {
+    if (visualStyle === 'neumorphic' && !isDarkMode) return theme.colors[600]
+    if (visualStyle === 'minimal') return isDarkMode ? '#94a3b8' : theme.colors[500]
+    return 'rgba(255,255,255,0.8)'
+  }
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
+      background: isDarkMode
+        ? 'linear-gradient(180deg, #0f172a 0%, #1e293b 100%)'
+        : visualStyle === 'neumorphic'
+        ? 'linear-gradient(180deg, #e8eef5 0%, #dfe6ef 100%)'
+        : 'linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)',
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-        color: 'white',
-        padding: '16px 20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
-          }}>
-            <span style={{ fontSize: '20px' }}>🎰</span>
+      {/* Header - Modern 2026 Design with Theme Support */}
+      <div style={getHeaderStyle()}>
+        {/* Decorative gradient orbs for glass/bento styles */}
+        {(visualStyle === 'glass' || visualStyle === 'bento') && (
+          <>
+            <div style={{
+              position: 'absolute',
+              width: '120px',
+              height: '120px',
+              background: `radial-gradient(circle, ${theme.colors[400]}30 0%, transparent 70%)`,
+              borderRadius: '50%',
+              top: '-40px',
+              right: '60px',
+              pointerEvents: 'none',
+            }} />
+            <div style={{
+              position: 'absolute',
+              width: '80px',
+              height: '80px',
+              background: `radial-gradient(circle, ${theme.colors[300]}20 0%, transparent 70%)`,
+              borderRadius: '50%',
+              bottom: '-30px',
+              left: '100px',
+              pointerEvents: 'none',
+            }} />
+          </>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px', zIndex: 1 }}>
+          {/* Octili "O" Logo - Themed */}
+          <div style={getLogoStyle()}>
+            <span style={{
+              fontSize: '26px',
+              fontWeight: 900,
+              fontFamily: 'system-ui, -apple-system, sans-serif',
+              color: visualStyle === 'bold' ? theme.colors[600] : (visualStyle === 'neumorphic' && !isDarkMode ? 'white' : 'white'),
+              textShadow: visualStyle === 'glass' ? '0 2px 8px rgba(0,0,0,0.2)' : 'none',
+              letterSpacing: '-2px',
+            }}>O</span>
           </div>
           <div>
             <h1 style={{
-              fontSize: '18px',
-              fontWeight: 700,
+              fontSize: '22px',
+              fontWeight: 800,
               letterSpacing: '-0.5px',
+              color: getHeaderTextColor(),
+              textShadow: (visualStyle === 'glass' || visualStyle === 'bento') ? '0 2px 8px rgba(0,0,0,0.15)' : 'none',
             }}>
-              Octili Cashier
+              Octili
             </h1>
             <p style={{
-              fontSize: '12px',
-              color: 'rgba(255,255,255,0.7)',
-              fontWeight: 500,
+              fontSize: '11px',
+              color: getSubtextColor(),
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              textTransform: 'uppercase',
             }}>
               Lottery Terminal
             </p>
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          {/* Balance */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', zIndex: 1 }}>
+          {/* Balance Card - Themed */}
           <div style={{
-            background: 'rgba(255,255,255,0.1)',
-            backdropFilter: 'blur(10px)',
+            background: visualStyle === 'neumorphic'
+              ? (isDarkMode ? '#1e293b' : '#f0f4f8')
+              : visualStyle === 'minimal'
+              ? (isDarkMode ? '#1e293b' : theme.colors[50])
+              : visualStyle === 'bold'
+              ? 'white'
+              : 'rgba(255,255,255,0.12)',
+            backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
             padding: '10px 16px',
-            borderRadius: '12px',
-            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: visualStyle === 'bold' ? '8px' : '14px',
+            border: visualStyle === 'bold'
+              ? `2px solid ${theme.colors[700]}`
+              : visualStyle === 'neumorphic'
+              ? 'none'
+              : visualStyle === 'minimal'
+              ? (isDarkMode ? '1px solid #334155' : `1px solid ${theme.colors[200]}`)
+              : '1px solid rgba(255,255,255,0.15)',
+            boxShadow: visualStyle === 'neumorphic'
+              ? (isDarkMode ? '4px 4px 8px #0d1117, -4px -4px 8px #273549' : '4px 4px 8px #c8d0dc, -4px -4px 8px #ffffff')
+              : visualStyle === 'bold'
+              ? `2px 2px 0 ${theme.colors[700]}`
+              : visualStyle === 'glass'
+              ? '0 4px 16px rgba(0,0,0,0.1)'
+              : 'none',
           }}>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', marginBottom: '2px' }}>
+            <p style={{
+              fontSize: '10px',
+              color: visualStyle === 'bold' || (visualStyle === 'neumorphic' && !isDarkMode) || visualStyle === 'minimal'
+                ? theme.colors[500]
+                : 'rgba(255,255,255,0.75)',
+              marginBottom: '2px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px',
+            }}>
               Balance
             </p>
             <p style={{
               fontSize: '16px',
-              fontWeight: 700,
-              color: '#10b981',
+              fontWeight: 800,
+              color: visualStyle === 'bold' || (visualStyle === 'neumorphic' && !isDarkMode)
+                ? theme.colors[700]
+                : visualStyle === 'minimal'
+                ? (isDarkMode ? '#f8fafc' : theme.colors[700])
+                : 'white',
               fontFamily: 'ui-monospace, monospace',
             }}>
-              {balance.toFixed(2)} <span style={{ fontSize: '12px', opacity: 0.8 }}>BRL</span>
+              {balance.toFixed(2)} <span style={{ fontSize: '11px', opacity: 0.8 }}>BRL</span>
             </p>
           </div>
 
-          {/* Menu Button - Operator Functions */}
+          {/* Menu Button - Themed */}
           <button
             onClick={() => navigate('/menu')}
             style={{
-              width: '44px',
-              height: '44px',
-              background: 'rgba(255,255,255,0.1)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              borderRadius: '12px',
+              width: '46px',
+              height: '46px',
+              background: visualStyle === 'neumorphic'
+                ? (isDarkMode ? '#1e293b' : '#f0f4f8')
+                : visualStyle === 'minimal'
+                ? (isDarkMode ? '#1e293b' : theme.colors[50])
+                : visualStyle === 'bold'
+                ? 'white'
+                : 'rgba(255,255,255,0.12)',
+              backdropFilter: visualStyle === 'glass' ? 'blur(12px)' : undefined,
+              border: visualStyle === 'bold'
+                ? `2px solid ${theme.colors[700]}`
+                : visualStyle === 'minimal'
+                ? (isDarkMode ? '1px solid #334155' : `1px solid ${theme.colors[200]}`)
+                : visualStyle === 'neumorphic'
+                ? 'none'
+                : '1px solid rgba(255,255,255,0.15)',
+              borderRadius: visualStyle === 'bold' ? '8px' : '14px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
+              boxShadow: visualStyle === 'neumorphic'
+                ? (isDarkMode ? '4px 4px 8px #0d1117, -4px -4px 8px #273549' : '4px 4px 8px #c8d0dc, -4px -4px 8px #ffffff')
+                : visualStyle === 'bold'
+                ? `2px 2px 0 ${theme.colors[700]}`
+                : visualStyle === 'glass'
+                ? '0 4px 16px rgba(0,0,0,0.1)'
+                : 'none',
             }}
             title="Operator Menu"
           >
-            <Menu size={22} color="white" />
+            <Menu
+              size={22}
+              color={
+                visualStyle === 'bold' || (visualStyle === 'neumorphic' && !isDarkMode)
+                  ? theme.colors[600]
+                  : visualStyle === 'minimal'
+                  ? (isDarkMode ? '#f8fafc' : theme.colors[600])
+                  : 'white'
+              }
+            />
           </button>
         </div>
       </div>
