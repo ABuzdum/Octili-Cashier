@@ -57,7 +57,7 @@ export function SettingsPage() {
       {/* AppHeader with balance and menu */}
       <AppHeader
         showBack
-        backPath="/pos"
+        backPath="/games"
         title="Settings"
         subtitle="App configuration"
       />

@@ -169,7 +169,7 @@ export function LoginPage() {
     setError(null)
     if (!username || !password) { setError('Please enter username and password'); return }
     const success = await login(username, password)
-    if (success) navigate('/pos')
+    if (success) navigate('/games')
     else setError('Invalid username or password')
   }
 

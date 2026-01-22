@@ -66,12 +66,12 @@ export function CheckoutPage() {
 
   const handleComplete = () => {
     clearCart()
-    navigate('/pos')
+    navigate('/games')
   }
 
   const handleBack = () => {
     if (step === 'method') {
-      navigate('/pos')
+      navigate('/games')
     } else if (step === 'cash' || step === 'card') {
       setStep('method')
       setPaymentMethod(null)
@@ -80,7 +80,7 @@ export function CheckoutPage() {
 
   // Redirect if no items
   if (items.length === 0 && step !== 'complete') {
-    navigate('/pos')
+    navigate('/games')
     return null
   }
 

@@ -98,7 +98,7 @@ export function PaymentOfWinningsPage() {
     setShowModal(false)
     setBarcode('')
     setValidationStatus('idle')
-    navigate('/pos')
+    navigate('/games')
   }
 
   // Close modal and reset
@@ -192,7 +192,7 @@ export function PaymentOfWinningsPage() {
         }} />
 
         <button
-          onClick={() => navigate('/pos')}
+          onClick={() => navigate('/games')}
           style={{
             background: 'rgba(255,255,255,0.2)',
             backdropFilter: 'blur(10px)',
@@ -629,7 +629,7 @@ export function PaymentOfWinningsPage() {
       )}
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab="draw" />
+      <BottomNavigation activeTab="games" />
 
       {/* Global styles for animations */}
       <style>{`

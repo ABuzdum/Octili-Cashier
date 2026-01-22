@@ -36,7 +36,7 @@ export function TransactionsPage() {
       {/* AppHeader with balance and menu */}
       <AppHeader
         showBack
-        backPath="/pos"
+        backPath="/games"
         title="Transactions"
         subtitle="Transaction history"
       />

@@ -775,7 +775,7 @@ export function PayoutTicketPage() {
       {/* AppHeader - Consistent header with balance and menu */}
       <AppHeader
         showBack
-        backPath="/pos"
+        backPath="/games"
         title="QR Ticket - Payout"
         subtitle="Scan or enter ticket code"
       />

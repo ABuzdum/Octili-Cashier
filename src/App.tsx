@@ -81,7 +81,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
 
   if (isAuthenticated) {
-    return <Navigate to="/pos" replace />
+    return <Navigate to="/games" replace />
   }
 
   return <>{children}</>
@@ -122,7 +122,7 @@ function App() {
 
           {/* Protected routes */}
           <Route
-            path="/pos"
+            path="/games"
             element={
               <ProtectedRoute>
                 <POSPage />

@@ -409,7 +409,7 @@ export function MenuPage() {
         }} />
 
         <button
-          onClick={() => navigate('/pos')}
+          onClick={() => navigate('/games')}
           style={{
             background: 'rgba(255,255,255,0.1)',
             border: 'none',
@@ -3059,7 +3059,7 @@ export function MenuPage() {
       )}
 
       {/* Bottom Navigation - Always visible */}
-      <BottomNavigation activeTab="draw" />
+      <BottomNavigation activeTab="games" />
     </div>
   )
 }

@@ -17,7 +17,7 @@ import { useNavigate } from 'react-router-dom'
 import { Ticket, Trophy, ShoppingCart, CreditCard, Settings, Tv, User, Receipt, DollarSign, Monitor, CirclePlus, Banknote } from 'lucide-react'
 import { useGameStore } from '@/stores/gameStore'
 
-export type NavTab = 'draw' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay'
+export type NavTab = 'games' | 'results' | 'qrticket-sell' | 'qrticket-payout' | 'cart' | 'checkout' | 'transactions' | 'settings' | 'tvbox' | 'account' | 'newticket' | 'payout' | 'seconddisplay'
 
 interface BottomNavigationProps {
   activeTab: NavTab
@@ -33,14 +33,14 @@ interface NavItem {
 }
 
 /**
- * Left navigation items: Draw & Results
+ * Left navigation items: Games & Results
  */
 const leftNavItems: NavItem[] = [
   {
-    id: 'draw',
-    label: 'Draw',
+    id: 'games',
+    label: 'Games',
     icon: Ticket,
-    path: '/pos',
+    path: '/games',
     color: '#8b5cf6',
     activeColor: '#7c3aed',
   },
@@ -276,7 +276,7 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
         scrollbarWidth: 'none',
         msOverflowStyle: 'none',
       }}>
-      {/* Draws Tickets Section - Label above buttons */}
+      {/* Draw Games Section - Label above buttons */}
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -293,14 +293,14 @@ export function BottomNavigation({ activeTab }: BottomNavigationProps) {
           letterSpacing: '0.5px',
           whiteSpace: 'nowrap',
         }}>
-          Draws Tickets
+          Draw Games
         </span>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
         }}>
-          {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'draw' }))}
+          {leftNavItems.map((item) => renderNavButton(item, { large: item.id === 'games' }))}
         </div>
       </div>
 

@@ -163,7 +163,7 @@ export function QRPage() {
           }} />
 
           <button
-            onClick={() => navigate('/pos')}
+            onClick={() => navigate('/games')}
             style={{
               background: 'rgba(255,255,255,0.2)',
               backdropFilter: 'blur(10px)',

@@ -145,7 +145,7 @@ export function AccountPage() {
         {/* AppHeader with balance and menu */}
         <AppHeader
           showBack
-          backPath="/pos"
+          backPath="/games"
           title="Player Account"
           subtitle="Deposit & Withdraw"
         />

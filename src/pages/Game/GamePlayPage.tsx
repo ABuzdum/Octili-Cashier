@@ -148,7 +148,7 @@ export function GamePlayPage() {
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>🎰</div>
           <p style={{ fontSize: '18px', color: '#64748b', marginBottom: '24px' }}>Game not found</p>
           <button
-            onClick={() => navigate('/pos')}
+            onClick={() => navigate('/games')}
             style={{
               padding: '16px 32px',
               minHeight: '52px',
@@ -234,7 +234,7 @@ export function GamePlayPage() {
     setShowAnotherTicketModal(false)
     if (wantAnother) {
       // Go back to games list to select another game
-      navigate('/pos')
+      navigate('/games')
     } else {
       // Go to cart to complete purchase
       navigate('/cart')
@@ -256,7 +256,7 @@ export function GamePlayPage() {
       {/* AppHeader with back button and custom title */}
       <AppHeader
         showBack
-        backPath="/pos"
+        backPath="/games"
         title={game.name}
         subtitle={game.type === 'keno' ? 'Keno' : game.type === 'roulette' ? 'Roulette' : 'Multiplier'}
         leftContent={

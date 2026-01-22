@@ -41,7 +41,7 @@ export function PinPage() {
       const success = await loginWithPin(newPin)
 
       if (success) {
-        navigate('/pos')
+        navigate('/games')
       } else {
         setError('Invalid PIN')
         setPin('')

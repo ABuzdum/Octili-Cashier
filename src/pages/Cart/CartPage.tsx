@@ -264,7 +264,7 @@ export function CartPage() {
     setShowPurchaseSuccess(true)
     setTimeout(() => {
       setShowPurchaseSuccess(false)
-      navigate('/pos')
+      navigate('/games')
     }, 2000)
   }
 
@@ -284,7 +284,7 @@ export function CartPage() {
       {/* AppHeader with balance and menu */}
       <AppHeader
         showBack
-        backPath="/pos"
+        backPath="/games"
         title="My Cart"
         subtitle={`${cartTickets.length} ticket${cartTickets.length !== 1 ? 's' : ''}`}
       />
@@ -383,7 +383,7 @@ export function CartPage() {
               Add lottery tickets to your cart by selecting numbers in any game
             </p>
             <button
-              onClick={() => navigate('/pos')}
+              onClick={() => navigate('/games')}
               style={{
                 padding: '16px 32px',
                 minHeight: '56px',

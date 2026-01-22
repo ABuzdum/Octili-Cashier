@@ -407,7 +407,7 @@ export function NewTicketPage() {
       {/* AppHeader - Consistent header with balance and menu */}
       <AppHeader
         showBack
-        backPath="/pos"
+        backPath="/games"
         title="QR Ticket - Sell"
         subtitle="Issue QR lottery ticket"
       />
