@@ -75,8 +75,14 @@ import {
   type ColorTheme,
   type VisualStyle,
 } from '@/stores/themeStore'
+import {
+  useTerminalStore,
+  OFFLINE_REASONS,
+  type OfflineReason,
+} from '@/stores/terminalStore'
 import { openSecondDisplay } from '@/hooks/useBroadcastSync'
 import { operatorInfo } from '@/data/games-mock-data'
+import { PauseCircle } from 'lucide-react'
 
 // Modal types for different operations
 type ModalType =
@@ -95,6 +101,7 @@ type ModalType =
   | 'history'
   | 'settings'
   | 'theme'
+  | 'not-working'
 
 // Support ticket categories
 const SUPPORT_CATEGORIES = [
@@ -147,8 +154,11 @@ export function MenuPage() {
     setVisualStyle,
     toggleDarkMode,
   } = useThemeStore()
+  const { goOffline } = useTerminalStore()
 
   const [activeModal, setActiveModal] = useState<ModalType>('none')
+  const [selectedOfflineReason, setSelectedOfflineReason] = useState<OfflineReason | null>(null)
+  const [offlineNote, setOfflineNote] = useState('')
   const [amount, setAmount] = useState('')
   const [hoveredItem, setHoveredItem] = useState<string | null>(null)
   const [supportCategory, setSupportCategory] = useState<string | null>(null)
@@ -429,41 +439,85 @@ export function MenuPage() {
         paddingBottom: '100px',
         overflow: 'auto',
       }}>
-        {/* Big Support Button */}
-        <button
-          onClick={() => setActiveModal('support')}
-          style={{
-            width: '100%',
-            padding: '20px',
-            background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-            border: 'none',
-            borderRadius: '20px',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '14px',
-            boxShadow: '0 8px 32px rgba(239, 68, 68, 0.4)',
-            marginBottom: '20px',
-          }}
-        >
-          <Headphones size={32} color="white" />
-          <div style={{ textAlign: 'left' }}>
-            <p style={{
-              color: 'white',
-              fontSize: '20px',
-              fontWeight: 700,
-            }}>
-              Need Help?
-            </p>
-            <p style={{
-              color: 'rgba(255,255,255,0.8)',
-              fontSize: '13px',
-            }}>
-              Create a support ticket
-            </p>
-          </div>
-        </button>
+        {/* Top Action Buttons */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '12px',
+          marginBottom: '20px',
+        }}>
+          {/* Big Support Button */}
+          <button
+            onClick={() => setActiveModal('support')}
+            style={{
+              width: '100%',
+              padding: '20px',
+              background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+              border: 'none',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              boxShadow: '0 8px 32px rgba(239, 68, 68, 0.4)',
+            }}
+          >
+            <Headphones size={32} color="white" />
+            <div style={{ textAlign: 'center' }}>
+              <p style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 700,
+              }}>
+                Need Help?
+              </p>
+              <p style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '11px',
+              }}>
+                Create support ticket
+              </p>
+            </div>
+          </button>
+
+          {/* Not Working Button */}
+          <button
+            onClick={() => setActiveModal('not-working')}
+            style={{
+              width: '100%',
+              padding: '20px',
+              background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+              border: 'none',
+              borderRadius: '20px',
+              cursor: 'pointer',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '10px',
+              boxShadow: '0 8px 32px rgba(245, 158, 11, 0.4)',
+            }}
+          >
+            <PauseCircle size={32} color="white" />
+            <div style={{ textAlign: 'center' }}>
+              <p style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: 700,
+              }}>
+                Not Working
+              </p>
+              <p style={{
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: '11px',
+              }}>
+                Pause terminal
+              </p>
+            </div>
+          </button>
+        </div>
 
         {/* Operator Info Card */}
         <div style={{
@@ -2441,6 +2495,246 @@ export function MenuPage() {
               <Check size={20} />
               Done
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Not Working Modal */}
+      {activeModal === 'not-working' && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.6)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '24px',
+            padding: '24px',
+            width: '100%',
+            maxWidth: '420px',
+            maxHeight: '85vh',
+            overflow: 'auto',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            {/* Header */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '24px',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
+                  borderRadius: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  <PauseCircle size={24} color="white" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                    Pause Terminal
+                  </h3>
+                  <p style={{ fontSize: '12px', color: '#64748b' }}>
+                    Select a reason for pausing
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setActiveModal('none')
+                  setSelectedOfflineReason(null)
+                  setOfflineNote('')
+                }}
+                style={{
+                  background: '#f1f5f9',
+                  border: 'none',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={20} color="#64748b" />
+              </button>
+            </div>
+
+            {/* Reason Selection */}
+            <div style={{ marginBottom: '20px' }}>
+              <p style={{
+                fontSize: '11px',
+                fontWeight: 700,
+                color: '#94a3b8',
+                textTransform: 'uppercase',
+                letterSpacing: '1px',
+                marginBottom: '12px',
+              }}>
+                Select Reason
+              </p>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px',
+              }}>
+                {(Object.keys(OFFLINE_REASONS) as OfflineReason[]).map((reason) => {
+                  const isSelected = selectedOfflineReason === reason
+                  const reasonData = OFFLINE_REASONS[reason]
+                  return (
+                    <button
+                      key={reason}
+                      onClick={() => setSelectedOfflineReason(reason)}
+                      style={{
+                        padding: '16px 12px',
+                        background: isSelected ? reasonData.gradient : '#f8fafc',
+                        border: isSelected ? 'none' : '2px solid #e2e8f0',
+                        borderRadius: '14px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.2s',
+                        transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                        boxShadow: isSelected ? `0 8px 24px ${reasonData.color}40` : 'none',
+                      }}
+                    >
+                      <span style={{ fontSize: '28px' }}>{reasonData.icon}</span>
+                      <span style={{
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: isSelected ? 'white' : '#475569',
+                        textAlign: 'center',
+                      }}>
+                        {reasonData.label}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Custom Note (for 'other' reason or any) */}
+            {selectedOfflineReason && (
+              <div style={{ marginBottom: '20px' }}>
+                <p style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px',
+                  marginBottom: '8px',
+                }}>
+                  Add Note (Optional)
+                </p>
+                <textarea
+                  value={offlineNote}
+                  onChange={(e) => setOfflineNote(e.target.value)}
+                  placeholder="Add details about why you're pausing..."
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    border: '2px solid #e2e8f0',
+                    borderRadius: '12px',
+                    fontSize: '14px',
+                    resize: 'none',
+                    height: '80px',
+                    fontFamily: 'inherit',
+                  }}
+                />
+              </div>
+            )}
+
+            {/* Warning */}
+            <div style={{
+              background: '#fef3c7',
+              borderRadius: '12px',
+              padding: '14px',
+              marginBottom: '20px',
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: '12px',
+            }}>
+              <AlertCircle size={20} color="#f59e0b" style={{ flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <p style={{ fontSize: '13px', fontWeight: 600, color: '#92400e', marginBottom: '4px' }}>
+                  Terminal will be paused
+                </p>
+                <p style={{ fontSize: '12px', color: '#a16207' }}>
+                  All transactions will be blocked until you resume. Your manager will be notified.
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={() => {
+                  setActiveModal('none')
+                  setSelectedOfflineReason(null)
+                  setOfflineNote('')
+                }}
+                style={{
+                  flex: 1,
+                  padding: '16px',
+                  borderRadius: '14px',
+                  border: 'none',
+                  background: '#f1f5f9',
+                  color: '#64748b',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedOfflineReason) {
+                    goOffline(selectedOfflineReason, offlineNote)
+                    setActiveModal('none')
+                    setSelectedOfflineReason(null)
+                    setOfflineNote('')
+                  }
+                }}
+                disabled={!selectedOfflineReason}
+                style={{
+                  flex: 1,
+                  padding: '16px',
+                  borderRadius: '14px',
+                  border: 'none',
+                  background: selectedOfflineReason
+                    ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                    : '#e2e8f0',
+                  color: selectedOfflineReason ? 'white' : '#94a3b8',
+                  fontSize: '16px',
+                  fontWeight: 700,
+                  cursor: selectedOfflineReason ? 'pointer' : 'not-allowed',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  boxShadow: selectedOfflineReason
+                    ? '0 4px 16px rgba(245, 158, 11, 0.4)'
+                    : 'none',
+                }}
+              >
+                <PauseCircle size={20} />
+                Pause Terminal
+              </button>
+            </div>
           </div>
         </div>
       )}

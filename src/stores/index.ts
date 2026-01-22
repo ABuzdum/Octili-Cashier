@@ -32,3 +32,9 @@ export {
   type VisualStyle,
   type ColorMode,
 } from './themeStore'
+export {
+  useTerminalStore,
+  OFFLINE_REASONS,
+  formatOfflineDuration,
+  type OfflineReason,
+} from './terminalStore'

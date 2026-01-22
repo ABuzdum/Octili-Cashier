@@ -18,6 +18,7 @@ import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { useThemeStore, applyThemeToDocument } from '@/stores/themeStore'
+import { TerminalOfflineOverlay } from '@/components/shared/TerminalOfflineOverlay'
 
 // Lazy load all pages for code splitting
 const LoginPage = lazy(() => import('@/pages/Auth/LoginPage').then(m => ({ default: m.LoginPage })))
@@ -93,6 +94,9 @@ function App() {
 
   return (
     <BrowserRouter>
+      {/* Terminal Offline Overlay - blocks all interactions when terminal is paused */}
+      <TerminalOfflineOverlay />
+
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Public routes */}
