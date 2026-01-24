@@ -15,7 +15,29 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Read(//c/Users/abuzd/OneDrive/Git/**)",
-      "Bash(there should be also another question. Do you want another ticket? If you say)"
+      "Bash(there should be also another question. Do you want another ticket? If you say)",
+      "Bash(gh auth status:*)",
+      "Bash(winget install:*)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth status)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" auth login --web --git-protocol https)",
+      "Bash(\"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" repo create Octili-Cashier --public --source=. --remote=origin --push --description \"Octili Lottery POS Terminal - React + TypeScript + Vite\")",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(gradlew.bat assembleDebug:*)",
+      "Bash(cmd /c \"dir /b \"\"C:\\\\Program Files\"\" | findstr /i java\")",
+      "Bash(cmd /c \"echo %JAVA_HOME%\")",
+      "Bash(cmd /c \"set JAVA_HOME\")",
+      "Bash(cmd /c \"dir /s /b \"\"C:\\\\Program Files\\\\*java.exe\"\" 2>nul | head -5\")",
+      "Bash(JAVA_HOME=\"/c/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot\" ./gradlew assembleDebug:*)",
+      "Bash(JAVA_HOME=\"/c/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot\" ./gradlew clean assembleDebug:*)",
+      "Bash(./gradlew:*)",
+      "Bash(where:*)",
+      "Bash(export JAVA_HOME=\"C:/Program Files/Eclipse Adoptium/jdk-17.0.17.10-hotspot\")",
+      "Bash(cmd /c \"rmdir /s /q C:\\\\Users\\\\abuzd\\\\OneDrive\\\\Git\\\\Octili-Cashier\\\\android\\\\capacitor-cordova-android-plugins\\\\build\")",
+      "Bash(adb devices:*)",
+      "Bash(\"C:/Users/abuzd/AppData/Local/Android/Sdk/platform-tools/adb.exe\" devices)",
+      "Bash(\"C:/Users/abuzd/AppData/Local/Android/Sdk/platform-tools/adb.exe\" install \"c:/Users/abuzd/OneDrive/Git/Octili-Cashier/android/app/build/outputs/apk/debug/app-debug.apk\")",
+      "Bash(\"C:/Users/abuzd/AppData/Local/Android/Sdk/platform-tools/adb.exe\" shell am start -n com.octili.cashier/.MainActivity)"
     ]
   }
 }
