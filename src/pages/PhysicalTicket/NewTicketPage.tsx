@@ -85,7 +85,7 @@ function NumPad({
         }}
       >
         <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>
-          Amount (BRL)
+          Amount (USD)
         </p>
         <p
           style={{
@@ -259,7 +259,7 @@ function SuccessModal({
             marginBottom: '24px',
           }}
         >
-          {ticket.depositAmount.toFixed(2)} BRL •{' '}
+          {ticket.depositAmount.toFixed(2)} USD •{' '}
           {ticket.gameScope === 'all' ? 'All Games' : ticket.gameName}
         </p>
 
@@ -503,7 +503,7 @@ export function NewTicketPage() {
               >
                 1
               </span>
-              Select Amount (BRL)
+              Select Amount (USD)
             </h2>
 
             {/* Quick Amount Buttons */}
@@ -595,7 +595,7 @@ export function NewTicketPage() {
                   }}
                 >
                   {selectedAmount.toFixed(2)}{' '}
-                  <span style={{ fontSize: '16px', opacity: 0.8 }}>BRL</span>
+                  <span style={{ fontSize: '16px', opacity: 0.8 }}>USD</span>
                 </p>
               </div>
             )}

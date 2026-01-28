@@ -170,7 +170,7 @@ function CartTicketItem({
               fontSize: '12px',
               color: '#64748b',
             }}>
-              {ticket.bet.numberOfDraws} draw{ticket.bet.numberOfDraws > 1 ? 's' : ''} × {ticket.bet.betAmount} BRL
+              {ticket.bet.numberOfDraws} draw{ticket.bet.numberOfDraws > 1 ? 's' : ''} × {ticket.bet.betAmount} USD
             </p>
           </div>
 
@@ -188,7 +188,7 @@ function CartTicketItem({
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}>
-              {ticket.bet.totalCost.toFixed(2)} BRL
+              {ticket.bet.totalCost.toFixed(2)} USD
             </span>
             <button
               onClick={(e) => {
@@ -474,7 +474,7 @@ export function CartPage() {
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                 }}>
-                  {cartTotal.toFixed(2)} BRL
+                  {cartTotal.toFixed(2)} USD
                 </span>
               </div>
             </div>
@@ -737,7 +737,7 @@ export function CartPage() {
                 }}
               >
                 {cartTotal.toFixed(2)}{' '}
-                <span style={{ fontSize: '16px', fontWeight: 500, opacity: 0.7 }}>BRL</span>
+                <span style={{ fontSize: '16px', fontWeight: 500, opacity: 0.7 }}>USD</span>
               </p>
               <p
                 style={{
@@ -843,7 +843,7 @@ export function CartPage() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
-                {purchasedAmount.toFixed(2)} BRL
+                {purchasedAmount.toFixed(2)} USD
               </span>
               {' '}added to {PAYMENT_METHOD_CONFIG[selectedPaymentMethod].label}
             </p>

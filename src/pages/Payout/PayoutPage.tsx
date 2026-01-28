@@ -98,7 +98,7 @@ function QRTicketModal({
             <div style={{ background: 'white', borderRadius: '12px', padding: '16px', display: 'inline-block' }}>
               <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Full Refund</p>
               <p style={{ fontSize: '32px', fontWeight: 800, color: '#3b82f6', fontFamily: 'ui-monospace, monospace' }}>
-                {ticket.depositAmount.toFixed(2)} BRL
+                {ticket.depositAmount.toFixed(2)} USD
               </p>
             </div>
           </div>
@@ -152,7 +152,7 @@ function QRTicketModal({
                     <p style={{ fontSize: '12px', color: '#64748b' }}>Pay everything</p>
                   </div>
                   <span style={{ fontSize: '18px', fontWeight: 700, color: '#24BD68' }}>
-                    {(ticket.totalWinnings + ticket.remainingBalance).toFixed(2)} BRL
+                    {(ticket.totalWinnings + ticket.remainingBalance).toFixed(2)} USD
                   </span>
                 </button>
                 <button
@@ -174,7 +174,7 @@ function QRTicketModal({
                     <p style={{ fontSize: '12px', color: '#64748b' }}>Balance stays on ticket</p>
                   </div>
                   <span style={{ fontSize: '18px', fontWeight: 700, color: '#24BD68' }}>
-                    {ticket.totalWinnings.toFixed(2)} BRL
+                    {ticket.totalWinnings.toFixed(2)} USD
                   </span>
                 </button>
               </div>
@@ -191,7 +191,7 @@ function QRTicketModal({
             <div style={{ background: 'white', borderRadius: '12px', padding: '20px', display: 'inline-block' }}>
               <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '4px' }}>Total Winnings</p>
               <p style={{ fontSize: '40px', fontWeight: 800, color: '#24BD68', fontFamily: 'ui-monospace, monospace' }}>
-                {ticket.totalWinnings.toFixed(2)} BRL
+                {ticket.totalWinnings.toFixed(2)} USD
               </p>
             </div>
           </div>
@@ -220,7 +220,7 @@ function QRTicketModal({
             <div style={{ background: 'white', borderRadius: '12px', padding: '16px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ fontSize: '13px', color: '#64748b' }}>Paid Amount</span>
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>{ticket.paidOutAmount?.toFixed(2)} BRL</span>
+                <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>{ticket.paidOutAmount?.toFixed(2)} USD</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '13px', color: '#64748b' }}>Paid On</span>
@@ -277,7 +277,7 @@ function QRTicketModal({
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={{ fontSize: '12px', color: '#64748b' }}>Deposit</span>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>{ticket.depositAmount.toFixed(2)} BRL</span>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>{ticket.depositAmount.toFixed(2)} USD</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '12px', color: '#64748b' }}>Game Access</span>
@@ -298,7 +298,7 @@ function QRTicketModal({
               style={{ flex: 1, height: '52px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)', fontSize: '15px', fontWeight: 600, cursor: 'pointer', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(36, 189, 104, 0.3)' }}
             >
               <CreditCard size={20} />
-              Pay {calculation.totalPayout.toFixed(2)} BRL
+              Pay {calculation.totalPayout.toFixed(2)} USD
             </button>
           )}
         </div>
@@ -345,7 +345,7 @@ function DrawTicketModal({
             <p style={{ textAlign: 'center', fontSize: '14px', color: '#64748b', marginBottom: '16px' }}>{result.gameName}</p>
             <div style={{ background: 'linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
               <p style={{ textAlign: 'center', fontSize: '14px', color: '#00A77E', fontWeight: 500, marginBottom: '4px' }}>Prize Amount</p>
-              <p style={{ textAlign: 'center', fontSize: '32px', fontWeight: 700, color: '#047857' }}>{result.winAmount.toFixed(2)} BRL</p>
+              <p style={{ textAlign: 'center', fontSize: '32px', fontWeight: 700, color: '#047857' }}>{result.winAmount.toFixed(2)} USD</p>
             </div>
             <div style={{ display: 'flex', gap: '12px' }}>
               <button onClick={onPayout} style={{ flex: 1, padding: '16px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)', color: 'white', fontWeight: 700, fontSize: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 4px 16px rgba(16, 185, 129, 0.4)' }}>
@@ -418,7 +418,7 @@ function PayoutSuccessModal({
 
         <div style={{ background: '#ecfdf5', borderRadius: '16px', padding: '20px', marginBottom: '24px' }}>
           <p style={{ fontSize: '12px', color: '#24BD68', marginBottom: '4px' }}>Amount Paid</p>
-          <p style={{ fontSize: '36px', fontWeight: 800, color: '#059669', fontFamily: 'ui-monospace, monospace' }}>{amount.toFixed(2)} BRL</p>
+          <p style={{ fontSize: '36px', fontWeight: 800, color: '#059669', fontFamily: 'ui-monospace, monospace' }}>{amount.toFixed(2)} USD</p>
         </div>
 
         <button onClick={onClose} style={{ width: '100%', height: '52px', borderRadius: '14px', border: 'none', background: 'linear-gradient(135deg, #24BD68 0%, #00A77E 100%)', fontSize: '16px', fontWeight: 600, cursor: 'pointer', color: 'white', boxShadow: '0 4px 12px rgba(36, 189, 104, 0.3)' }}>

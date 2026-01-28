@@ -225,7 +225,7 @@ export function BalanceOverview({
         >
           {totalBalance.toFixed(2)}{' '}
           <span style={{ fontSize: '18px', fontWeight: 500, opacity: 0.7 }}>
-            BRL
+            USD
           </span>
         </p>
       </div>
@@ -294,7 +294,7 @@ export function BalanceOverview({
                       fontFamily: 'ui-monospace, monospace',
                     }}
                   >
-                    {balance.toFixed(2)} BRL
+                    {balance.toFixed(2)} USD
                   </span>
                 </div>
 
@@ -560,7 +560,7 @@ export function BalanceOverviewCompact({
             fontFamily: 'ui-monospace, monospace',
           }}
         >
-          {totalBalance.toFixed(2)} BRL
+          {totalBalance.toFixed(2)} USD
         </p>
       </div>
     </button>

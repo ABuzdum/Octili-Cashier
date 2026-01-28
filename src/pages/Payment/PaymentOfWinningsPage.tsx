@@ -475,7 +475,7 @@ export function PaymentOfWinningsPage() {
                     fontWeight: 700,
                     color: '#047857',
                   }}>
-                    {winAmount.toFixed(2)} BRL
+                    {winAmount.toFixed(2)} USD
                   </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>

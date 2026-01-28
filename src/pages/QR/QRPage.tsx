@@ -578,7 +578,7 @@ export function QRPage() {
                   letterSpacing: '0.5px',
                   marginBottom: '8px',
                 }}>
-                  Amount (BRL)
+                  Amount (USD)
                 </p>
                 <div style={{
                   display: 'flex',
@@ -710,7 +710,7 @@ export function QRPage() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
-                {amount} BRL
+                {amount} USD
               </span>
               {' '}{isReplenishment ? 'added to' : 'paid from'} account
             </p>

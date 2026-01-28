@@ -97,7 +97,7 @@ function TicketStatusModal({
                   fontFamily: 'ui-monospace, monospace',
                 }}
               >
-                {ticket.depositAmount.toFixed(2)} BRL
+                {ticket.depositAmount.toFixed(2)} USD
               </p>
             </div>
           </div>
@@ -206,7 +206,7 @@ function TicketStatusModal({
                     </p>
                   </div>
                   <span style={{ fontSize: '18px', fontWeight: 700, color: '#24BD68' }}>
-                    {(ticket.totalWinnings + ticket.remainingBalance).toFixed(2)} BRL
+                    {(ticket.totalWinnings + ticket.remainingBalance).toFixed(2)} USD
                   </span>
                 </button>
                 <button
@@ -232,7 +232,7 @@ function TicketStatusModal({
                     </p>
                   </div>
                   <span style={{ fontSize: '18px', fontWeight: 700, color: '#24BD68' }}>
-                    {ticket.totalWinnings.toFixed(2)} BRL
+                    {ticket.totalWinnings.toFixed(2)} USD
                   </span>
                 </button>
               </div>
@@ -277,7 +277,7 @@ function TicketStatusModal({
                   fontFamily: 'ui-monospace, monospace',
                 }}
               >
-                {ticket.totalWinnings.toFixed(2)} BRL
+                {ticket.totalWinnings.toFixed(2)} USD
               </p>
             </div>
           </div>
@@ -358,7 +358,7 @@ function TicketStatusModal({
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                 <span style={{ fontSize: '13px', color: '#64748b' }}>Paid Amount</span>
                 <span style={{ fontSize: '14px', fontWeight: 600, color: '#1e293b' }}>
-                  {ticket.paidOutAmount?.toFixed(2)} BRL
+                  {ticket.paidOutAmount?.toFixed(2)} USD
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -527,7 +527,7 @@ function TicketStatusModal({
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={{ fontSize: '12px', color: '#64748b' }}>Deposit</span>
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>
-              {ticket.depositAmount.toFixed(2)} BRL
+              {ticket.depositAmount.toFixed(2)} USD
             </span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -580,7 +580,7 @@ function TicketStatusModal({
               }}
             >
               <CreditCard size={20} />
-              Pay {calculation.totalPayout.toFixed(2)} BRL
+              Pay {calculation.totalPayout.toFixed(2)} USD
             </button>
           )}
         </div>
@@ -667,7 +667,7 @@ function PayoutSuccessModal({
               fontFamily: 'ui-monospace, monospace',
             }}
           >
-            {amount.toFixed(2)} BRL
+            {amount.toFixed(2)} USD
           </p>
         </div>
 

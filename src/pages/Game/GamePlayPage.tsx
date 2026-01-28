@@ -1080,7 +1080,7 @@ export function GamePlayPage() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
-                {totalCost.toFixed(2)} BRL
+                {totalCost.toFixed(2)} USD
               </span>
             </div>
           </div>
@@ -1247,15 +1247,15 @@ export function GamePlayPage() {
               }}>
                 <span style={{ color: '#64748b', fontSize: '14px' }}>
                   {drawMode === 'specific'
-                    ? `Draw #${selectedSpecificDraw} × ${betAmount} BRL`
-                    : `${numberOfDraws} draw${numberOfDraws > 1 ? 's' : ''} × ${betAmount} BRL`}
+                    ? `Draw #${selectedSpecificDraw} × ${betAmount} USD`
+                    : `${numberOfDraws} draw${numberOfDraws > 1 ? 's' : ''} × ${betAmount} USD`}
                 </span>
                 <span style={{
                   fontSize: '20px',
                   fontWeight: 700,
                   color: '#24BD68',
                 }}>
-                  {totalCost.toFixed(2)} BRL
+                  {totalCost.toFixed(2)} USD
                 </span>
               </div>
             </div>

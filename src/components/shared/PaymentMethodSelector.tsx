@@ -183,7 +183,7 @@ export function PaymentMethodSelector({
                     fontFamily: 'ui-monospace, monospace',
                   }}
                 >
-                  {pocketBalances[method].toFixed(2)} BRL
+                  {pocketBalances[method].toFixed(2)} USD
                 </span>
               )}
             </button>
@@ -237,7 +237,7 @@ export function PaymentMethodSelector({
                 fontFamily: 'ui-monospace, monospace',
               }}
             >
-              {(pocketBalances.cash + pocketBalances.card + pocketBalances.pix + pocketBalances.other).toFixed(2)} BRL
+              {(pocketBalances.cash + pocketBalances.card + pocketBalances.pix + pocketBalances.other).toFixed(2)} USD
             </span>
           )}
         </button>

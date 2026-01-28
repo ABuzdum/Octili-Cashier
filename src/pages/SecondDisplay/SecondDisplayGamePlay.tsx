@@ -533,7 +533,7 @@ export function SecondDisplayGamePlay({
                 transition: 'all 0.2s',
               }}
             >
-              {betAmount} BRL
+              {betAmount} USD
             </button>
             {showBetAmountDropdown && (
               <div
@@ -574,7 +574,7 @@ export function SecondDisplayGamePlay({
                       transition: 'all 0.2s',
                     }}
                   >
-                    {amount} BRL
+                    {amount} USD
                   </button>
                 ))}
               </div>
@@ -743,7 +743,7 @@ export function SecondDisplayGamePlay({
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                {totalCost.toFixed(2)} BRL
+                {totalCost.toFixed(2)} USD
               </span>
             </div>
           </div>

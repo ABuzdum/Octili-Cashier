@@ -524,7 +524,7 @@ export function AccountPage() {
                   letterSpacing: '0.5px',
                   marginBottom: '8px',
                 }}>
-                  Amount (BRL)
+                  Amount (USD)
                 </p>
                 <div style={{
                   display: 'flex',
@@ -656,7 +656,7 @@ export function AccountPage() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
-                {amount} BRL
+                {amount} USD
               </span>
               {' '}{isDeposit ? 'added to' : 'withdrawn from'} account
             </p>

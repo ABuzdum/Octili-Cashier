@@ -532,7 +532,7 @@ export function ReportsPage() {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <p style={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>
-                        {game.sales.toFixed(2)} BRL
+                        {game.sales.toFixed(2)} USD
                       </p>
                       <p style={{
                         fontSize: '11px',
@@ -630,7 +630,7 @@ export function ReportsPage() {
         <div>
           <p style={{ fontSize: '12px', color: '#94a3b8' }}>Current Terminal Balance</p>
           <p style={{ fontSize: '24px', fontWeight: 800, color: '#24BD68' }}>
-            {balance.toFixed(2)} BRL
+            {balance.toFixed(2)} USD
           </p>
         </div>
         <button

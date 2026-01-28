@@ -562,7 +562,7 @@ export function MenuPage() {
                 fontWeight: 700,
                 color: '#24BD68',
               }}>
-                {balance.toFixed(2)} BRL
+                {balance.toFixed(2)} USD
               </p>
             </div>
           </div>
@@ -706,7 +706,7 @@ export function MenuPage() {
             label="My Sales Today"
             gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
             onClick={() => setActiveModal('shift-info')}
-            badge={`${SHIFT_DATA.salesToday.toFixed(0)} BRL`}
+            badge={`${SHIFT_DATA.salesToday.toFixed(0)} USD`}
           />
         </div>
 
@@ -1916,7 +1916,7 @@ export function MenuPage() {
                   fontWeight: 700,
                   color: '#24BD68',
                 }}>
-                  {SHIFT_DATA.commission.toFixed(2)} BRL
+                  {SHIFT_DATA.commission.toFixed(2)} USD
                 </span>
               </div>
             </div>
@@ -2063,7 +2063,7 @@ export function MenuPage() {
                 fontSize: '12px',
                 color: '#64748b',
               }}>
-                Max: {getMaxCollectionAmount().toFixed(2)} BRL
+                Max: {getMaxCollectionAmount().toFixed(2)} USD
                 {selectedCollectionPocket !== 'all' && (
                   <span> from {selectedCollectionPocket.charAt(0).toUpperCase() + selectedCollectionPocket.slice(1)}</span>
                 )}
@@ -2120,7 +2120,7 @@ export function MenuPage() {
                 }}
               >
                 <Sparkles size={18} />
-                Collect All ({getMaxCollectionAmount().toFixed(2)} BRL)
+                Collect All ({getMaxCollectionAmount().toFixed(2)} USD)
               </button>
               <button
                 onClick={() => {
@@ -2225,7 +2225,7 @@ export function MenuPage() {
                 fontSize: '12px',
                 color: '#64748b',
               }}>
-                Enter amount in BRL
+                Enter amount in USD
               </p>
             </div>
 
@@ -2420,7 +2420,7 @@ export function MenuPage() {
                         fontWeight: 700,
                         color: '#24BD68',
                       }}>
-                        +{ticket.bet.totalCost.toFixed(2)} BRL
+                        +{ticket.bet.totalCost.toFixed(2)} USD
                       </p>
                     </div>
                   ))}

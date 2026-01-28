@@ -70,13 +70,13 @@ export interface PhysicalTicket {
   /** Current status of the ticket */
   status: PhysicalTicketStatus
 
-  /** Initial deposit amount when ticket was purchased (BRL) */
+  /** Initial deposit amount when ticket was purchased (USD) */
   depositAmount: number
 
-  /** Remaining balance available for betting (BRL) */
+  /** Remaining balance available for betting (USD) */
   remainingBalance: number
 
-  /** Total winnings accumulated from games played (BRL) */
+  /** Total winnings accumulated from games played (USD) */
   totalWinnings: number
 
   /** Whether ticket is for one game or all games */
@@ -111,7 +111,7 @@ export interface PhysicalTicket {
  * Parameters for creating a new physical ticket.
  */
 export interface CreateTicketParams {
-  /** Deposit amount in BRL */
+  /** Deposit amount in USD */
   amount: number
 
   /** Whether ticket is for single game or all games */
@@ -198,7 +198,7 @@ export interface StatusDisplayConfig {
  * Quick amount button configuration for the new ticket form.
  */
 export interface QuickAmountButton {
-  /** Amount value in BRL */
+  /** Amount value in USD */
   value: number
 
   /** Display label */

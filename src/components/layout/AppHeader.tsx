@@ -371,7 +371,7 @@ export function AppHeader({
               : 'white',
             fontFamily: 'ui-monospace, monospace',
           }}>
-            {balance.toFixed(2)} <span style={{ fontSize: '12px', opacity: 0.8 }}>BRL</span>
+            {balance.toFixed(2)} <span style={{ fontSize: '12px', opacity: 0.8 }}>USD</span>
           </p>
         </button>
 

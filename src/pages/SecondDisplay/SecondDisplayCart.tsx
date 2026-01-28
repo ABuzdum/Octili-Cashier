@@ -174,7 +174,7 @@ function CartTicketItem({ ticket, index }: { ticket: CartTicket; index: number }
               }}
             >
               {ticket.bet.numberOfDraws} draw{ticket.bet.numberOfDraws > 1 ? 's' : ''} ×{' '}
-              {ticket.bet.betAmount} BRL
+              {ticket.bet.betAmount} USD
             </span>
             <span
               style={{
@@ -185,7 +185,7 @@ function CartTicketItem({ ticket, index }: { ticket: CartTicket; index: number }
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              {ticket.bet.totalCost.toFixed(2)} BRL
+              {ticket.bet.totalCost.toFixed(2)} USD
             </span>
           </div>
         </div>
@@ -488,7 +488,7 @@ export function SecondDisplayCart({ onBack, sendMessage }: SecondDisplayCartProp
                 letterSpacing: '-1px',
               }}
             >
-              {total.toFixed(2)} BRL
+              {total.toFixed(2)} USD
             </span>
           </div>
 
