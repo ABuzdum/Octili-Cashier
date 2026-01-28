@@ -502,7 +502,24 @@ export function PayoutPage() {
         setError(null)
       }
     } else if (type === 'draw') {
-      // Look up Draw ticket
+      // Check for predefined test codes first
+      const testCode = ticketCode.trim()
+      const testDrawCodes: Record<string, DrawTicketResult> = {
+        '0289-1111111111-11111111111': { status: 'valid', winAmount: 50, gameName: 'Lucky Keno' },
+        '0289-2222222222-22222222222': { status: 'valid', winAmount: 120, gameName: 'Mega Ball' },
+        '0289-3333333333-33333333333': { status: 'valid', winAmount: 500, gameName: 'Golden Lotto' },
+        '0289-4444444444-44444444444': { status: 'invalid', winAmount: 0, gameName: 'Quick Pick' },
+        '0289-5555555555-55555555555': { status: 'paid', winAmount: 0, gameName: 'Super Seven' },
+        '0289-6666666666-66666666666': { status: 'invalid', winAmount: 0, gameName: '' },
+      }
+
+      if (testDrawCodes[testCode]) {
+        setDrawResult(testDrawCodes[testCode])
+        setError(null)
+        return
+      }
+
+      // Look up Draw ticket in history
       const ticketNumber = ticketCode.replace(/-/g, '')
       const ticket = ticketHistory.find((t) => t.ticketNumber.replace(/-/g, '') === ticketNumber)
 
@@ -680,6 +697,8 @@ export function PayoutPage() {
                 { code: 'OCT-TESTCD34-ACTV', label: 'Active' },
                 { code: 'OCT-TESTEF56-FWIN', label: 'Won' },
                 { code: 'OCT-TESTGH78-FLST', label: 'Lost' },
+                { code: 'OCT-TESTIJ90-PAID', label: 'Paid Out' },
+                { code: 'OCT-TESTKL12-EXPR', label: 'Expired' },
               ].map((test) => (
                 <button
                   key={test.code}
@@ -693,12 +712,22 @@ export function PayoutPage() {
 
             <p style={{ fontSize: '11px', color: '#94a3b8', marginBottom: '6px' }}>Draw Tickets:</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-              <button
-                onClick={() => setTicketCode('0289-2397122442-00028362302')}
-                style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', fontSize: '11px', cursor: 'pointer', color: '#8b5cf6' }}
-              >
-                Sample Draw
-              </button>
+              {[
+                { code: '0289-1111111111-11111111111', label: 'Win $50' },
+                { code: '0289-2222222222-22222222222', label: 'Win $120' },
+                { code: '0289-3333333333-33333333333', label: 'Win $500' },
+                { code: '0289-4444444444-44444444444', label: 'No Win' },
+                { code: '0289-5555555555-55555555555', label: 'Already Paid' },
+                { code: '0289-6666666666-66666666666', label: 'Invalid' },
+              ].map((test) => (
+                <button
+                  key={test.code}
+                  onClick={() => setTicketCode(test.code)}
+                  style={{ padding: '6px 10px', borderRadius: '8px', border: '1px solid #e2e8f0', background: 'white', fontSize: '11px', cursor: 'pointer', color: '#8b5cf6' }}
+                >
+                  {test.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

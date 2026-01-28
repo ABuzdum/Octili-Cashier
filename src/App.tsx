@@ -8,14 +8,15 @@
  * Features:
  * - React Router setup
  * - Lazy loading for all pages
- * - Protected routes
+ * - Protected routes with auth redirect
+ * - Error boundary for graceful error handling
  *
  * @author Octili Development Team
  * @version 1.0.0
  */
 
-import { Suspense, lazy, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Suspense, lazy, useEffect, Component, type ReactNode } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/stores/authStore'
 import { useThemeStore, applyThemeToDocument } from '@/stores/themeStore'
 import { TerminalOfflineOverlay } from '@/components/shared/TerminalOfflineOverlay'
@@ -65,13 +66,58 @@ function LoadingSpinner() {
 }
 
 /**
+ * Error Boundary for catching render errors and showing fallback UI
+ */
+interface ErrorBoundaryState {
+  hasError: boolean
+  error: Error | null
+}
+
+class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  constructor(props: { children: ReactNode }) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+          <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md text-center">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">⚠️</span>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+            <p className="text-gray-600 mb-4">Please refresh the page to try again.</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-brand-500 text-white font-semibold rounded-xl hover:bg-brand-600 transition"
+            >
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      )
+    }
+
+    return this.props.children
+  }
+}
+
+/**
  * Protected route wrapper - redirects to login if not authenticated
  */
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
+  const location = useLocation()
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    // Redirect to login, preserving the intended destination
+    return <Navigate to="/login" state={{ from: location }} replace />
   }
 
   return <>{children}</>
@@ -103,8 +149,9 @@ function App() {
       {/* Terminal Offline Overlay - blocks all interactions when terminal is paused */}
       <TerminalOfflineOverlay />
 
-      <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
           {/* Public routes */}
           <Route
             path="/login"
@@ -259,8 +306,9 @@ function App() {
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   )
 }
