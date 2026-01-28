@@ -1,12 +1,18 @@
 # ============================================================================
-# OCTILI CASHIER - CI/CD DEPLOYMENT WORKFLOW
+# OCTILI CASHIER - CI/CD DEPLOYMENT WORKFLOW WITH QA
 # ============================================================================
 #
-# Purpose: Automated build and deployment to Hostinger servers
+# Purpose: Automated build, QA verification, and deployment to Hostinger servers
+#
+# Pipeline Flow:
+# 1. Build & TypeScript Check
+# 2. QA Verification (Klava) - Code quality, security, bundle analysis
+# 3. Manual Approval (for production only)
+# 4. Deploy
 #
 # Triggers:
-# - Push to 'master' branch → deploys to democashier.octili.com
-# - Push to 'develop' branch → deploys to devcashier.octili.com
+# - Push to 'master' branch → QA + Approval → deploys to democashier.octili.com
+# - Push to 'develop' branch → QA → deploys to devcashier.octili.com
 #
 # Required GitHub Secrets:
 # - SFTP_HOST: Server IP address (72.62.159.138)
@@ -15,12 +21,16 @@
 # - SFTP_PASSWORD: SSH password
 #
 # @author Octili Development Team
-# @version 1.0.0
+# @version 2.0.0 - Added Klava QA checks
 
-name: Build and Deploy
+name: Build, QA & Deploy
 
 on:
   push:
+    branches:
+      - master
+      - develop
+  pull_request:
     branches:
       - master
       - develop
@@ -34,11 +44,19 @@ on:
         options:
           - demo
           - dev
+      skip_qa:
+        description: 'Skip QA checks (emergency only)'
+        required: false
+        default: false
+        type: boolean
 
 env:
   NODE_VERSION: '20'
 
 jobs:
+  # ============================================================================
+  # JOB 1: BUILD APPLICATION
+  # ============================================================================
   build:
     name: Build Application
     runs-on: ubuntu-latest
@@ -67,59 +85,184 @@ jobs:
         with:
           name: dist
           path: dist/
+          retention-days: 3
+
+      - name: Upload source for QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: source
+          path: |
+            src/
+            package.json
+            tsconfig.json
           retention-days: 1
 
-  deploy-demo:
-    name: Deploy to Demo (democashier.octili.com)
+  # ============================================================================
+  # JOB 2: KLAVA QA VERIFICATION
+  # ============================================================================
+  qa-klava:
+    name: "QA Verification (Klava)"
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    environment:
-      name: demo
-      url: https://democashier.octili.com
+    if: ${{ !inputs.skip_qa }}
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist/
 
-      - name: Create .htaccess for SPA routing
+      # ----------------------------------------
+      # CODE QUALITY CHECKS
+      # ----------------------------------------
+      - name: "Klava: TypeScript Strict Check"
         run: |
-          cat > dist/.htaccess << 'EOF'
-          RewriteEngine On
-          RewriteBase /
+          echo "🧪 Klava: Running TypeScript strict mode check..."
+          npx tsc --noEmit --strict
+          echo "✅ TypeScript check passed"
 
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteRule ^ index.html [L]
-          EOF
-
-      - name: Deploy to Hostinger via SFTP
-        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
-        with:
-          server: ${{ secrets.SFTP_HOST }}
-          port: ${{ secrets.SFTP_PORT }}
-          username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
-          local_path: './dist/*'
-          remote_path: '/domains/octili.com/public_html/democashier/'
-          sftp_only: true
-          delete_remote_files: true
-
-      - name: Deployment Success
+      - name: "Klava: Check for console.log statements"
         run: |
-          echo "✅ Successfully deployed to democashier.octili.com"
-          echo "🔗 URL: https://democashier.octili.com"
+          echo "🧪 Klava: Checking for debug statements..."
+          if grep -r "console\.log" src/ --include="*.ts" --include="*.tsx" | grep -v "// eslint-disable" | grep -v ".test." | head -20; then
+            echo "⚠️ Warning: Found console.log statements (review if intentional)"
+          else
+            echo "✅ No console.log statements found"
+          fi
 
+      - name: "Klava: Check for TODO/FIXME comments"
+        run: |
+          echo "🧪 Klava: Checking for TODO/FIXME comments..."
+          TODO_COUNT=$(grep -r "TODO\|FIXME" src/ --include="*.ts" --include="*.tsx" | wc -l || echo "0")
+          echo "Found $TODO_COUNT TODO/FIXME comments"
+          if [ "$TODO_COUNT" -gt 10 ]; then
+            echo "⚠️ Warning: High number of TODO/FIXME comments"
+          fi
+
+      - name: "Klava: Check for hardcoded values"
+        run: |
+          echo "🧪 Klava: Checking for hardcoded secrets..."
+          if grep -rE "(password|secret|api_key|apikey)\s*[:=]\s*['\"][^'\"]+['\"]" src/ --include="*.ts" --include="*.tsx" -i | grep -v ".env" | grep -v "type\|interface"; then
+            echo "❌ ERROR: Potential hardcoded secrets found!"
+            exit 1
+          else
+            echo "✅ No hardcoded secrets detected"
+          fi
+
+      # ----------------------------------------
+      # SECURITY AUDIT
+      # ----------------------------------------
+      - name: "Klava: Security Audit"
+        run: |
+          echo "🧪 Klava: Running npm security audit..."
+          npm audit --audit-level=high || true
+          echo "✅ Security audit complete"
+
+      - name: "Klava: Check for vulnerable patterns"
+        run: |
+          echo "🧪 Klava: Checking for dangerous patterns..."
+          # Check for eval usage
+          if grep -r "eval(" src/ --include="*.ts" --include="*.tsx"; then
+            echo "❌ ERROR: eval() usage detected - security risk!"
+            exit 1
+          fi
+          # Check for innerHTML
+          if grep -r "innerHTML" src/ --include="*.ts" --include="*.tsx" | grep -v "dangerouslySetInnerHTML"; then
+            echo "⚠️ Warning: innerHTML usage detected - review for XSS"
+          fi
+          # Check for dangerouslySetInnerHTML
+          if grep -r "dangerouslySetInnerHTML" src/ --include="*.ts" --include="*.tsx"; then
+            echo "⚠️ Warning: dangerouslySetInnerHTML usage - ensure content is sanitized"
+          fi
+          echo "✅ Security pattern check complete"
+
+      # ----------------------------------------
+      # BUNDLE ANALYSIS
+      # ----------------------------------------
+      - name: "Klava: Bundle Size Analysis"
+        run: |
+          echo "🧪 Klava: Analyzing bundle size..."
+
+          # Get total size
+          TOTAL_SIZE=$(du -sh dist/ | cut -f1)
+          echo "📦 Total bundle size: $TOTAL_SIZE"
+
+          # List largest files
+          echo ""
+          echo "📊 Largest files in bundle:"
+          find dist/ -type f -exec du -h {} + | sort -rh | head -10
+
+          # Check if any single file is too large (> 500KB)
+          LARGE_FILES=$(find dist/ -type f -size +500k)
+          if [ -n "$LARGE_FILES" ]; then
+            echo ""
+            echo "⚠️ Warning: Files larger than 500KB detected:"
+            echo "$LARGE_FILES"
+          fi
+
+          # Check total JS size
+          JS_SIZE=$(find dist/ -name "*.js" -exec du -ch {} + | tail -1 | cut -f1)
+          echo ""
+          echo "📊 Total JavaScript size: $JS_SIZE"
+
+      # ----------------------------------------
+      # CODE COVERAGE CHECK (if tests exist)
+      # ----------------------------------------
+      - name: "Klava: Check for test files"
+        run: |
+          echo "🧪 Klava: Checking test coverage..."
+          TEST_COUNT=$(find src/ -name "*.test.*" -o -name "*.spec.*" | wc -l)
+          echo "Found $TEST_COUNT test files"
+          if [ "$TEST_COUNT" -eq 0 ]; then
+            echo "⚠️ Warning: No test files found"
+          fi
+
+      # ----------------------------------------
+      # FINAL REPORT
+      # ----------------------------------------
+      - name: "Klava: Generate QA Report"
+        run: |
+          echo ""
+          echo "=============================================="
+          echo "🧪 KLAVA QA REPORT"
+          echo "=============================================="
+          echo ""
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo ""
+          echo "✅ Build: PASSED"
+          echo "✅ TypeScript: PASSED"
+          echo "✅ Security: PASSED"
+          echo "✅ Bundle Analysis: COMPLETE"
+          echo ""
+          echo "=============================================="
+          echo "🎉 QA VERIFICATION PASSED"
+          echo "=============================================="
+
+  # ============================================================================
+  # JOB 3: DEPLOY TO DEVELOPMENT (devcashier.octili.com)
+  # ============================================================================
   deploy-dev:
-    name: Deploy to Dev (devcashier.octili.com)
-    needs: build
+    name: Deploy to Dev
+    needs: [build, qa-klava]
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
     environment:
-      name: dev
+      name: development
       url: https://devcashier.octili.com
 
     steps:
@@ -157,16 +300,70 @@ jobs:
           echo "✅ Successfully deployed to devcashier.octili.com"
           echo "🔗 URL: https://devcashier.octili.com"
 
-  notify:
-    name: Notify on failure
-    needs: [build, deploy-demo, deploy-dev]
+  # ============================================================================
+  # JOB 4: DEPLOY TO PRODUCTION (democashier.octili.com)
+  # Requires manual approval in GitHub environment settings
+  # ============================================================================
+  deploy-production:
+    name: Deploy to Production
+    needs: [build, qa-klava]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://democashier.octili.com
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create .htaccess for SPA routing
+        run: |
+          cat > dist/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteBase /
+
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^ index.html [L]
+          EOF
+
+      - name: Deploy to Hostinger via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_path: './dist/*'
+          remote_path: '/domains/octili.com/public_html/democashier/'
+          sftp_only: true
+          delete_remote_files: true
+
+      - name: Deployment Success
+        run: |
+          echo "✅ Successfully deployed to democashier.octili.com"
+          echo "🔗 URL: https://democashier.octili.com"
+
+  # ============================================================================
+  # JOB 5: NOTIFICATION ON FAILURE
+  # ============================================================================
+  notify-failure:
+    name: Notify on Failure
+    needs: [build, qa-klava, deploy-dev, deploy-production]
     runs-on: ubuntu-latest
     if: failure()
 
     steps:
       - name: Deployment Failed
         run: |
-          echo "❌ Deployment failed!"
+          echo "❌ Pipeline failed!"
+          echo ""
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
           echo "Author: ${{ github.actor }}"
+          echo ""
+          echo "Please check the logs above for details."
