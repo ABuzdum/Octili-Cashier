@@ -40,7 +40,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: TypeScript check
         run: npx tsc --noEmit
@@ -119,7 +119,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Download build
         uses: actions/download-artifact@v4
@@ -132,6 +132,12 @@ jobs:
           echo "🧪 TypeScript strict mode..."
           npx tsc --noEmit --strict
           echo "✅ Passed"
+
+      - name: "Klava: Run Automated Tests"
+        run: |
+          echo "🧪 Running automated tests..."
+          npm test
+          echo "✅ All tests passed"
 
       - name: "Klava: Debug Statements"
         run: |
@@ -170,11 +176,21 @@ jobs:
       - name: "Klava: QA Report"
         run: |
           echo "=============================================="
-          echo "🧪 KLAVA QA PASSED"
+          echo "🧪 KLAVA QA REPORT"
           echo "=============================================="
+          echo ""
           echo "Branch: ${{ github.ref_name }}"
           echo "Commit: ${{ github.sha }}"
-          echo "✅ Ready for production"
+          echo ""
+          echo "✅ TypeScript Strict: PASSED"
+          echo "✅ Automated Tests: PASSED"
+          echo "✅ Security Checks: PASSED"
+          echo "✅ Bundle Analysis: COMPLETE"
+          echo ""
+          echo "=============================================="
+          echo "🎉 QA VERIFICATION PASSED"
+          echo "=============================================="
+          echo "✅ Ready for production deployment"
 
   # ============================================================================
   # DEPLOY TO PRODUCTION - Only after QA passes
