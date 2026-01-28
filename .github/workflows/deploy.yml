@@ -1,0 +1,172 @@
+# ============================================================================
+# OCTILI CASHIER - CI/CD DEPLOYMENT WORKFLOW
+# ============================================================================
+#
+# Purpose: Automated build and deployment to Hostinger servers
+#
+# Triggers:
+# - Push to 'master' branch → deploys to democashier.octili.com
+# - Push to 'develop' branch → deploys to devcashier.octili.com
+#
+# Required GitHub Secrets:
+# - SFTP_HOST: Server IP address (72.62.159.138)
+# - SFTP_PORT: SSH port (65002)
+# - SFTP_USERNAME: SSH username
+# - SFTP_PASSWORD: SSH password
+#
+# @author Octili Development Team
+# @version 1.0.0
+
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'demo'
+        type: choice
+        options:
+          - demo
+          - dev
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run TypeScript check
+        run: npx tsc --noEmit
+
+      - name: Build application
+        run: npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  deploy-demo:
+    name: Deploy to Demo (democashier.octili.com)
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    environment:
+      name: demo
+      url: https://democashier.octili.com
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create .htaccess for SPA routing
+        run: |
+          cat > dist/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteBase /
+
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^ index.html [L]
+          EOF
+
+      - name: Deploy to Hostinger via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_path: './dist/*'
+          remote_path: '/domains/octili.com/public_html/democashier/'
+          sftp_only: true
+          delete_remote_files: true
+
+      - name: Deployment Success
+        run: |
+          echo "✅ Successfully deployed to democashier.octili.com"
+          echo "🔗 URL: https://democashier.octili.com"
+
+  deploy-dev:
+    name: Deploy to Dev (devcashier.octili.com)
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment:
+      name: dev
+      url: https://devcashier.octili.com
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Create .htaccess for SPA routing
+        run: |
+          cat > dist/.htaccess << 'EOF'
+          RewriteEngine On
+          RewriteBase /
+
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteRule ^ index.html [L]
+          EOF
+
+      - name: Deploy to Hostinger via SFTP
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
+        with:
+          server: ${{ secrets.SFTP_HOST }}
+          port: ${{ secrets.SFTP_PORT }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_path: './dist/*'
+          remote_path: '/domains/octili.com/public_html/devcashier/'
+          sftp_only: true
+          delete_remote_files: true
+
+      - name: Deployment Success
+        run: |
+          echo "✅ Successfully deployed to devcashier.octili.com"
+          echo "🔗 URL: https://devcashier.octili.com"
+
+  notify:
+    name: Notify on failure
+    needs: [build, deploy-demo, deploy-dev]
+    runs-on: ubuntu-latest
+    if: failure()
+
+    steps:
+      - name: Deployment Failed
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
